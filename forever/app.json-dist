@@ -1,0 +1,9 @@
+{
+    "sourceDir": "/home/node/apps/commissioner",
+    "uid": "commissioner",
+    "script": "app.js",
+    "append": true,
+    "logFile": "/home/node/apps/commissioner/logs/log.log",
+    "outFile": "/home/node/apps/commissioner/logs/out.log",
+    "errFile": "/home/node/apps/commissioner/logs/error.log"
+}

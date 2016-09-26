@@ -1,0 +1,15 @@
+.idea
+.DS_Store
+out
+config/config.json
+config/jsdoc_conf.json
+config/mongo-config.js
+logs/*
+!.gitkeep
+node_modules/
+bower_components/
+tmp
+.jshintrc
+userFiles/
+forever/app.json
+public/css/app.css

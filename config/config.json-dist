@@ -1,0 +1,17 @@
+{
+    "port": 9000,
+    "mongoose": {
+        "uri": "mongodb://localhost/vps"
+    },
+    "mailgun": {
+        "api": "key-08f0f2c01746fccba190d6bb988f4028",
+        "domain": "sandbox6f6bcef21c774e93a483fcd32af91b1d.mailgun.org",
+        "fromName": "suppor@commissioner.com",
+        "emailTo": "v@codemotion.eu"
+    },
+    "jwt": {
+        "secret": "nBpSSm2"
+    },
+    "appDomain": "http://localhost:9000",
+    "debug": true
+}
