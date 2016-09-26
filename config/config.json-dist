@@ -4,9 +4,9 @@
         "uri": "mongodb://localhost/vps"
     },
     "mailgun": {
-        "api": "key-08f0f2c01746fccba190d6bb988f4028",
-        "domain": "sandbox6f6bcef21c774e93a483fcd32af91b1d.mailgun.org",
-        "fromName": "suppor@commissioner.com",
+        "api": "key-00ff1bad35d36a6bf1ac37e95eac1b08",
+        "domain": "sandbox35da72bd198f4fc0b4eb3556fe73d3ae.mailgun.org",
+        "fromName": "support@ftr.com",
         "emailTo": "v@codemotion.eu"
     },
     "jwt": {

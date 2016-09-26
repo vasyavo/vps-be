@@ -18,13 +18,13 @@ if (process.env.VCAP_SERVICES) {
   }
 } else {
   mongo = {
-    db:       'prospectlinked',
+    db:       'vps',
     host:     'localhost',
-    password: '',
+    password: 'pass',
     port:     27017,
     ssl:      false,
-    url:      'mongodb://localhost/prospectlinked',
-    username: '',
+    url:      'mongodb://localhost/vps',
+    username: 'admin',
   };
 }
 
