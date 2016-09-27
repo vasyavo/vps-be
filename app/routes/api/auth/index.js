@@ -12,7 +12,9 @@ const fs                    = require('fs')
  */
 
 class AuthRoutes {
-    constructor() {};
+    constructor() {
+        this.emailPattern = new RegExp(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/);
+    };
 
 
     /**
@@ -26,7 +28,7 @@ class AuthRoutes {
         let login = req.body.login || '';
         let password = req.body.password || '';
 
-        if (login.length < 3 || password.length < 5) {
+        if (login.length < 3 || password.length < 5 || !this.emailPattern.test(login)) {
             helperFunctions.generateResponse(422, 'Incorrect info for authenticate', null, null, res);
             return;
         }
@@ -52,7 +54,8 @@ class AuthRoutes {
     registerUserHandler(req, res, next) {
         let userInfo = req.body || {};
 
-        if ( userInfo.login.length < 3 || userInfo.password.length < 5 ) {
+        if ( (userInfo.login && userInfo.login.length < 3)
+            || (userInfo.password && userInfo.password.length < 5) ) {
             helperFunctions.generateResponse(422, 'Incorrect info for registration', null, null, res);
             return;
         }
@@ -84,12 +87,63 @@ class AuthRoutes {
 
         userModel.confirmUserRegistration(token)
             .then((user) => {
-                console.log(user);
                 helperFunctions.generateResponse(200, null, {user: user}, '', res);
             } )
             .catch((err) => {
                 helperFunctions.generateResponse(422, err, null, null, res);
             } );
+    };
+
+
+    /**
+     * Forgot password handler
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next rout
+     */
+
+    forgotPasswordHandler(req, res, next) {
+        let email = req.body.login || null;
+
+        if (!email || !this.emailPattern.test(email)) {
+            helperFunctions.generateResponse(422, 'Bad data for restoring password', null, null, res);
+            return;
+        }
+
+        userModel.restorePassword(email.trim())
+            .then((user) => {
+                helperFunctions.generateResponse(200, null, {user: user}, 'Email sent.', res);
+            })
+            .catch((err) => {
+                helperFunctions.generateResponse(422, 'User does not exist.', null, null, res);
+            });
+    };
+
+
+    /**
+     * Change password handler
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next rout
+     */
+
+    changePasswordHandler(req, res, next) {
+        let hash = req.params.hash || null;
+        let password = req.body.password || null;
+        let confirmPassowrd = req.body.confirmPassowrd || null;
+
+        if(!hash || !password || password !== confirmPassowrd) {
+            helperFunctions.generateResponse(422, 'Bad data for restoring password', null, null, res);
+            return;
+        }
+
+        userModel.changePassword(hash, password)
+            .then((user) => {
+                helperFunctions.generateResponse(200, null, {user: user}, 'Email sent.', res);
+            })
+            .catch((err) => {
+                helperFunctions.generateResponse(422, 'User does not exist.', null, null, res);
+            });
     };
 
 

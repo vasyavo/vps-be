@@ -24,6 +24,9 @@ let Users = new Schema({
     confirm_hash: {
         type: String
     },
+    restore_hash: {
+        type: String
+    },
 	password: {
         type: String,
         required: true
@@ -86,10 +89,6 @@ Users.pre('save', function(next) {
         if(!self.isModified('time_register')) {
             let now = moment().unix();
             self.time_register = now;
-        }
-
-        if(self.isModified('status')) {
-            self.status = 'inactive';
         }
 
         next();
@@ -168,7 +167,7 @@ class UsersManager {
 
     registerUser(options) {
         let promise = new Promise((resolve, reject) => {
-            this.getUser({login: options.email})
+            this.getUser({login: options.login})
                 .then((user) => {
                     user = (user && user.length) ? user[0] : null;
 
@@ -177,6 +176,7 @@ class UsersManager {
                     }
 
                     let userEntity = new UsersObject(options);
+                    userEntity.status = 'inactive';
 
                     userEntity.save()
                         .then((user) => {
@@ -189,7 +189,7 @@ class UsersManager {
                                 },
                                 emailTo: user.login
                             });
-                            
+
                             resolve(user);
                         });
 
@@ -299,6 +299,89 @@ class UsersManager {
         return promise;
     };
 
+
+    /**
+     * Restore password
+     * @param {string} confirmToken - registration confirm token
+     * @param {function} callback - callback function after registration
+     */
+
+    restorePassword(email) {
+
+        let promise = new Promise((resolve, reject) => {
+            UsersObject.findOne({login: email})
+                .then((user) => {
+                    if(!user || user.status !== 'active') {
+                        return reject('Wrong confirm token');
+                    }
+
+                    crypto.randomBytes(15, (err, buf) => {
+
+                        if(err) {
+                            return reject(err);
+                        }
+
+                        let token = buf.toString('hex');
+
+                        user.restore_hash = token;
+                        user.save()
+                            .then(resolve)
+                            .catch(reject);
+
+                        mailerModel.sendEmail({
+                            eventType: 'restore_password',
+                            data: {
+                                userName: user.first_name || user.login,
+                                url: config.get('appDomain') + '/api/v1/users/restore/' + user.restore_hash
+                            },
+                            emailTo: user.login
+                        });
+
+                    });
+
+                });
+        });
+
+        return promise;
+    };
+
+
+    /**
+     * Change user password
+     * @param {string} hash - registration confirm token
+     * @param {function} callback - callback function after registration
+     */
+
+    changePassword(hash, newPassword) {
+        let promise = new Promise((resolve, reject) => {
+            UsersObject.findOne({restore_hash: hash})
+                .then((user) => {
+
+                    if(!user) {
+                        return reject('Wrong restore token');
+                    }
+
+                    user.password = newPassword;
+                    user.restore_hash = null;
+
+                    user.save()
+                        .then(resolve)
+                        .catch(reject);
+
+                    mailerModel.sendEmail({
+                        eventType: 'password_changed',
+                        data: {
+                            userName: user.first_name || user.login,
+                            url: config.get('appDomain') + '/'
+                        },
+                        emailTo: user.login
+                    });
+                });
+        });
+
+        return promise;
+    };
+
     /**
      * Generate JWT token based on user info
      * @param {string} userName - user login
@@ -309,7 +392,7 @@ class UsersManager {
     _generateJWTToken(user) {
         let tokenExpire = 12 * 2592000; //12 month
         let signUser = {
-            login: user.user_name,
+            login: user.login,
             status: user.status,
             expire: tokenExpire
         };

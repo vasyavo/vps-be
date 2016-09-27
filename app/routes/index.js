@@ -21,13 +21,17 @@ module.exports = (app) => {
     app.all('/api/v1/*', admin.checkAccessRights.bind(admin));
 
     //auth routes
-    app.post('/api/v1/users/login', auth.authorizeUserHandler);
+    app.post('/api/v1/users/login', auth.authorizeUserHandler.bind(auth));
 
     app.get('/api/v1/users/logout', auth.logoutUserHandler);
 
     app.post('/api/v1/users/register', auth.registerUserHandler);
 
     app.get('/api/v1/users/confirm/:hash', auth.confirmRegisterUserHandler);
+
+    app.post('/api/v1/users/restore', auth.forgotPasswordHandler.bind(auth));
+
+    app.post('/api/v1/users/change/:hash', auth.changePasswordHandler.bind(auth));
 
 
     //Mongo express

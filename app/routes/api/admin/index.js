@@ -18,7 +18,9 @@ class AdminRoutes {
             'users/login',
             'users/register',
             'users/forgot',
-            'users/confirm'
+            'users/confirm',
+            'users/restore',
+            'users/change'
         ];
     };
 
