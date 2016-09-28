@@ -187,7 +187,7 @@ class AuthRoutes {
         if(!userId) {
             userModel.registerUser({facebook_data: facebookData})
                 .then((user) => {
-                    helperFunctions.generateResponse(200, null, {user: user}, 'Successfully registered.', res);
+                    helperFunctions.generateResponse(200, null, {user: user}, 'Successfully authorized.', res);
                 })
                 .catch((err) => {
                     console.log(err);

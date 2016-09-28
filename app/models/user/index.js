@@ -178,6 +178,11 @@ class UsersManager {
                     if(user && !options.facebook_data) {
                         return reject('Already exist');
                     } else if(user && options.facebook_data) {
+
+                        if(user.facebook_data.id && user.facebook_data.id !== options.facebook_data.id) {
+                            return reject('Wrong facebook id');
+                        }
+
                         let newToken = this._generateJWTToken(user);
                         user.token.push(newToken);
                         user.save()
