@@ -195,11 +195,11 @@ class UsersManager {
                             userEntity.roles = [];
                             userEntity.roles.push('user');
                             userEntity.token = [];
-                            userEntity.token.push(this._generateJWTToken(user));
+                            userEntity.token.push(this._generateJWTToken(userEntity));
                         } else {
                             userEntity.status = this.INACTIVE_STATTUS;
                         }
-                        
+
                         userEntity.save()
                             .then((user) => {
 
