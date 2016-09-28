@@ -170,14 +170,17 @@ class UsersManager {
      */
 
     registerUser(options) {
+        console.log(options);
         let promise = new Promise((resolve, reject) => {
             this.getUser({login: options.login || options.facebook_data.login})
                 .then((user) => {
                     user = (user && user.length) ? user[0] : null;
 
                     if(user && !options.facebook_data) {
+                        console.log('exist');
                         return reject('Already exist');
                     } else if(user && options.facebook_data) {
+                        console.log('auth');
                         let newToken = this._generateJWTToken(user);
                         user.token.push(newToken);
                         user.save()
@@ -199,7 +202,8 @@ class UsersManager {
                         } else {
                             userEntity.status = this.INACTIVE_STATTUS;
                         }
-
+                        console.log('------');
+                        console.log(userEntity);
                         userEntity.save()
                             .then((user) => {
 
