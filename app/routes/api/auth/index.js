@@ -190,6 +190,7 @@ class AuthRoutes {
                     helperFunctions.generateResponse(200, null, {user: user}, 'Successfully registered.', res);
                 })
                 .catch((err) => {
+                    console.log(err);
                     helperFunctions.generateResponse(422, 'User does not exist.', null, null, res);
                 });
         } else {
