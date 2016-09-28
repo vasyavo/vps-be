@@ -15,8 +15,6 @@ const mongo    	        = require('../mongo')
 let Users = new Schema({
 	login: {
         type: String,
-        required: true,
-        unique: true
     },
 	token: {
         type: Array
@@ -112,7 +110,6 @@ Users.methods.comparePassword = function(password, callback) {
 
 const UsersObject = mongoose.model('Users', Users);
 
-
 /**
  * Users class.
  * @constructor
@@ -170,61 +167,65 @@ class UsersManager {
      */
 
     registerUser(options) {
+        options.facebook_data = options.facebook_data || {};
+        let query = {};
+
+        if(options.facebook_data.facebook_id) {
+            query['facebook_data.facebook_id'] = options.facebook_data.facebook_id;
+        } else {
+            query.login = options.login || options.facebook_data.login
+        }
+
         let promise = new Promise((resolve, reject) => {
-            this.getUser({login: options.login || options.facebook_data.login})
-                .then((user) => {
-                    user = (user && user.length) ? user[0] : null;
+            this.getUser(query).then((user) => {
+                console.log(user);
+                user = (user && user.length) ? user[0] : null;
 
-                    if(user && !options.facebook_data) {
-                        return reject('Already exist');
-                    } else if(user && options.facebook_data) {
+                if(user && !options.facebook_data.facebook_id) {
+                    return reject('Already exist');
+                } else if(user && options.facebook_data.facebook_id) {
 
-                        if(user.facebook_data.id && user.facebook_data.id !== options.facebook_data.id) {
-                            return reject('Wrong facebook id');
-                        }
+                    let newToken = this._generateJWTToken(user);
+                    user.token.push(newToken);
+                    user.save()
+                        .then(resolve)
+                        .catch(reject);
+                    return;
+                } else {
+                    let userEntity = new UsersObject(options);
 
-                        let newToken = this._generateJWTToken(user);
-                        user.token.push(newToken);
-                        user.save()
-                            .then(resolve)
-                            .catch(reject);
-                        return;
+                    if(userEntity.facebook_data.facebook_id) {
+                        userEntity.first_name = userEntity.facebook_data.first_name;
+                        userEntity.last_name = userEntity.facebook_data.last_name;
+                        userEntity.status = this.ACTIVE_STATTUS;
+                        userEntity.roles = [];
+                        userEntity.roles.push('user');
+                        userEntity.token = [];
+                        userEntity.token.push(this._generateJWTToken(userEntity));
                     } else {
-                        let userEntity = new UsersObject(options);
-
-                        if(userEntity.facebook_data) {
-                            userEntity.login = userEntity.facebook_data.login;
-                            userEntity.first_name = userEntity.facebook_data.first_name;
-                            userEntity.last_name = userEntity.facebook_data.last_name;
-                            userEntity.status = this.ACTIVE_STATTUS;
-                            userEntity.roles = [];
-                            userEntity.roles.push('user');
-                            userEntity.token = [];
-                            userEntity.token.push(this._generateJWTToken(userEntity));
-                        } else {
-                            userEntity.status = this.INACTIVE_STATTUS;
-                        }
-
-                        userEntity.save()
-                            .then((user) => {
-
-                                if(!user.facebook_data) {
-                                    mailerModel.sendEmail({
-                                        eventType: 'confirm_registration',
-                                        data: {
-                                            userName: user.first_name || user.login,
-                                            url: config.get('appDomain') + '/api/v1/users/confirm/' + user.confirm_hash
-                                        },
-                                        emailTo: user.login
-                                    });
-                                }
-
-                                resolve(user);
-                            });
+                        userEntity.status = this.INACTIVE_STATTUS;
                     }
+                    console.log(userEntity);
+                    userEntity.save()
+                        .then((user) => {
 
-                })
-                .catch(reject);
+                            if(!user.facebook_data) {
+                                mailerModel.sendEmail({
+                                    eventType: 'confirm_registration',
+                                    data: {
+                                        userName: user.first_name || user.login,
+                                        url: config.get('appDomain') + '/api/v1/users/confirm/' + user.confirm_hash
+                                    },
+                                    emailTo: user.login
+                                });
+                            }
+
+                            resolve(user);
+                        });
+                }
+
+            })
+            .catch(reject);
 
         });
         return promise;
@@ -295,6 +296,33 @@ class UsersManager {
 
         return promise;
 
+    };
+
+
+    /**
+     * Attach facebook account
+     * @param {string} userId - userId requested account
+     * @param {object} options - object with facebook data
+     * @returns {Promise} - promise with result of attach action
+     */
+
+    attachFacebookAccount(userId, options) {
+
+        let promise = new Promise((resolve, reject) => {
+            UsersObject.findOne({'facebook_data.facebook_id': options.facebook_id})
+                .then((user) => {
+                    console.log(user);
+                    if (user) {
+                        return reject('Facebook account already attached to another account.');
+                    }
+
+                    this.updateUser({_id: userId}, {facebook_data: options})
+                        .then(resolve)
+                        .catch(reject);
+
+                });
+        });
+        return promise;
     };
 
 

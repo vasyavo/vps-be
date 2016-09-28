@@ -194,12 +194,12 @@ class AuthRoutes {
                     helperFunctions.generateResponse(422, 'User does not exist.', null, null, res);
                 });
         } else {
-            userModel.updateUser({_id: userId}, {facebook_data: facebookData})
+            userModel.attachFacebookAccount(userId, facebookData)
                 .then((user) => {
                     helperFunctions.generateResponse(200, null, {user: user}, 'Facebook account successfully attached.', res);
                 })
                 .catch((err) => {
-                    helperFunctions.generateResponse(422, 'User does not exist.', null, null, res);
+                    helperFunctions.generateResponse(422, err, null, null, res);
                 });
         }
 
