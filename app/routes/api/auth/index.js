@@ -62,7 +62,7 @@ class AuthRoutes {
 
         userModel.registerUser(userInfo)
             .then((user) => {
-                helperFunctions.generateResponse(200, null, {user: user}, '', res);
+                helperFunctions.generateResponse(200, null, {user: user}, 'Account successfully created.', res);
             } )
             .catch((err) => {
                 helperFunctions.generateResponse(422, err, null, null, res);
@@ -148,6 +148,65 @@ class AuthRoutes {
 
 
     /**
+     * Update user info
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next rout
+     */
+
+    updateUserInfoHandler(req, res, next) {
+        let userId = req.params.id || null;
+        let updateOptions = req.body || {};
+
+        if(!userId) {
+            helperFunctions.generateResponse(422, 'Wrong user id', null, null, res);
+            return;
+        }
+
+        userModel.updateUser({_id: userId}, updateOptions)
+            .then((user) => {
+                helperFunctions.generateResponse(200, null, {user: user}, 'Successfully updated.', res);
+            })
+            .catch((err) => {
+                helperFunctions.generateResponse(422, 'User does not exist.', null, null, res);
+            });
+    };
+
+
+    /**
+     * Facebook register handler
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next rout
+     */
+
+    facebookAuthHandler(req, res, next) {
+        let userId = req.params.id || null;
+        let facebookData = req.body || {};
+
+        if(!userId) {
+            userModel.registerUser({facebook_data: facebookData})
+                .then((user) => {
+                    helperFunctions.generateResponse(200, null, {user: user}, 'Successfully registered.', res);
+                })
+                .catch((err) => {
+                    helperFunctions.generateResponse(422, 'User does not exist.', null, null, res);
+                });
+        } else {
+            userModel.updateUser({_id: userId}, {facebook_data: facebookData})
+                .then((user) => {
+                    helperFunctions.generateResponse(200, null, {user: user}, 'Facebook account successfully attached.', res);
+                })
+                .catch((err) => {
+                    helperFunctions.generateResponse(422, 'User does not exist.', null, null, res);
+                });
+        }
+
+
+    };
+
+
+    /**
      * Logout user handler
      * @param {object} req - request
      * @param {object} res - response
@@ -165,8 +224,6 @@ class AuthRoutes {
                 helperFunctions.generateResponse(401, err, null, null, res);
             } );
     };
-
-
 
 
 };

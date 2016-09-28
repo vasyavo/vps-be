@@ -28,14 +28,16 @@ let Users = new Schema({
         type: String
     },
 	password: {
-        type: String,
-        required: true
+        type: String
     },
     first_name: {
         type: String
     },
     last_name: {
         type: String
+    },
+    facebook_data: {
+        type: Object
     },
 	time_register: {
         type: String
@@ -123,6 +125,8 @@ class UsersManager {
             'admin',
             'user'
         ];
+        this.ACTIVE_STATTUS = 'active';
+        this.INACTIVE_STATTUS = 'inactive';
     };
 
     /**
@@ -167,31 +171,52 @@ class UsersManager {
 
     registerUser(options) {
         let promise = new Promise((resolve, reject) => {
-            this.getUser({login: options.login})
+            this.getUser({login: options.login || options.facebook_data.login})
                 .then((user) => {
                     user = (user && user.length) ? user[0] : null;
 
-                    if(user) {
+                    if(user && !options.facebook_data) {
                         return reject('Already exist');
-                    }
+                    } else if(user && options.facebook_data) {
+                        let newToken = this._generateJWTToken(user);
+                        user.token.push(newToken);
+                        user.save()
+                            .then(resolve)
+                            .catch(reject);
+                        return;
+                    } else {
+                        let userEntity = new UsersObject(options);
 
-                    let userEntity = new UsersObject(options);
-                    userEntity.status = 'inactive';
+                        if(userEntity.facebook_data) {
+                            userEntity.login = userEntity.facebook_data.login;
+                            userEntity.first_name = userEntity.facebook_data.first_name;
+                            userEntity.last_name = userEntity.facebook_data.last_name;
+                            userEntity.status = this.ACTIVE_STATTUS;
+                            userEntity.roles = [];
+                            userEntity.roles.push('user');
+                            userEntity.token = [];
+                            userEntity.token.push(this._generateJWTToken(user));
+                        } else {
+                            userEntity.status = this.INACTIVE_STATTUS;
+                        }
 
-                    userEntity.save()
-                        .then((user) => {
+                        userEntity.save()
+                            .then((user) => {
 
-                            mailerModel.sendEmail({
-                                eventType: 'confirm_registration',
-                                data: {
-                                    userName: user.first_name || user.login,
-                                    url: config.get('appDomain') + '/api/v1/users/confirm/' + user.confirm_hash
-                                },
-                                emailTo: user.login
+                                if(!user.facebook_data) {
+                                    mailerModel.sendEmail({
+                                        eventType: 'confirm_registration',
+                                        data: {
+                                            userName: user.first_name || user.login,
+                                            url: config.get('appDomain') + '/api/v1/users/confirm/' + user.confirm_hash
+                                        },
+                                        emailTo: user.login
+                                    });
+                                }
+
+                                resolve(user);
                             });
-
-                            resolve(user);
-                        });
+                    }
 
                 })
                 .catch(reject);
@@ -213,7 +238,7 @@ class UsersManager {
             UsersObject.findOne({login: login})
                 .then((user) => {
 
-                    if (!user || user.status !== 'active') {
+                    if (!user || user.status !== this.ACTIVE_STATTUS) {
                         reject('Wrong user name or password');
                     }
 
@@ -283,7 +308,7 @@ class UsersManager {
                         return reject('Wrong confirm token');
                     }
 
-                    user.status = 'active';
+                    user.status = this.ACTIVE_STATTUS;
                     user.confirm_hash = '';
                     user.roles.push('user');
 
@@ -311,7 +336,7 @@ class UsersManager {
         let promise = new Promise((resolve, reject) => {
             UsersObject.findOne({login: email})
                 .then((user) => {
-                    if(!user || user.status !== 'active') {
+                    if(!user || user.status !== this.ACTIVE_STATTUS) {
                         return reject('Wrong confirm token');
                     }
 
