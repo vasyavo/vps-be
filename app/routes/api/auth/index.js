@@ -181,29 +181,36 @@ class AuthRoutes {
      */
 
     facebookAuthHandler(req, res, next) {
-        let userId = req.params.id || null;
         let facebookData = req.body || {};
 
-        if(!userId) {
-            userModel.registerUser({facebook_data: facebookData})
-                .then((user) => {
-                    helperFunctions.generateResponse(200, null, {user: user}, 'Successfully authorized.', res);
-                })
-                .catch((err) => {
-                    console.log(err);
-                    helperFunctions.generateResponse(422, 'User does not exist.', null, null, res);
-                });
-        } else {
-            userModel.attachFacebookAccount(userId, facebookData)
-                .then((user) => {
-                    helperFunctions.generateResponse(200, null, {user: user}, 'Facebook account successfully attached.', res);
-                })
-                .catch((err) => {
-                    helperFunctions.generateResponse(422, err, null, null, res);
-                });
-        }
+        userModel.registerUser({facebook_data: facebookData})
+            .then((user) => {
+                helperFunctions.generateResponse(200, null, {user: user}, 'Successfully authorized.', res);
+            })
+            .catch((err) => {
+                console.log(err);
+                helperFunctions.generateResponse(422, 'User does not exist.', null, null, res);
+            });
+    };
 
 
+    /**
+     * Facebook attach account handler
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next rout
+     */
+
+    facebookAttachHandler(req, res, next) {
+        let userId = req.params.id || null;
+        let facebookData = req.body || {};
+        userModel.attachFacebookAccount(userId, facebookData)
+            .then((user) => {
+                helperFunctions.generateResponse(200, null, {user: user}, 'Facebook account successfully attached.', res);
+            })
+            .catch((err) => {
+                helperFunctions.generateResponse(422, err, null, null, res);
+            });
     };
 
 

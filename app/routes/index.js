@@ -33,7 +33,9 @@ module.exports = (app) => {
 
     app.post('/api/v1/users/change/:hash', auth.changePasswordHandler.bind(auth));
 
-    app.post('/api/v1/users/facebook/:id?', auth.facebookAuthHandler.bind(auth));
+    app.post('/api/v1/users/facebook', auth.facebookAuthHandler.bind(auth));
+
+    app.post('/api/v1/users/facebook-attach/:id', auth.facebookAttachHandler.bind(auth));
 
     app.put('/api/v1/users/update/:id', auth.updateUserInfoHandler.bind(auth));
 
