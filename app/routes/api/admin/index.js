@@ -20,7 +20,8 @@ class AdminRoutes {
             'users/forgot',
             'users/confirm',
             'users/restore',
-            'users/change'
+            'users/change',
+            'users/facebook'
         ];
     };
 
