@@ -1,22 +1,23 @@
-const mongo    	        = require('../mongo')
-    , config            = global.config
-    , async             = require('async')
-    , bcrypt            = require('bcryptjs')
-    , crypto            = require('crypto')
-    , moment            = require('moment')
-    , dataTables        = require('mongoose-datatables')
-    , jwt               = require("jsonwebtoken")
-    , Schema            = mongo.Schema
-    , mongoose          = mongo.mongoose
-    , mailerModel       = require('../mailer')
-    , helperFunctions   = require('../helpers');
+const mongo = require('../mongo')
+    , config = global.config
+    , async = require('async')
+    , bcrypt = require('bcryptjs')
+    , crypto = require('crypto')
+    , moment = require('moment')
+    , dataTables = require('mongoose-datatables')
+    , jwt = require("jsonwebtoken")
+    , Schema = mongo.Schema
+    , mongoose = mongo.mongoose
+    , mailerModel = require('../mailer')
+    , helperFunctions = require('../helpers');
 
 
 let Users = new Schema({
-	login: {
+    login: {
         type: String,
+        unique: true
     },
-	token: {
+    token: {
         type: Array
     },
     confirm_hash: {
@@ -25,7 +26,7 @@ let Users = new Schema({
     restore_hash: {
         type: String
     },
-	password: {
+    password: {
         type: String
     },
     first_name: {
@@ -37,7 +38,7 @@ let Users = new Schema({
     facebook_data: {
         type: Object
     },
-	time_register: {
+    time_register: {
         type: String
     },
     status: {
@@ -54,7 +55,7 @@ Users.plugin(dataTables, {
 });
 
 
-Users.pre('save', function(next) {
+Users.pre('save', function (next) {
 
     const SALT_FACTOR = 6;
     let self = this;
@@ -78,7 +79,7 @@ Users.pre('save', function(next) {
 
     }, (err, result) => {
 
-        if(self.isModified('password')) {
+        if (self.isModified('password')) {
             self.password = result.hashPass;
         }
 
@@ -86,21 +87,44 @@ Users.pre('save', function(next) {
             self.confirm_hash = result.confirmToken;
         }
 
-        if(!self.isModified('time_register')) {
+        if (!self.isModified('time_register')) {
             let now = moment().unix();
             self.time_register = now;
         }
-
         next();
-
     });
-
 });
 
 
-Users.methods.comparePassword = function(password, callback) {
+Users.pre('findOneAndUpdate', function (next) {
+
+    let SALT_FACTOR = 6;
+    let self = this;
+
+    async.parallel({
+
+        hashPass (callback) {
+            bcrypt.genSalt(SALT_FACTOR, (err, salt) => {
+                bcrypt.hash(self._update.password, salt, (err, hash) => {
+                    callback(null, hash);
+                });
+            });
+        }
+
+    }, (err, result) => {
+
+        if (this._update.password) {
+            this._update.password = result.hashPass;
+        }
+
+        next();
+    });
+});
+
+
+Users.methods.comparePassword = function (password, callback) {
     bcrypt.compare(password, this.password, (err, isMatch) => {
-        if ( err ) {
+        if (err) {
             return callback(err);
         }
 
@@ -124,6 +148,7 @@ class UsersManager {
         ];
         this.ACTIVE_STATTUS = 'active';
         this.INACTIVE_STATTUS = 'inactive';
+        this.MOBILE_DEVICE = 'mobile';
     };
 
     /**
@@ -170,7 +195,7 @@ class UsersManager {
         options.facebook_data = options.facebook_data || {};
         let query = {};
 
-        if(options.facebook_data.facebook_id) {
+        if (options.facebook_data.facebook_id) {
             query['facebook_data.facebook_id'] = options.facebook_data.facebook_id;
         } else {
             query.login = options.login || options.facebook_data.login
@@ -178,12 +203,11 @@ class UsersManager {
 
         let promise = new Promise((resolve, reject) => {
             this.getUser(query).then((user) => {
-                console.log(user);
                 user = (user && user.length) ? user[0] : null;
 
-                if(user && !options.facebook_data.facebook_id) {
+                if (user && !options.facebook_data.facebook_id) {
                     return reject('Already exist');
-                } else if(user && options.facebook_data.facebook_id) {
+                } else if (user && options.facebook_data.facebook_id) {
 
                     let newToken = this._generateJWTToken(user);
                     user.token.push(newToken);
@@ -194,7 +218,7 @@ class UsersManager {
                 } else {
                     let userEntity = new UsersObject(options);
 
-                    if(userEntity.facebook_data.facebook_id) {
+                    if (userEntity.facebook_data.facebook_id) {
                         userEntity.first_name = userEntity.facebook_data.first_name;
                         userEntity.last_name = userEntity.facebook_data.last_name;
                         userEntity.status = this.ACTIVE_STATTUS;
@@ -205,16 +229,14 @@ class UsersManager {
                     } else {
                         userEntity.status = this.INACTIVE_STATTUS;
                     }
-                    console.log(userEntity);
                     userEntity.save()
                         .then((user) => {
-
-                            if(!user.facebook_data) {
+                            if (!Object.keys(user.facebook_data).length) {
                                 mailerModel.sendEmail({
                                     eventType: 'confirm_registration',
                                     data: {
                                         userName: user.first_name || user.login,
-                                        url: config.get('appDomain') + '/api/v1/users/confirm/' + user.confirm_hash
+                                        url: config.get('appDomain') + '/success?confirmHash=' + user.confirm_hash
                                     },
                                     emailTo: user.login
                                 });
@@ -225,7 +247,7 @@ class UsersManager {
                 }
 
             })
-            .catch(reject);
+                .catch(reject);
 
         });
         return promise;
@@ -236,11 +258,12 @@ class UsersManager {
      * Authenticate by login and pass
      * @param {string} login - user login
      * @param {string} password - user password
+     * @param {string} device - device used
      * @returns {Promise} - promise with result of authenticate user
      */
 
-    authenticateUser(login, password) {
-        let promise = new Promise ((resolve, reject) => {
+    authenticateUser(login, password, device = null) {
+        let promise = new Promise((resolve, reject) => {
             UsersObject.findOne({login: login})
                 .then((user) => {
 
@@ -251,6 +274,14 @@ class UsersManager {
                     user.comparePassword(password, (err, isMatch) => {
 
                         if (err || !isMatch) {
+                            return reject('Wrong user name or password');
+                        }
+
+                        if (user.roles.indexOf('admin') > -1 && device === this.MOBILE_DEVICE) {
+                            return reject('Wrong user name or password');
+                        }
+
+                        if (user.roles.indexOf('user') > -1 && !device) {
                             return reject('Wrong user name or password');
                         }
 
@@ -311,7 +342,6 @@ class UsersManager {
         let promise = new Promise((resolve, reject) => {
             UsersObject.findOne({'facebook_data.facebook_id': options.facebook_id})
                 .then((user) => {
-                    console.log(user);
                     if (user) {
                         return reject('Facebook account already attached to another account.');
                     }
@@ -337,7 +367,7 @@ class UsersManager {
             UsersObject.findOne({confirm_hash: confirmToken})
                 .then((user) => {
 
-                    if(!user) {
+                    if (!user) {
                         return reject('Wrong confirm token');
                     }
 
@@ -360,8 +390,7 @@ class UsersManager {
 
     /**
      * Restore password
-     * @param {string} confirmToken - registration confirm token
-     * @param {function} callback - callback function after registration
+     * @param {string} email - registration confirm token
      */
 
     restorePassword(email) {
@@ -369,13 +398,13 @@ class UsersManager {
         let promise = new Promise((resolve, reject) => {
             UsersObject.findOne({login: email})
                 .then((user) => {
-                    if(!user || user.status !== this.ACTIVE_STATTUS) {
+                    if (!user || user.status !== this.ACTIVE_STATTUS) {
                         return reject('Wrong confirm token');
                     }
 
                     crypto.randomBytes(15, (err, buf) => {
 
-                        if(err) {
+                        if (err) {
                             return reject(err);
                         }
 
@@ -390,7 +419,7 @@ class UsersManager {
                             eventType: 'restore_password',
                             data: {
                                 userName: user.first_name || user.login,
-                                url: config.get('appDomain') + '/api/v1/users/restore/' + user.restore_hash
+                                url: config.get('appDomain') + '/reset-password/' + user.restore_hash
                             },
                             emailTo: user.login
                         });
@@ -407,7 +436,7 @@ class UsersManager {
     /**
      * Change user password
      * @param {string} hash - registration confirm token
-     * @param {function} callback - callback function after registration
+     * @param {string} newPassword - user new password
      */
 
     changePassword(hash, newPassword) {
@@ -415,7 +444,7 @@ class UsersManager {
             UsersObject.findOne({restore_hash: hash})
                 .then((user) => {
 
-                    if(!user) {
+                    if (!user) {
                         return reject('Wrong restore token');
                     }
 
@@ -442,9 +471,7 @@ class UsersManager {
 
     /**
      * Generate JWT token based on user info
-     * @param {string} userName - user login
-     * @param {string} password - user password
-     * @returns {string} - return JWT token as string
+     * @param {string} user - user object
      */
 
     _generateJWTToken(user) {
@@ -458,7 +485,8 @@ class UsersManager {
         return jwt.sign(signUser, config.get('jwt').secret, {expiresIn: tokenExpire});
     };
 
-};
+}
+;
 
 const usersManager = new UsersManager();
 

@@ -1,10 +1,10 @@
-const moment                = require('moment')
-    , async                 = require('async')
-    , mime                  = require('mime')
-    , fs                    = require('fs')
-    , userModel             = require(__dirname + '/../../../models/user')
-    , mailerModel           = require(__dirname + '/../../../models/mailer')
-    , helperFunctions       = require(__dirname + '/../../../models/helpers');
+const moment = require('moment')
+    , async = require('async')
+    , mime = require('mime')
+    , fs = require('fs')
+    , userModel = require(__dirname + '/../../../models/user')
+    , mailerModel = require(__dirname + '/../../../models/mailer')
+    , helperFunctions = require(__dirname + '/../../../models/helpers');
 
 
 /**
@@ -38,16 +38,16 @@ class AdminRoutes {
         let requestedMethod = req.params[0];
         let token = req.headers['x-access-token'] || req.query.token;
 
-        if ( token ) {
+        if (token) {
 
-            if ( this._checkIfUnauthorizedRoute(requestedMethod) ) {
+            if (this._checkIfUnauthorizedRoute(requestedMethod)) {
                 helperFunctions.generateResponse(403, 'Bad route for authentication user', null, null, res);
                 return;
             }
 
         } else {
 
-            if ( !this._checkIfUnauthorizedRoute(requestedMethod) ) {
+            if (!this._checkIfUnauthorizedRoute(requestedMethod)) {
                 helperFunctions.generateResponse(401, 'Bad route or token', null, null, res);
                 return;
             }
@@ -64,7 +64,7 @@ class AdminRoutes {
      */
 
     _checkIfUnauthorizedRoute(requestedMethod) {
-        return this.unauthorizedRoutes.some( e => requestedMethod.indexOf(e) > -1 );
+        return this.unauthorizedRoutes.some(e => requestedMethod.indexOf(e) > -1);
     };
 
     /**
@@ -101,7 +101,7 @@ class AdminRoutes {
             });
     };
 
-};
+}
 
 const adminRoutes = new AdminRoutes();
 

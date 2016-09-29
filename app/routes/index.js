@@ -1,6 +1,8 @@
 const api 			            = require('./api')
     , admin                     = require('./api/admin')
+    , user                      = require('./api/user')
     , auth                      = require('./api/auth')
+    , comment                   = require('./api/comment')
     , mongo_express             = require('mongo-express/lib/middleware')
     , mongo_express_config      = require('../../config/mongo-config');
 
@@ -38,6 +40,16 @@ module.exports = (app) => {
     app.post('/api/v1/users/account-attach/:id', auth.facebookAttachHandler.bind(auth));
 
     app.put('/api/v1/users/update/:id', auth.updateUserInfoHandler.bind(auth));
+
+    //Comments routes
+
+    app.post('/api/v1/comments/:itemId', user.checkUserRights, comment.createCommentHandler);
+
+    app.get('/api/v1/comments/:itemId', comment.getCommentsHandler);
+
+    app.delete('/api/v1/comments/:id', admin.checkAdminRights, comment.deleteCommentHandler);
+
+    app.put('/api/v1/comments/:id', admin.checkAdminRights, comment.updateCommentHandler);
 
 
     //Mongo express

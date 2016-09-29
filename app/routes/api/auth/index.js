@@ -7,7 +7,7 @@ const fs                    = require('fs')
 
 
 /**
- * Admin routes class.
+ * Comment routes class.
  * @constructor
  */
 
@@ -27,13 +27,14 @@ class AuthRoutes {
     authorizeUserHandler(req, res, next) {
         let login = req.body.login || '';
         let password = req.body.password || '';
+        let device = req.body.device || null;
 
         if (login.length < 3 || password.length < 5 || !this.emailPattern.test(login)) {
             helperFunctions.generateResponse(422, 'Incorrect info for authenticate', null, null, res);
             return;
         }
 
-        userModel.authenticateUser(login, password)
+        userModel.authenticateUser(login, password, device)
             .then((user) => {
                 user.token = user.token[user.token.length - 1];
                 helperFunctions.generateResponse(200, null, {user: user}, '', res);
@@ -87,7 +88,7 @@ class AuthRoutes {
 
         userModel.confirmUserRegistration(token)
             .then((user) => {
-                helperFunctions.generateResponse(200, null, {user: user}, '', res);
+                helperFunctions.generateResponse(200, null, {user: user}, 'Successfully activated.', res);
             } )
             .catch((err) => {
                 helperFunctions.generateResponse(422, err, null, null, res);
@@ -139,7 +140,7 @@ class AuthRoutes {
 
         userModel.changePassword(hash, password)
             .then((user) => {
-                helperFunctions.generateResponse(200, null, {user: user}, 'Email sent.', res);
+                helperFunctions.generateResponse(200, null, {user: user}, 'Password successfully changed.', res);
             })
             .catch((err) => {
                 helperFunctions.generateResponse(422, 'User does not exist.', null, null, res);

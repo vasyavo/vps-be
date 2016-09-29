@@ -1,9 +1,9 @@
 {
-    "sourceDir": "/home/node/apps/commissioner",
-    "uid": "commissioner",
+    "sourceDir": "/home/node/apps/vps-be",
+    "uid": "vps-be",
     "script": "app.js",
     "append": true,
-    "logFile": "/home/node/apps/commissioner/logs/log.log",
-    "outFile": "/home/node/apps/commissioner/logs/out.log",
-    "errFile": "/home/node/apps/commissioner/logs/error.log"
+    "logFile": "/home/node/apps/vps-be/logs/log.log",
+    "outFile": "/home/node/apps/vps-be/logs/out.log",
+    "errFile": "/home/node/apps/vps-be/logs/error.log"
 }
