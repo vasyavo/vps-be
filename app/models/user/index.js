@@ -90,11 +90,34 @@ Users.pre('save', function(next) {
             let now = moment().unix();
             self.time_register = now;
         }
+        next();
+    });
+});
+
+
+Users.pre('findOneAndUpdate', function(next) {
+
+    let SALT_FACTOR = 6;
+    let self = this;
+
+    async.parallel({
+
+        hashPass (callback) {
+            bcrypt.genSalt(SALT_FACTOR, (err, salt) => {
+                bcrypt.hash(self._update.password, salt, (err, hash) => {
+                    callback(null, hash);
+                });
+            });
+        }
+
+    }, (err, result) => {
+
+        if ( this._update.password ) {
+            this._update.password = result.hashPass;
+        }
 
         next();
-
     });
-
 });
 
 
