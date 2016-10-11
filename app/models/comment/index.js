@@ -12,7 +12,7 @@ let Comment = new Schema({
         type: String,
     },
     user_id: {
-        type: Array
+        type: String
     },
     user_name: {
         type: String
