@@ -26,6 +26,7 @@ class CommentRoutes {
     createCommentHandler(req, res, next) {
         let commentTitle = req.body.title || null;
         let commentText = req.body.text || null;
+        let itemName = req.body.item_name || null;
         let itemId = req.params.itemId || null;
         let user = req.user;
 
@@ -37,6 +38,7 @@ class CommentRoutes {
             title: commentTitle,
             text: commentText,
             item_id: itemId,
+            item_name: itemName,
             user_id: user._id,
             user_name: user.first_name || user.login,
             user_email: user.login
@@ -61,17 +63,24 @@ class CommentRoutes {
 
     getCommentsHandler(req, res, next) {
         let itemId = req.params.itemId || null;
+        let commentId = req.params.id || null;
+        let findOptions = {};
 
-        if (!itemId) {
-            helperFunctions.generateResponse(422, 'Incorrect info for getting comment', null, null, res);
-            return;
+
+        if (itemId) {
+            findOptions['item_id'] = itemId;
         }
 
-        commentModel.getComment({item_id: itemId})
+        if(commentId) {
+            findOptions['_id'] = commentId;
+        }
+
+        commentModel.getComment(findOptions)
             .then((comments) => {
                 helperFunctions.generateResponse(200, null, {comments: comments}, '', res);
             })
             .catch((err) => {
+                console.log(err);
                 helperFunctions.generateResponse(422, err, null, null, res);
             });
     }
@@ -88,14 +97,14 @@ class CommentRoutes {
         let commentId = req.params.id || null;
         let commentData = req.body || {};
 
-        if (!itemId || !Object.keys(commentData).length) {
+        if (!commentId || !Object.keys(commentData).length) {
             helperFunctions.generateResponse(422, 'Incorrect info for updating comment', null, null, res);
             return;
         }
 
         commentModel.updateComment({_id: commentId}, commentData)
-            .then((comments) => {
-                helperFunctions.generateResponse(200, null, {comment: comment}, '', res);
+            .then((comment) => {
+                helperFunctions.generateResponse(200, null, {comment: comment}, 'Comment status successfully changed', res);
             })
             .catch((err) => {
                 helperFunctions.generateResponse(422, err, null, null, res);
@@ -103,6 +112,39 @@ class CommentRoutes {
     }
 
 
+    /**
+     * Datatable comments handler
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next route
+     */
+
+    datatableCommentsHandler(req, res, next) {
+
+        let productId = req.query.item_id || req.params.itemId || null;
+
+        let options = helperFunctions.prepareDtRequest(req);
+        options.search = req.query.keyword
+            ? {
+                value: req.query.keyword,
+                fields: ['title']
+            }
+            : {};
+
+        if (productId) {
+            options.find = {item_id: productId};
+        }
+
+        options.sort['time_created'] = -1;
+
+        commentModel.getAllCommentDatatables(options)
+            .then((comments) => {
+                helperFunctions.generateResponse(200, null, {comments: comments}, '', res);
+            })
+            .catch((err) => {
+                helperFunctions.generateResponse(422, err, null, null, res);
+            });
+    }
 
 
     /**
@@ -115,14 +157,14 @@ class CommentRoutes {
     deleteCommentHandler(req, res, next) {
         let commentId = req.params.id || null;
 
-        if (!itemId) {
+        if (!commentId) {
             helperFunctions.generateResponse(422, 'Incorrect info for updating comment', null, null, res);
             return;
         }
 
         commentModel.deleteComment({_id: commentId})
             .then((comments) => {
-                helperFunctions.generateResponse(200, null, {}, '', res);
+                helperFunctions.generateResponse(200, null, {}, 'Comment successfully deleted', res);
             })
             .catch((err) => {
                 helperFunctions.generateResponse(422, err, null, null, res);

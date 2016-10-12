@@ -1,6 +1,7 @@
 const mongo = require('../mongo')
     , config = global.config
     , async = require('async')
+    , dataTables = require('mongoose-datatables')
     , moment = require('moment')
     , Schema = mongo.Schema
     , mongoose = mongo.mongoose
@@ -10,6 +11,9 @@ const mongo = require('../mongo')
 let Comment = new Schema({
     item_id: {
         type: String,
+    },
+    item_name: {
+        type: String
     },
     user_id: {
         type: String
@@ -30,7 +34,7 @@ let Comment = new Schema({
         type: String
     },
     status: {
-        type: String
+        type: Boolean
     }
 
 });
@@ -46,6 +50,11 @@ Comment.pre('save', function (next) {
 
     next();
 
+});
+
+Comment.plugin(dataTables, {
+    totalKey: 'recordsTotal',
+    dataKey: 'data'
 });
 
 const CommentsObject = mongoose.model('Comment', Comment);
@@ -66,7 +75,15 @@ class CommentsManager {
      */
 
     getComment(options) {
-        return CommentsObject.find(options);
+        let promise = new Promise((resolve, reject) => {
+            if(options._id && !mongoose.Types.ObjectId.isValid(options._id)) {
+                return reject('Wrong comment id');
+            }
+            CommentsObject.find(options)
+                .then(resolve)
+                .catch(reject);
+        });
+        return promise;
     };
 
     /**
@@ -88,7 +105,7 @@ class CommentsManager {
 
     createComment(options) {
         let commentEntity = new CommentsObject(options);
-        commentEntity.status = 'inactive';
+        commentEntity.status = false;
         return commentEntity.save();
     };
 
@@ -102,6 +119,31 @@ class CommentsManager {
 
     updateComment(findOptions, updateOptions) {
         return CommentsObject.findOneAndUpdate(findOptions, updateOptions, {new: true});
+    };
+
+
+    /**
+     * Getting comment via datatables
+     * @param {object} options - options for datatable search
+     * @returns {Promise} - promise with result of comment list
+     */
+
+    getAllCommentDatatables(options) {
+
+        let promise = new Promise((resolve, reject) => {
+            CommentsObject.dataTables(options, (err, comments) => {
+
+                if (err) {
+                    return reject(err);
+                }
+
+                resolve(comments);
+            });
+
+        });
+
+        return promise;
+
     };
 
 

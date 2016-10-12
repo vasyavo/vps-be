@@ -7,7 +7,7 @@ const mongoose          = require('../mongo').mongoose;
  */
 
 Array.prototype.getUnique = function() {
-    var u = {}, a = [];
+    let u = {}, a = [];
     for (let i = 0, l = this.length; i < l; ++i) {
         if(u.hasOwnProperty(this[i].id)) {
             continue;
@@ -57,7 +57,34 @@ class Helpers {
         res.json(responseObject);
     };
 
-};
+    /**
+     * Prepare object for datatables request
+     * @param {object} req - request object
+     * @returns {object} - object with datatable options and filters
+     */
+
+    prepareDtRequest (req) {
+        let limit = req.query.limit || 10;
+        let skip = req.query.skip || 0;
+        let sort = {};
+
+        if ( req.query.sort_field ) {
+            let sortOrder = 1;
+
+            if ( req.query.sort_field[0] === '-' ) {
+                let sortOrder = -1;
+                req.query.sort_field = req.query.sort_field.substr(1);
+            }
+
+            sort[req.query.sort_field] = sortOrder;
+
+        } else {
+            sort['time_created'] = -1;
+        }
+        return { limit, skip, sort };
+    };
+
+}
 
 const helpers = new Helpers();
 

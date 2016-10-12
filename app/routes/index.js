@@ -47,9 +47,13 @@ module.exports = (app) => {
 
     app.get('/api/v1/comments/:itemId', comment.getCommentsHandler);
 
+    app.get('/api/v1/comments-datatable/:itemId?', comment.datatableCommentsHandler);
+
     app.delete('/api/v1/comments/:id', admin.checkAdminRights, comment.deleteCommentHandler);
 
     app.put('/api/v1/comments/:id', admin.checkAdminRights, comment.updateCommentHandler);
+
+    app.get('/api/v1/comment/:id', admin.checkAdminRights, comment.getCommentsHandler);
 
 
     //Mongo express
