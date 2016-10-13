@@ -143,7 +143,6 @@ class CommentsManager {
         });
 
         return promise;
-
     };
 
 

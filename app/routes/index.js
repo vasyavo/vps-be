@@ -1,8 +1,8 @@
-const api 			            = require('./api')
-    , admin                     = require('./api/admin')
+const admin                     = require('./api/admin')
     , user                      = require('./api/user')
     , auth                      = require('./api/auth')
     , comment                   = require('./api/comment')
+    , api                       = require('../models/api')
     , mongo_express             = require('mongo-express/lib/middleware')
     , mongo_express_config      = require('../../config/mongo-config');
 
@@ -40,6 +40,10 @@ module.exports = (app) => {
     app.post('/api/v1/users/account-attach/:id', auth.facebookAttachHandler.bind(auth));
 
     app.put('/api/v1/users/update/:id', auth.updateUserInfoHandler.bind(auth));
+
+    app.get('/api/v1/users/datatable', admin.checkAdminRights, user.datatableCommentsHandler);
+
+    app.put('/api/v1/users/ban/:id', admin.checkAdminRights, user.banUserHandler);
 
     //Comments routes
 

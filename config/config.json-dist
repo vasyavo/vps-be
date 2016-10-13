@@ -12,6 +12,7 @@
     "jwt": {
         "secret": "nBpSSm2"
     },
-    "appDomain": "http://localhost:9000",
+    "externalApiUrl": "http://google.com",
+    "appDomain": "http://localhost:3000",
     "debug": true
 }

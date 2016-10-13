@@ -46,6 +46,9 @@ let Users = new Schema({
     },
     roles: {
         type: Array
+    },
+    banned: {
+        type: Boolean
     }
 });
 
@@ -217,6 +220,7 @@ class UsersManager {
                     return;
                 } else {
                     let userEntity = new UsersObject(options);
+                    userEntity.banned = false;
 
                     if (userEntity.facebook_data.facebook_id) {
                         userEntity.first_name = userEntity.facebook_data.first_name;
@@ -275,6 +279,10 @@ class UsersManager {
 
                         if (err || !isMatch) {
                             return reject('Wrong user name or password');
+                        }
+
+                        if(user.banned) {
+                            return reject('Your account has been banned. Please, contact administrator.');
                         }
 
                         if (user.roles.indexOf('admin') > -1 && device === this.MOBILE_DEVICE) {
@@ -468,6 +476,31 @@ class UsersManager {
 
         return promise;
     };
+
+
+    /**
+     * Getting users via datatables
+     * @param {object} options - options for datatable search
+     * @returns {Promise} - promise with result of users list
+     */
+
+    getAllUsersDatatables(options) {
+
+        let promise = new Promise((resolve, reject) => {
+            UsersObject.dataTables(options, (err, users) => {
+
+                if (err) {
+                    return reject(err);
+                }
+
+                resolve(users);
+            });
+
+        });
+
+        return promise;
+    };
+
 
     /**
      * Generate JWT token based on user info
