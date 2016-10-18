@@ -2,6 +2,7 @@ const admin                     = require('./api/admin')
     , user                      = require('./api/user')
     , auth                      = require('./api/auth')
     , comment                   = require('./api/comment')
+    , related                   = require('./api/related')
     , api                       = require('../models/api')
     , mongo_express             = require('mongo-express/lib/middleware')
     , mongo_express_config      = require('../../config/mongo-config');
@@ -58,6 +59,15 @@ module.exports = (app) => {
     app.put('/api/v1/comments/:id', admin.checkAdminRights, comment.updateCommentHandler);
 
     app.get('/api/v1/comment/:id', admin.checkAdminRights, comment.getCommentsHandler);
+
+
+    //Related products routes
+
+    app.get('/api/v1/related/:id', admin.checkAdminRights, related.getRelatedProductsHandler);
+
+    app.put('/api/v1/related/:id', admin.checkAdminRights, related.updateRelatedProductsHandler);
+
+
 
 
     //Mongo express
