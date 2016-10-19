@@ -2,6 +2,7 @@ const admin                     = require('./api/admin')
     , user                      = require('./api/user')
     , auth                      = require('./api/auth')
     , comment                   = require('./api/comment')
+    , raiting                   = require('./api/raiting')
     , related                   = require('./api/related')
     , api                       = require('../models/api')
     , mongo_express             = require('mongo-express/lib/middleware')
@@ -46,6 +47,8 @@ module.exports = (app) => {
 
     app.put('/api/v1/users/ban/:id', admin.checkAdminRights, user.banUserHandler);
 
+    app.get('/api/v1/users/token', user.checkUserRights, auth.getUserByToken.bind(auth));
+
     //Comments routes
 
     app.post('/api/v1/comments/:itemId', user.checkUserRights, comment.createCommentHandler);
@@ -66,6 +69,19 @@ module.exports = (app) => {
     app.get('/api/v1/related/:id', admin.checkAdminRights, related.getRelatedProductsHandler);
 
     app.put('/api/v1/related/:id', admin.checkAdminRights, related.updateRelatedProductsHandler);
+
+
+    //Raiting routes
+
+    app.post('/api/v1/raiting/:itemId', user.checkUserRights, raiting.addRaitingHandler);
+
+    app.get('/api/v1/raiting/:itemId', user.checkUserRights, raiting.getRaitingHandler);
+
+    app.get('/api/v1/raiting-datatable/:itemId?', raiting.datatableRaitingHandler);
+
+    app.delete('/api/v1/raiting/:id', admin.checkAdminRights, raiting.deleteRaitingHandler);
+
+    app.put('/api/v1/raiting/:id', admin.checkAdminRights, raiting.updateRaitingHandler);
 
 
 

@@ -1,9 +1,9 @@
-const fs                    = require('fs')
-    , path                  = require('path')
-    , moment                = require('moment')
-    , async                 = require('async')
-    , userModel             = require(__dirname + '/../../../models/user')
-    , helperFunctions       = require(__dirname + '/../../../models/helpers');
+const fs = require('fs')
+    , path = require('path')
+    , moment = require('moment')
+    , async = require('async')
+    , userModel = require(__dirname + '/../../../models/user')
+    , helperFunctions = require(__dirname + '/../../../models/helpers');
 
 
 /**
@@ -38,10 +38,10 @@ class AuthRoutes {
             .then((user) => {
                 user.token = user.token[user.token.length - 1];
                 helperFunctions.generateResponse(200, null, {user: user}, '', res);
-            } )
+            })
             .catch((err) => {
                 helperFunctions.generateResponse(422, err, null, null, res);
-            } );
+            });
     }
 
 
@@ -55,8 +55,8 @@ class AuthRoutes {
     registerUserHandler(req, res, next) {
         let userInfo = req.body || {};
 
-        if ( (userInfo.login && userInfo.login.length < 3)
-            || (userInfo.password && userInfo.password.length < 5) ) {
+        if ((userInfo.login && userInfo.login.length < 3)
+            || (userInfo.password && userInfo.password.length < 5)) {
             helperFunctions.generateResponse(422, 'Incorrect info for registration', null, null, res);
             return;
         }
@@ -64,10 +64,10 @@ class AuthRoutes {
         userModel.registerUser(userInfo)
             .then((user) => {
                 helperFunctions.generateResponse(200, null, {user: user}, 'Account successfully created.', res);
-            } )
+            })
             .catch((err) => {
                 helperFunctions.generateResponse(422, err, null, null, res);
-            } );
+            });
     };
 
 
@@ -81,7 +81,7 @@ class AuthRoutes {
     confirmRegisterUserHandler(req, res, next) {
         let token = req.params.hash || null;
 
-        if ( !token ) {
+        if (!token) {
             helperFunctions.generateResponse(422, 'Incorrect hash params', null, null, res);
             return;
         }
@@ -89,10 +89,10 @@ class AuthRoutes {
         userModel.confirmUserRegistration(token)
             .then((user) => {
                 helperFunctions.generateResponse(200, null, {user: user}, 'Successfully activated.', res);
-            } )
+            })
             .catch((err) => {
                 helperFunctions.generateResponse(422, err, null, null, res);
-            } );
+            });
     };
 
 
@@ -133,7 +133,7 @@ class AuthRoutes {
         let password = req.body.password || null;
         let confirmPassowrd = req.body.confirmPassowrd || null;
 
-        if(!hash || !password || password !== confirmPassowrd) {
+        if (!hash || !password || password !== confirmPassowrd) {
             helperFunctions.generateResponse(422, 'Bad data for restoring password', null, null, res);
             return;
         }
@@ -159,7 +159,7 @@ class AuthRoutes {
         let userId = req.params.id || null;
         let updateOptions = req.body || {};
 
-        if(!userId) {
+        if (!userId) {
             helperFunctions.generateResponse(422, 'Wrong user id', null, null, res);
             return;
         }
@@ -222,20 +222,39 @@ class AuthRoutes {
      * @param {function} next - next rout
      */
 
-    logoutUserHandler (req, res, next) {
+    logoutUserHandler(req, res, next) {
         let token = req.headers['x-access-token'];
 
-        userModel.logoutUser( token )
-            .then( (user) => {
+        userModel.logoutUser(token)
+            .then((user) => {
                 helperFunctions.generateResponse(200, null, {}, 'Successfully logged out', res);
-            } )
-            .catch( (err) => {
+            })
+            .catch((err) => {
                 helperFunctions.generateResponse(401, err, null, null, res);
-            } );
+            });
     };
 
 
-};
+    /**
+     * Get user by auth token handler
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next rout
+     */
+
+    getUserByToken(req, res, next) {
+        let token = req.headers['x-access-token'];
+        userModel.getUser({token: token})
+            .then((user) => {
+                helperFunctions.generateResponse(200, null, {user: user[0] || null}, '', res);
+            })
+            .catch((err) => {
+                helperFunctions.generateResponse(401, err, null, null, res);
+            });
+    };
+
+
+}
 
 const authRoutes = new AuthRoutes();
 
