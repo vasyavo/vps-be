@@ -44,7 +44,7 @@ class CommentRoutes {
             user_email: user.login
         };
 
-        commentModel.createComment(commentObject)
+        commentModel.create(commentObject)
             .then((comment) => {
                 helperFunctions.generateResponse(200, null, {comment: comment}, 'Thanks for your comment. Its under review.', res);
             })
@@ -75,7 +75,7 @@ class CommentRoutes {
             findOptions['_id'] = commentId;
         }
 
-        commentModel.getComment(findOptions)
+        commentModel.list(findOptions)
             .then((comments) => {
                 helperFunctions.generateResponse(200, null, {comments: comments}, '', res);
             })
@@ -102,7 +102,7 @@ class CommentRoutes {
             return;
         }
 
-        commentModel.updateComment({_id: commentId}, commentData)
+        commentModel.update({_id: commentId}, commentData)
             .then((comment) => {
                 helperFunctions.generateResponse(200, null, {comment: comment}, 'Comment status successfully changed', res);
             })
@@ -137,7 +137,7 @@ class CommentRoutes {
 
         options.sort['time_created'] = -1;
 
-        commentModel.getAllCommentDatatables(options)
+        commentModel.listDatatable(options)
             .then((comments) => {
                 helperFunctions.generateResponse(200, null, {comments: comments}, '', res);
             })
@@ -162,7 +162,7 @@ class CommentRoutes {
             return;
         }
 
-        commentModel.deleteComment({_id: commentId})
+        commentModel.delete({_id: commentId})
             .then((comments) => {
                 helperFunctions.generateResponse(200, null, {}, 'Comment successfully deleted', res);
             })

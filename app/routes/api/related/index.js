@@ -27,7 +27,7 @@ class RelatedRoutes {
             return helperFunctions.generateResponse(422, 'Wrong item id', null, null, res);
         }
 
-        relatedProductsModel.getRelated(findOptions)
+        relatedProductsModel.list(findOptions)
             .then((product) => {
                 helperFunctions.generateResponse(200, null, {product: product}, '', res);
             })
@@ -54,10 +54,10 @@ class RelatedRoutes {
             return;
         }
 
-        relatedProductsModel.getRelated({item_id: itemId})
+        relatedProductsModel.list({item_id: itemId})
             .then((product) => {
                 if(product && product.length) {
-                    relatedProductsModel.updateRelatedProduct({item_id: itemId}, {related_products_ids: relatedProducts})
+                    relatedProductsModel.update({item_id: itemId}, {related_products: relatedProducts})
                         .then(function (products) {
                             helperFunctions.generateResponse(200, null, {products: products}, 'Related products successfully updated', res);
                         })
@@ -66,7 +66,7 @@ class RelatedRoutes {
                         });
 
                 } else {
-                    relatedProductsModel.createRelatedProduct({item_id: itemId, related_products_ids: relatedProducts})
+                    relatedProductsModel.create({item_id: itemId, related_products: relatedProducts})
                         .then(function (products) {
                             helperFunctions.generateResponse(200, null, {products: products}, 'Related products successfully updated', res);
                         })

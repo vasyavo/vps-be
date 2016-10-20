@@ -81,7 +81,7 @@ module.exports = (app) => {
 
     app.delete('/api/v1/raiting/:id', admin.checkAdminRights, raiting.deleteRaitingHandler);
 
-    app.put('/api/v1/raiting/:id', admin.checkAdminRights, raiting.updateRaitingHandler);
+    app.put('/api/v1/raiting/:raitingId', admin.checkAdminRights, raiting.updateRaitingHandler);
 
 
 

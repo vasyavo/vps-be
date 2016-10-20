@@ -107,7 +107,7 @@ class RaitingRoutes {
         options.search = req.query.keyword
             ? {
                 value: req.query.keyword,
-                fields: ['title']
+                fields: ['item_name', 'score']
             }
             : {};
 

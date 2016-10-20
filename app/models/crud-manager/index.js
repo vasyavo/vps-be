@@ -54,7 +54,7 @@ class CrudManager {
      */
 
     create(options) {
-        let entity = new this.schemaObject(data);
+        let entity = new this.schemaObject(options);
         return entity.save();
     };
 

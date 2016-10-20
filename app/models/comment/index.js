@@ -5,10 +5,9 @@ const mongo = require('../mongo')
     , moment = require('moment')
     , Schema = mongo.Schema
     , mongoose = mongo.mongoose
-    , helperFunctions = require('../helpers');
+    , CrudManager = require('../crud-manager');
 
-
-let Comment = new Schema({
+const Comment = new Schema({
     item_id: {
         type: String,
     },
@@ -39,115 +38,32 @@ let Comment = new Schema({
 
 });
 
-Comment.pre('save', function (next) {
+const preMethods = [
+    {
+        name: 'save',
+        callback: function (next) {
+            let self = this;
+            if (!self.isModified('time_created')) {
+                let now = moment().unix();
+                self.time_created = now;
+            }
 
-    let self = this;
-
-    if (!self.isModified('time_created')) {
-        let now = moment().unix();
-        self.time_created = now;
+            next();
+        }
     }
-
-    next();
-
-});
-
-Comment.plugin(dataTables, {
-    totalKey: 'recordsTotal',
-    dataKey: 'data'
-});
-
-const CommentsObject = mongoose.model('Comment', Comment);
+];
 
 /**
- * Comment class.
+ * Comments class.
  * @constructor
  */
 
-class CommentsManager {
-
-    constructor() {};
-
-    /**
-     * Get comment with options
-     * @param {object} options - object with options for find comment
-     * @returns {Promise} - promise with result of getting comment
-     */
-
-    getComment(options) {
-        let promise = new Promise((resolve, reject) => {
-            if(options._id && !mongoose.Types.ObjectId.isValid(options._id)) {
-                return reject('Wrong comment id');
-            }
-            CommentsObject.find(options)
-                .then(resolve)
-                .catch(reject);
-        });
-        return promise;
+class CommentsManager extends CrudManager{
+    constructor() {
+        super('Comment', Comment, preMethods);
     };
-
-    /**
-     * Delete comment with options
-     * @param {object} options - object with options for delete comment
-     * @returns {Promise} - promise with result of deleting comments
-     */
-
-    deleteComment(options) {
-        return CommentsObject.findOneAndRemove(options);
-    };
-
-
-    /**
-     * Create comment with options
-     * @param {object} options - object with options for create comment
-     * @returns {Promise} - promise with result of creating comment
-     */
-
-    createComment(options) {
-        let commentEntity = new CommentsObject(options);
-        commentEntity.status = false;
-        return commentEntity.save();
-    };
-
-
-    /**
-     * Update comment
-     * @param {object} findOptions - object with options for finding comment
-     * @param {object} updateOptions - object with options for updating comment
-     * @returns {Promise} - promise with result of updating comment
-     */
-
-    updateComment(findOptions, updateOptions) {
-        return CommentsObject.findOneAndUpdate(findOptions, updateOptions, {new: true});
-    };
-
-
-    /**
-     * Getting comment via datatables
-     * @param {object} options - options for datatable search
-     * @returns {Promise} - promise with result of comment list
-     */
-
-    getAllCommentDatatables(options) {
-
-        let promise = new Promise((resolve, reject) => {
-            CommentsObject.dataTables(options, (err, comments) => {
-
-                if (err) {
-                    return reject(err);
-                }
-
-                resolve(comments);
-            });
-
-        });
-
-        return promise;
-    };
-
 
 }
 
 const commentsManager = new CommentsManager();
-
 module.exports = commentsManager;

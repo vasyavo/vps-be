@@ -49,7 +49,6 @@ const preMethods = [
  */
 
 class RaitingManager extends CrudManager{
-
     constructor() {
         super('Raiting', Raiting, preMethods);
     };
