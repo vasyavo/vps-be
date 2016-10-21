@@ -61,7 +61,7 @@ module.exports = (app) => {
 
     app.put('/api/v1/comments/:id', admin.checkAdminRights, comment.updateCommentHandler);
 
-    app.get('/api/v1/comment/:id', admin.checkAdminRights, comment.getCommentsHandler);
+    app.get('/api/v1/comment/:id?', admin.checkAdminRights, comment.getCommentsHandler);
 
 
     //Related products routes

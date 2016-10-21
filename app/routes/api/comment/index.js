@@ -29,6 +29,7 @@ class CommentRoutes {
         let itemName = req.body.item_name || null;
         let itemId = req.params.itemId || null;
         let user = req.user;
+        let visited = false;
 
         if (!commentTitle || !commentText || !itemId) {
             helperFunctions.generateResponse(422, 'Incorrect info for adding comment', null, null, res);
@@ -41,7 +42,8 @@ class CommentRoutes {
             item_name: itemName,
             user_id: user._id,
             user_name: user.first_name || user.login,
-            user_email: user.login
+            user_email: user.login,
+            visited: false
         };
 
         commentModel.create(commentObject)
@@ -64,8 +66,12 @@ class CommentRoutes {
     getCommentsHandler(req, res, next) {
         let itemId = req.params.itemId || null;
         let commentId = req.params.id || null;
+        let visited = req.query.visited;
         let findOptions = {};
 
+        if(typeof visited !== 'undefined') {
+            findOptions['visited'] = visited;
+        }
 
         if (itemId) {
             findOptions['item_id'] = itemId;

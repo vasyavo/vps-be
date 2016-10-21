@@ -34,6 +34,9 @@ const Comment = new Schema({
     },
     status: {
         type: Boolean
+    },
+    visited: {
+        type: Boolean
     }
 
 });
