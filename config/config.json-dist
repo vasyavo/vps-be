@@ -12,7 +12,7 @@
     "jwt": {
         "secret": "nBpSSm2"
     },
-    "externalApiUrl": "http://google.com",
+    "externalApiUrl": "http://jsuitedes.smartfutura.com:9301/RemotingFuturaServerWeb",
     "appDomain": "http://localhost:3000",
     "debug": true
 }

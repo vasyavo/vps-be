@@ -4,6 +4,8 @@ const admin                     = require('./api/admin')
     , comment                   = require('./api/comment')
     , raiting                   = require('./api/raiting')
     , related                   = require('./api/related')
+    , machines                  = require('./api/machines')
+    , orders                    = require('./api/orders')
     , api                       = require('../models/api')
     , mongo_express             = require('mongo-express/lib/middleware')
     , mongo_express_config      = require('../../config/mongo-config');
@@ -82,6 +84,11 @@ module.exports = (app) => {
     app.delete('/api/v1/raiting/:id', admin.checkAdminRights, raiting.deleteRaitingHandler);
 
     app.put('/api/v1/raiting/:raitingId', admin.checkAdminRights, raiting.updateRaitingHandler);
+
+
+    //Machines routes
+
+    app.get('/api/v1/machines', user.checkUserRights, machines.getMachinesHandler);
 
 
 

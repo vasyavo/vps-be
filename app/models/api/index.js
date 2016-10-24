@@ -48,8 +48,8 @@ class ApiManager {
 
     get machines() {
         return {
-            list: (...rest) => { return this.sendRequest('/machines', 'GET', ...rest); },
-            get: (...rest) => { return this.sendRequest('/machines/:machineId', 'GET', ...rest); }
+            list: (...rest) => { return this.sendRequest('/getMachines/:param1/:machineClienCode/:param2', 'GET', ...rest); },
+            get: (...rest) => { return this.sendRequest('/getStockMachine/:param1/:param2/:param3/:param4', 'GET', ...rest); }
         }
     };
 

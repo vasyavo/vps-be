@@ -49,6 +49,9 @@ let Users = new Schema({
     },
     banned: {
         type: Boolean
+    },
+    unratedProducts: {
+        type: Array
     }
 });
 
@@ -230,6 +233,7 @@ class UsersManager {
                         userEntity.roles.push('user');
                         userEntity.token = [];
                         userEntity.token.push(this._generateJWTToken(userEntity));
+                        userEntity.unratedProducts = [];
                     } else {
                         userEntity.status = this.INACTIVE_STATTUS;
                     }
