@@ -371,7 +371,7 @@ class UsersManager {
     /**
      * Confirm user registration
      * @param {string} confirmToken - registration confirm token
-     * @param {function} callback - callback function after registration
+     * @returns {Promise} - promise with result of confirm registration
      */
 
     confirmUserRegistration(confirmToken) {

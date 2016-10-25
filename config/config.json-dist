@@ -12,6 +12,21 @@
     "jwt": {
         "secret": "nBpSSm2"
     },
+    "paypal_dev": {
+        "host" : "api.sandbox.paypal.com",
+        "port" : "",
+        "client_id" : "AUw-LH4C6uNWmGo6rjzuYjik03dngYfi7FIGzI0zhlbAP1PcxT4ES5uVw26TcgO4u4H8TBtJqppPwupi",
+        "client_secret" : "EHet3Uxzf9dDZgvdJnQBKutIj_Jcq-3pU21UHFUyduIYvSN2c-fh9jd1UuHyuZCDdX0-iPT_q20gNBgt"
+    },
+    "paypal_live": {
+        "mode": "live",
+        "client_id": "AYcmIU-EKA-ItBDLMabOK4-2BqwSd0aWQoAmxfBNQELcfaAh6nJ3KIx8Qe_2iTCtE8i4flOqXcQJtoRp",
+        "client_secret": "EIDWamHi1295gSHYIBnkyd7gt0Nvcr2bN9cyOBpmoo_-pZb4qg4qjqey1pNNiBqt3y7InBunRhkORxue"
+    },
+    "paypal_redirects": {
+        "redirect_url": "http://localhost:3000/execute",
+        "cancel_url": "http://localhost:3000/cancel"
+    },
     "externalApiUrl": "http://jsuitedes.smartfutura.com:9301/RemotingFuturaServerWeb",
     "appDomain": "http://localhost:3000",
     "debug": true

@@ -27,7 +27,7 @@ class PaymentsFactory {
             employee = new nativePayments();
         }
 
-        return this.initInstance();
+        return this.initInstance(instance, type);
     };
 
 
@@ -47,6 +47,10 @@ class PaymentsFactory {
 
         instance.updateTransaction = (findOptions, updateOptions) => {
             return transactionsModel.update(findOptions, updateOptions);
+        };
+
+        instance.getTransaction = (options) => {
+            return transactionsModel.list(options);
         };
 
         return instance;
