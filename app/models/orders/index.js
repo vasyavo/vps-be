@@ -1,8 +1,11 @@
 const mongo = require('../mongo')
     , moment = require('moment')
     , Schema = mongo.Schema
+    , crypto = require('crypto')
     , transactionModel = require('../transactions')
     , userModel = require('../user')
+    , QRGenerator = require('../qr-generator')
+    , productsModel = require('../products')
     , CrudManager = require('../crud-manager');
 
 const Order = new Schema({
@@ -12,13 +15,22 @@ const Order = new Schema({
     user_id: {
         type: String
     },
+    machine_id: {
+        type: String
+    },
+    codeQr: {
+        type: String
+    },
+    codeManual: {
+        type: String
+    },
+    products: {
+        type: Array
+    },
     price: {
         type: String
     },
     time_created: {
-        type: String
-    },
-    external_order_id: {
         type: String
     },
     status: {
@@ -49,6 +61,54 @@ const preMethods = [
 class OrderManager extends CrudManager {
     constructor() {
         super('Order', Order, preMethods);
+        this.CANCEL_TIME = 15 * 60 * 1000; //15 min
+        this.schema.post('save', this.saveOrderQRCode.bind(this));
+    };
+
+
+    /**
+     * Cancel user order
+     * @param {object} order - options for canceling order
+     * @returns {Promise} promise - promise with a result of executing order
+     */
+
+    saveOrderQRCode(order) {
+        let fileName = 'qr' + order._id;
+        let cryptedStr = crypto.createHash("sha256").update(order._id).digest("base64");
+
+        order.codeQr = fileName;
+        order.codeManual = cryptedStr;
+
+        QRGenerator.generateQR(cryptedStr, fileName, {})
+            .then(() => {
+                order.save();
+                next();
+            })
+            .catch(() => {
+                next();
+            });
+    };
+
+
+    /**
+     * Cancel user order
+     * @param {object} options - options for canceling order
+     * @returns {Promise} promise - promise with a result of executing order
+     */
+
+    cancelOrder(options) {
+        return new Promise((resolve, reject) => {
+            productsModel.cancelOrder(options)
+                .then((result) => {
+                    return result;
+                })
+                .then((status) => {
+                    return this.update({_id: options.params.orderId}, {status: 'canceled'})
+                })
+                .then(resolve)
+                .catch(reject);
+        });
+
     };
 
 

@@ -48,8 +48,9 @@ class ApiManager {
 
     get machines() {
         return {
-            list: (...rest) => { return this.sendRequest('/getMachines/:param1/:machineClienCode/:param2', 'GET', ...rest); },
-            get: (...rest) => { return this.sendRequest('/getStockMachine/:param1/:param2/:param3/:param4', 'GET', ...rest); }
+            list: (...rest) => { return this.sendRequest('/getMachines/:appId/:companyId/:signature', 'GET', ...rest); },
+            get: (...rest) => { return this.sendRequest('/getStockMachine/:appId/:companyId/:machineId/:signature', 'GET', ...rest); },
+            getCatalog: (...rest) => { return this.sendRequest('/getCatalog/:appId/:companyId/:machineId/:signature', 'GET', ...rest); }
         }
     };
 
@@ -61,10 +62,10 @@ class ApiManager {
 
     get products() {
         return {
-            list: (...rest) => { return this.sendRequest('/product/:machineId', 'GET', ...rest); },
-            get: (...rest) => { return this.sendRequest('/product/:machinedId/:productId', 'GET', ...rest); },
-            makeOrder: (...rest) => { return this.sendRequest('/product/:machinedId/:productId', 'POST', ...rest); },
-            getOrderStatus: (...rest) => { return this.sendRequest('/product/:machinedId/:productId/:orderId', 'GET', ...rest); },
+            pictures: (...rest) => { return this.sendRequest('/getProductsPictures/:appId/:companyId/:machineId/:signature', 'GET', ...rest); },
+            makeOrder: (...rest) => { return this.sendRequest('/saveOrder/:appId/:companyId/:machineId/:signature', 'POST', ...rest); },
+            getOrderStatus: (...rest) => { return this.sendRequest('/getOrderStatus/:appId/:companyId/:machineId/:orderId/:signature', 'GET', ...rest); },
+            cancelOrder: (...rest) => { return this.sendRequest('/cancelOrder/:appId/:companyId/:machineId/:orderId/:signature', 'GET', ...rest); },
         }
     };
 

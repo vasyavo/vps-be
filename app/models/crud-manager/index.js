@@ -108,13 +108,13 @@ class CrudManager {
 
     listDatatable(options) {
         let promise = new Promise((resolve, reject) => {
-            this.schemaObject.dataTables(options, (err, comments) => {
+            this.schemaObject.dataTables(options, (err, list) => {
 
                 if (err) {
                     return reject(err);
                 }
 
-                resolve(comments);
+                resolve(list);
             });
 
         });

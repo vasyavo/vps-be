@@ -18,7 +18,6 @@ class PaypalManager {
         this.liveConfig = config.get('paypal_live');
         this.paypal = paypal;
         this.paypal.configure(this.devConfig);
-        console.log(this.paypal.sale);
     };
 
 

@@ -24,6 +24,9 @@ const Raiting = new Schema({
     },
     status: {
         type: Boolean
+    },
+    visited: {
+        type: Boolean
     }
 
 });
@@ -51,6 +54,18 @@ const preMethods = [
 class RaitingManager extends CrudManager{
     constructor() {
         super('Raiting', Raiting, preMethods);
+    };
+
+
+    /**
+     * Bulk update for raitings
+     * @param {object} findOptions - object with options for finding entity
+     * @param {object} updateOptions - object with options for updating entity
+     * @returns {Promise} - promise with result of updating entity
+     */
+
+    bulkUpdate(findOptions, updateOptions) {
+        return this.schemaObject.update(findOptions, updateOptions, {multi: true, new: true})
     };
 
 }

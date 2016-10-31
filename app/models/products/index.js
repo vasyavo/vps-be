@@ -1,5 +1,6 @@
 const config = global.config
-    , api = require('../api');
+    , api = require('../api')
+    , machinesModel = require('../machines');
 
 /**
  * Products class.
@@ -14,24 +15,28 @@ class ProductManager {
 
 
     /**
-     * Get Products list with options
-     * @param {object} options - object with options for find product
-     * @returns {Promise} - promise with result of getting product
-     */
-
-    getProductsList(options) {
-        return this.api.products.list(options.params, options.data, options.headers);
-    };
-
-
-    /**
      * Get Product
      * @param {object} options - object with options for find product
      * @returns {Promise} - promise with result of getting product
      */
 
     getProduct(options) {
-        return this.api.products.get(options.params, options.data, options.headers);
+        return new Promise((resolve, reject) => {
+            machinesModel.getMachine(options)
+                .then((result) => {
+                    let productsStock = result[0];
+                    let productCatalog = result[1];
+                    let images = result[2];
+                    // console.log(productsStock);
+                    // console.log(productCatalog);
+                    console.log(images);
+                    let product = productsStock.GetStockMachineResult.stock.find((el) => {
+                        return el.productId.toString() === options.params.productId;
+                    });
+                    resolve({product, images});
+                })
+                .catch(reject);
+        });
     };
 
 
@@ -54,6 +59,17 @@ class ProductManager {
 
     getOrderStatus(options) {
         return this.api.products.getOrderStatus(options.params, options.data, options.headers);
+    };
+
+
+    /**
+     * Cancel order
+     * @param {object} options - object with options for canceling order
+     * @returns {Promise} - promise with result of canceling order status
+     */
+
+    cancelOrder(options) {
+        return this.api.products.cancelOrder(options.params, options.data, options.headers);
     };
 
 }

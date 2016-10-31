@@ -1,4 +1,5 @@
 const userModel = require(__dirname + '/../../../models/user')
+    , mailerModel = require(__dirname + '/../../../models/mailer')
     , helperFunctions = require(__dirname + '/../../../models/helpers');
 
 
@@ -98,6 +99,37 @@ class UserRoutes {
             .catch((err) => {
                 helperFunctions.generateResponse(422, err, null, null, res);
             });
+    }
+
+    /**
+     * Send messages handler
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next route
+     */
+
+    sendMessagesHandler(req, res, next) {
+
+        let emailSubject = req.body.subject || null;
+        let emailText = req.body.emailText || null;
+        let emails = req.body.emails || [];
+
+        if(!emailSubject || !emailText || !emails || !emails.length) {
+            return helperFunctions.generateResponse(422, 'Wrong inputed data.', null, null, res);
+        }
+        mailerModel.sendEmail({
+            eventType: 'custom_message',
+            data: {
+                emailSubject,
+                emailText
+            },
+            emailTo: emails,
+            subject: emailSubject
+        });
+
+        helperFunctions.generateResponse(200, null, {}, 'Message(s) successfully sended.', res);
+
+
     }
 
 }

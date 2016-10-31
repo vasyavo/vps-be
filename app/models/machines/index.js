@@ -20,7 +20,17 @@ class MachinesManager {
      */
 
     getMachinesList(options) {
-        return this.api.machines.list(options.params, options.data, options.headers);
+        return new Promise((resolve, reject) => {
+            this.api.machines.list(options.params, options.data, options.headers)
+                .then((machines) => {
+                    let result = (machines.GetMachinesResult && machines.GetMachinesResult.length)
+                        ? machines.GetMachinesResult
+                        : [];
+
+                    resolve(result.filter(m => !!m.active));
+                })
+                .catch(reject);
+        });
     };
 
 
@@ -31,7 +41,14 @@ class MachinesManager {
      */
 
     getMachine(options) {
-        return this.api.machines.get(options.params, options.data, options.headers);
+        return new Promise((resolve, reject) => {
+            let machineStock = this.api.machines.get(options.params, options.data, options.headers);
+            let machineCatalog = this.api.machines.getCatalog(options.params, options.data, options.headers);
+            let machinePictures = this.api.products.pictures(options.params, options.data, options.headers);
+            Promise.all([machineStock, machineCatalog, machinePictures])
+                .then(resolve)
+                .catch(reject);
+        });
     };
 
 }

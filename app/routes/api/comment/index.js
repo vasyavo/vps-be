@@ -67,6 +67,7 @@ class CommentRoutes {
         let itemId = req.params.itemId || null;
         let commentId = req.params.id || null;
         let visited = req.query.visited;
+        let status = req.query.status;
         let findOptions = {};
 
         if(typeof visited !== 'undefined') {
@@ -80,6 +81,11 @@ class CommentRoutes {
         if(commentId) {
             findOptions['_id'] = commentId;
         }
+
+        if(typeof status !== 'undefined') {
+            findOptions['status'] = status;
+        }
+
 
         commentModel.list(findOptions)
             .then((comments) => {

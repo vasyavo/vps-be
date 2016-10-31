@@ -5,7 +5,8 @@ const admin                     = require('./api/admin')
     , raiting                   = require('./api/raiting')
     , related                   = require('./api/related')
     , machines                  = require('./api/machines')
-    , orders                    = require('./api/orders')
+    , products                  = require('./api/products')
+    , transactions              = require('./api/transaction')
     , api                       = require('../models/api')
     , mongo_express             = require('mongo-express/lib/middleware')
     , mongo_express_config      = require('../../config/mongo-config');
@@ -51,6 +52,8 @@ module.exports = (app) => {
 
     app.get('/api/v1/users/token', user.checkUserRights, auth.getUserByToken.bind(auth));
 
+    app.post('/api/v1/users/send-messages', admin.checkAdminRights, user.sendMessagesHandler);
+
     //Comments routes
 
     app.post('/api/v1/comments/:itemId', user.checkUserRights, comment.createCommentHandler);
@@ -77,7 +80,7 @@ module.exports = (app) => {
 
     app.post('/api/v1/raiting/:itemId', user.checkUserRights, raiting.addRaitingHandler);
 
-    app.get('/api/v1/raiting/:itemId', user.checkUserRights, raiting.getRaitingHandler);
+    app.get('/api/v1/raiting/:itemId?', raiting.getRaitingHandler);
 
     app.get('/api/v1/raiting-datatable/:itemId?', raiting.datatableRaitingHandler);
 
@@ -85,11 +88,30 @@ module.exports = (app) => {
 
     app.put('/api/v1/raiting/:raitingId', admin.checkAdminRights, raiting.updateRaitingHandler);
 
+    app.put('/api/v1/raiting-bulk', admin.checkAdminRights, raiting.bulkUpdateRaitingHandler);
+
 
     //Machines routes
 
-    app.get('/api/v1/machines', user.checkUserRights, machines.getMachinesHandler);
+    app.get('/api/v1/machines', user.checkUserRights, machines.getMachinesHandler.bind(machines));
 
+    app.get('/api/v1/machine/:machineId', user.checkUserRights, machines.getMachineHandler.bind(machines));
+
+
+    //Products routes
+
+    app.get('/api/v1/product/:machineId/:productId', user.checkUserRights, products.getProductHandler.bind(products));
+
+    app.post('/api/v1/product-order/:machineId/:productId', user.checkUserRights, products.createOrderHandler.bind(products));
+
+    app.get('/api/v1/product-order-status/:machineId/:orderId', user.checkUserRights, products.getOrderStatusHandler.bind(products));
+
+    app.get('/api/v1/product-order-cancel/:machineId/:orderId', user.checkUserRights, products.cancelOrderHandler.bind(products));
+
+
+    //Transaction routes
+
+    app.get('/api/v1/transactions-datatable', admin.checkAdminRights, transactions.datatableTransactionsHandler);
 
 
 

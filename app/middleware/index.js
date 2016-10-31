@@ -2,12 +2,13 @@ const config = global.config;
 
 module.exports = (app, express) => {
 
-    const router              = require('../routes')
-        , bodyParser          = require('body-parser')
-        , methodOverride      = require('method-override')
-        , cookieParser        = require('cookie-parser')
+    const router = require('../routes')
+        , bodyParser = require('body-parser')
+        , methodOverride = require('method-override')
+        , cookieParser = require('cookie-parser');
 
-      app
+    app
+        .use(express.static('./public'))
         .use(cookieParser())
         .use(bodyParser.json({limit: '50mb'}))
         .use(bodyParser.urlencoded({

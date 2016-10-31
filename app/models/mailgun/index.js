@@ -19,7 +19,7 @@ const sendEmail = (to, html, subject, attachment, callback) => {
     });
 
     let data = { to, subject, html, attachment };
-    data.from = config.get('mailgun').fromName
+    data.from = config.get('mailgun').fromName;
 
     mailgun.messages().send(data, (err, body) => {
         if (err) {

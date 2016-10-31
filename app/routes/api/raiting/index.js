@@ -29,15 +29,16 @@ class RaitingRoutes {
         let score = req.body.score || null;
         let user_id = req.user._id || null;
         let status = false;
+        let visited = false;
 
         if (!item_id || !score || !user_id) {
             helperFunctions.generateResponse(422, 'Incorrect info for adding raiting', null, null, res);
             return;
         }
 
-        raitingModel.create({item_id, score, user_id, status, item_name})
-            .then((comment) => {
-                helperFunctions.generateResponse(200, null, {comment: comment}, 'Thanks for your evaluation. Its under review.', res);
+        raitingModel.create({item_id, score, user_id, status, item_name, visited})
+            .then((raiting) => {
+                helperFunctions.generateResponse(200, null, {raiting: raiting}, 'Thanks for your evaluation. Its under review.', res);
             })
             .catch((err) => {
                 helperFunctions.generateResponse(422, err, null, null, res);
@@ -54,8 +55,16 @@ class RaitingRoutes {
 
     getRaitingHandler(req, res, next) {
         let itemId = req.params.itemId || null;
+        let visited = req.query.visited;
+        let findOptions = {};
+        if(itemId) {
+            findOptions.item_id = itemId;
+        }
+        if(visited !== 'undefined') {
+            findOptions.visited = visited;
+        }
 
-        raitingModel.list({item_id: itemId})
+        raitingModel.list(findOptions)
             .then((raiting) => {
                 helperFunctions.generateResponse(200, null, {raiting: raiting}, '', res);
             })
@@ -67,7 +76,7 @@ class RaitingRoutes {
 
 
     /**
-     * Update comment handler
+     * Update raiting handler
      * @param {object} req - request
      * @param {object} res - response
      * @param {function} next - next route
@@ -87,6 +96,32 @@ class RaitingRoutes {
                 helperFunctions.generateResponse(200, null, {raiting: raiting}, 'Raiting status successfully changed', res);
             })
             .catch((err) => {
+                helperFunctions.generateResponse(422, err, null, null, res);
+            });
+    }
+
+
+    /**
+     * Bulk Update raitings handler
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next route
+     */
+
+    bulkUpdateRaitingHandler(req, res, next) {
+        let raitingIds = req.body.raitingsIds || [];
+        let findOptions = {
+            _id: {
+                $in: raitingIds
+            }
+        };
+
+        raitingModel.bulkUpdate(findOptions, {visited: true})
+            .then((raiting) => {
+                helperFunctions.generateResponse(200, null, {raiting: raiting}, '', res);
+            })
+            .catch((err) => {
+                console.log(err);
                 helperFunctions.generateResponse(422, err, null, null, res);
             });
     }
@@ -142,8 +177,8 @@ class RaitingRoutes {
             return;
         }
 
-        commentModel.deleteComment({_id: raitingId})
-            .then((comments) => {
+        raitingModel.delete({_id: raitingId})
+            .then(() => {
                 helperFunctions.generateResponse(200, null, {}, 'Raiting successfully deleted', res);
             })
             .catch((err) => {

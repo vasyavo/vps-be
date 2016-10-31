@@ -10,9 +10,18 @@ const Transaction = new Schema({
         type: String,
         required: true
     },
+    user_login: {
+        type: String
+    },
     order_id: {
         type: String,
         required: true
+    },
+    product_id: {
+        type: String
+    },
+    product_name: {
+        type: String
     },
     payment_id: {
         type: String
