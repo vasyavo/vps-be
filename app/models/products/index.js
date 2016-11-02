@@ -27,13 +27,10 @@ class ProductManager {
                     let productsStock = result[0];
                     let productCatalog = result[1];
                     let images = result[2];
-                    // console.log(productsStock);
-                    // console.log(productCatalog);
-                    console.log(images);
                     let product = productsStock.GetStockMachineResult.stock.find((el) => {
                         return el.productId.toString() === options.params.productId;
                     });
-                    resolve({product, images});
+                    resolve({product, images, productCatalog});
                 })
                 .catch(reject);
         });

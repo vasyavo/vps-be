@@ -187,6 +187,32 @@ class RaitingRoutes {
     }
 
 
+    /**
+     * Calculate raiting handler
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next route
+     */
+
+    calculateRaitingHandler(req, res, next) {
+        let productIds = req.body.productIds || null;
+
+        if (!productIds) {
+            helperFunctions.generateResponse(422, 'Incorrect info for calculating raiting', null, null, res);
+            return;
+        }
+
+        raitingModel.calculateRaiting(productIds)
+            .then((result) => {
+                helperFunctions.generateResponse(200, null, {raitings: result}, '', res);
+            })
+            .catch((err) => {
+                console.log(err);
+                helperFunctions.generateResponse(422, err, null, null, res);
+            });
+    }
+
+
 }
 
 const raitingRoutes = new RaitingRoutes();

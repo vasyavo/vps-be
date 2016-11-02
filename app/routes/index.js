@@ -90,6 +90,8 @@ module.exports = (app) => {
 
     app.put('/api/v1/raiting-bulk', admin.checkAdminRights, raiting.bulkUpdateRaitingHandler);
 
+    app.post('/api/v1/calculate-raiting', user.checkUserRights, raiting.calculateRaitingHandler);
+
 
     //Machines routes
 
