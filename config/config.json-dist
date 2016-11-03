@@ -27,6 +27,11 @@
         "redirect_url": "http://localhost:3000/execute",
         "cancel_url": "http://localhost:3000/cancel"
     },
+    "pushNotifications": {
+        "url": "https://api.ionic.io/push/notifications",
+        "api_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlZjg1OGU1NS0yZmI2LTQ3ZTYtOGVlYy1jZmJlOTMyZmM1NTEifQ.tx13Ip2bMQOF6XlimUQ3rZod7UCZ_X2oNVdU0O_MJu0",
+        "profile": "ios"
+    },
     "externalApiUrl": "http://jsuitedes.smartfutura.com:9301/RemotingFuturaServerWeb",
     "appDomain": "http://localhost:3000",
     "qrCodesUrl": "/qrCodes",

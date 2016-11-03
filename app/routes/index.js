@@ -8,8 +8,18 @@ const admin                     = require('./api/admin')
     , products                  = require('./api/products')
     , transactions              = require('./api/transaction')
     , api                       = require('../models/api')
+    , notificationSender        = require('../models/notifications-sender')
     , mongo_express             = require('mongo-express/lib/middleware')
     , mongo_express_config      = require('../../config/mongo-config');
+
+
+// notificationSender.sendPushNotification(['83b123425bdcde70833c354b5b9db49f3ea35bd97ed310418290f1f986f31aea'], 'test')
+//     .then((r) => {
+//         console.log(r);
+//     })
+//     .catch((e) => {
+//         console.log(e);
+//     });
 
 module.exports = (app) => {
 

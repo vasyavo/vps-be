@@ -208,7 +208,7 @@ class UsersManager {
                 user.device_tokens = []
             }
 
-            if(user.device_tokens.includes(token)) {
+            if(user.device_tokens.includes(token) || !token) {
                 return resolve('Token already added');
             }
 
