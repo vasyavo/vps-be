@@ -116,6 +116,11 @@ module.exports = (app) => {
     app.get('/api/v1/transactions-datatable', admin.checkAdminRights, transactions.datatableTransactionsHandler);
 
 
+    //Mobile device tokens
+
+    app.put('/api/v1/mobile-token', auth.saveTokenHandler);
+
+
 
     //Mongo express
 

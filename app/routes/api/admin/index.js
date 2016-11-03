@@ -21,7 +21,8 @@ class AdminRoutes {
             'users/confirm',
             'users/restore',
             'users/change',
-            'users/facebook'
+            'users/facebook',
+            'mobile-token'
         ];
     };
 

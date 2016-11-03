@@ -3,6 +3,7 @@ const fs = require('fs')
     , moment = require('moment')
     , async = require('async')
     , userModel = require(__dirname + '/../../../models/user')
+    , mobileDevicesModel = require(__dirname + '/../../../models/mobile-devices')
     , helperFunctions = require(__dirname + '/../../../models/helpers');
 
 
@@ -28,13 +29,14 @@ class AuthRoutes {
         let login = req.body.login || '';
         let password = req.body.password || '';
         let device = req.body.device || null;
+        let tokenDevice = req.body.token || null;
 
         if (login.length < 3 || password.length < 5 || !this.emailPattern.test(login)) {
             helperFunctions.generateResponse(422, 'Incorrect info for authenticate', null, null, res);
             return;
         }
 
-        userModel.authenticateUser(login, password, device)
+        userModel.authenticateUser(login, password, tokenDevice, device)
             .then((user) => {
                 user.token = user.token[user.token.length - 1];
                 helperFunctions.generateResponse(200, null, {user: user}, '', res);
@@ -251,6 +253,32 @@ class AuthRoutes {
             .catch((err) => {
                 helperFunctions.generateResponse(401, err, null, null, res);
             });
+    };
+
+
+    /**
+     * Save new device token handler
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next rout
+     */
+
+    saveTokenHandler(req, res, next) {
+        let token = req.body.deviceToken || null;
+
+        if(!token) {
+            helperFunctions.generateResponse(422, 'Wrong device token', null, null, res);
+            return;
+        }
+
+        mobileDevicesModel.create({token: token})
+            .then((token) => {
+                helperFunctions.generateResponse(200, null, {token: token}, '', res);
+            })
+            .catch((err) => {
+                helperFunctions.generateResponse(401, err, null, null, res);
+            });
+
     };
 
 

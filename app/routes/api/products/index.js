@@ -53,7 +53,6 @@ class ProductsRoutes {
 
         productsModel.getProduct(basicOptions)
             .then((currentProduct) => {
-                console.log(currentProduct);
                 helperFunctions.generateResponse(200, null, {product: currentProduct}, '', res);
             })
             .catch((err) => {

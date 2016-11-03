@@ -9,6 +9,7 @@ const mongo = require('../mongo')
     , Schema = mongo.Schema
     , mongoose = mongo.mongoose
     , mailerModel = require('../mailer')
+    , mobileDevicesModels = require('../mobile-devices')
     , helperFunctions = require('../helpers');
 
 
@@ -51,6 +52,9 @@ let Users = new Schema({
         type: Boolean
     },
     unratedProducts: {
+        type: Array
+    },
+    device_tokens: {
         type: Array
     }
 });
@@ -192,6 +196,32 @@ class UsersManager {
 
 
     /**
+     * Add mobile device token to user
+     * @param {object} user - mongoose user object
+     * @param {object} token - mobile device token
+     * @returns {Promise} - promise with result of updating user
+     */
+
+    addMobileToken(user, token) {
+        return new Promise((resolve, reject) => {
+            if(!user.device_tokens || !user.device_tokens.length) {
+                user.device_tokens = []
+            }
+
+            if(user.device_tokens.includes(token)) {
+                return resolve('Token already added');
+            }
+
+            user.device_tokens.push(token);
+            user.markModified('device_tokens');
+            user.save()
+                .then(resolve)
+                .catch(reject);
+        });
+    };
+
+
+    /**
      * Register new user
      * @param {object} options - object with options for registration user
      * @returns {Promise} - promise with result of registration user
@@ -250,7 +280,9 @@ class UsersManager {
                                 });
                             }
 
-                            resolve(user);
+                            this.addMobileToken(user, options.mobileToken)
+                                .then(resolve)
+                                .catch(reject);
                         });
                 }
 
@@ -270,7 +302,7 @@ class UsersManager {
      * @returns {Promise} - promise with result of authenticate user
      */
 
-    authenticateUser(login, password, device = null) {
+    authenticateUser(login, password, deviceToken, device = null) {
         let promise = new Promise((resolve, reject) => {
             UsersObject.findOne({login: login})
                 .then((user) => {
@@ -299,8 +331,14 @@ class UsersManager {
 
                         let newToken = this._generateJWTToken(user);
                         user.token.push(newToken);
+
+
                         user.save()
-                            .then(resolve)
+                            .then((res) => {
+                                this.addMobileToken(user, deviceToken)
+                                    .then(resolve)
+                                    .catch(reject);
+                            })
                             .catch(reject);
                     });
                 });
