@@ -276,7 +276,8 @@ class AuthRoutes {
                 helperFunctions.generateResponse(200, null, {token: token}, '', res);
             })
             .catch((err) => {
-                helperFunctions.generateResponse(401, err, null, null, res);
+                console.log(err);
+                // helperFunctions.generateResponse(401, '', null, null, res);
             });
 
     };
