@@ -22,10 +22,11 @@ class MachinesManager {
     getMachinesList(options) {
         return new Promise((resolve, reject) => {
             this.api.machines.list(options.params, options.data, options.headers)
-                .then((machines) => {
-                    let result = (machines.GetMachinesResult && machines.GetMachinesResult.length)
-                        ? machines.GetMachinesResult
+                .then((res) => {
+                    let result = (res.GetMachinesResult.machines && res.GetMachinesResult.machines.length)
+                        ? res.GetMachinesResult.machines
                         : [];
+                    console.log(result);
 
                     resolve(result.filter(m => !!m.active));
                 })
@@ -46,7 +47,43 @@ class MachinesManager {
             let machineCatalog = this.api.machines.getCatalog(options.params, options.data, options.headers);
             let machinePictures = this.api.products.pictures(options.params, options.data, options.headers);
             Promise.all([machineStock, machineCatalog, machinePictures])
-                .then(resolve)
+                .then((result) => {
+                    let stockResult = result[0].GetStockMachineResult;
+                    let catalogResult = result[1].GetCatalogResult;
+                    let imagesResult = result[2].GetProductsPicturesResult;
+
+                    const CATALOG_FIELDS = ['articlesTariffs_VO', 'articles_VO'];
+
+                    let responseObject = {
+                        machineId: stockResult.machineId
+                    };
+                    let items = {};
+
+                    for (let i = 0, l = stockResult.stock.length; i < l; ++i) {
+                        items[stockResult.stock[i].productId] = stockResult.stock[i];
+                    }
+
+                    for (let i = 0; i < CATALOG_FIELDS.length; ++i ) {
+                        let currentFields = CATALOG_FIELDS[i];
+                        for (let j = 0, l = catalogResult[currentFields].length; j < l; ++j) {
+                            let currentProductField = catalogResult[currentFields][j];
+
+                            if(items[currentProductField.reference]) {
+                                items[currentProductField.reference][currentFields] = currentProductField;
+                            }
+                            if(items[currentProductField.id]) {
+                                items[currentProductField.id][currentFields] = currentProductField;
+                            }
+                        }
+                    }
+
+                    //TODO do something with images
+
+                    responseObject.items = items;
+
+                    // console.log(result);
+                    resolve(responseObject);
+                })
                 .catch(reject);
         });
     };

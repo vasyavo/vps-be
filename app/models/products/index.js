@@ -24,13 +24,7 @@ class ProductManager {
         return new Promise((resolve, reject) => {
             machinesModel.getMachine(options)
                 .then((result) => {
-                    let productsStock = result[0];
-                    let productCatalog = result[1];
-                    let images = result[2];
-                    let product = productsStock.GetStockMachineResult.stock.find((el) => {
-                        return el.productId.toString() === options.params.productId;
-                    });
-                    resolve({product, images, productCatalog});
+                    resolve(result.items[options.params.productId] || {});
                 })
                 .catch(reject);
         });

@@ -86,6 +86,8 @@ class CommentRoutes {
             findOptions['status'] = status;
         }
 
+        console.log(findOptions);
+
 
         commentModel.list(findOptions)
             .then((comments) => {

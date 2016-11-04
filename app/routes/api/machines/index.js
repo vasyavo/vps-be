@@ -18,7 +18,7 @@ class MachinesRoutes {
             params: {
                 appId: 1,
                 signature: 1,
-                companyId: 2
+                companyId: 49
             },
             data: {},
             headers: {}
