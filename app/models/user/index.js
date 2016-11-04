@@ -209,7 +209,7 @@ class UsersManager {
             }
 
             if(user.device_tokens.includes(token) || !token) {
-                return resolve('Token already added');
+                return resolve(user);
             }
 
             user.device_tokens.push(token);
@@ -310,6 +310,7 @@ class UsersManager {
                     if (!user || user.status !== this.ACTIVE_STATTUS) {
                         reject('Wrong user name or password');
                     }
+
 
                     user.comparePassword(password, (err, isMatch) => {
 
