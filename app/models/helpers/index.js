@@ -1,4 +1,4 @@
-const mongoose          = require('../mongo').mongoose;
+const mongoose = require('../mongo').mongoose;
 
 
 /**
@@ -6,15 +6,28 @@ const mongoose          = require('../mongo').mongoose;
  * @returns {array} - array with unique values
  */
 
-Array.prototype.getUnique = function() {
+Array.prototype.getUnique = function () {
     let u = {}, a = [];
     for (let i = 0, l = this.length; i < l; ++i) {
-        if(u.hasOwnProperty(this[i].id)) {
+        if (u.hasOwnProperty(this[i].id)) {
             continue;
         }
         a.push(this[i]);
         u[this[i].id] = 1;
     }
+    return a;
+};
+
+Array.prototype.unique = function () {
+    let a = this.concat();
+    for (let i = 0; i < a.length; ++i) {
+        for (let j = i + 1; j < a.length; ++j) {
+            if (a[i] === a[j]) {
+                a.splice(j--, 1);
+            }
+        }
+    }
+
     return a;
 };
 
@@ -40,13 +53,12 @@ class Helpers {
 
         let responseObject = {
             "status": status,
-            "error":
-                errorMessage ?
-                    {
-                        "code": status,
-                        "message": errorMessage,
-                    } :
-                    null,
+            "error": errorMessage ?
+            {
+                "code": status,
+                "message": errorMessage,
+            } :
+                null,
             "data": {
                 "content": content,
                 "message": successMessage ? successMessage : null,
@@ -63,15 +75,15 @@ class Helpers {
      * @returns {object} - object with datatable options and filters
      */
 
-    prepareDtRequest (req) {
+    prepareDtRequest(req) {
         let limit = req.query.limit || 10;
         let skip = req.query.skip || 0;
         let sort = {};
 
-        if ( req.query.sort_field ) {
+        if (req.query.sort_field) {
             let sortOrder = 1;
 
-            if ( req.query.sort_field[0] === '-' ) {
+            if (req.query.sort_field[0] === '-') {
                 let sortOrder = -1;
                 req.query.sort_field = req.query.sort_field.substr(1);
             }
@@ -81,7 +93,11 @@ class Helpers {
         } else {
             sort['time_created'] = -1;
         }
-        return { limit, skip, sort };
+        return {
+            limit,
+            skip,
+            sort
+        };
     };
 
 }

@@ -1,17 +1,18 @@
-const admin                     = require('./api/admin')
-    , user                      = require('./api/user')
-    , auth                      = require('./api/auth')
-    , comment                   = require('./api/comment')
-    , raiting                   = require('./api/raiting')
-    , related                   = require('./api/related')
-    , machines                  = require('./api/machines')
-    , products                  = require('./api/products')
-    , transactions              = require('./api/transaction')
-    , api                       = require('../models/api')
-    , notificationSender        = require('../models/notifications-sender')
-    , mongo_express             = require('mongo-express/lib/middleware')
-    , mongo_express_config      = require('../../config/mongo-config');
-
+const admin = require('./api/admin')
+    , user = require('./api/user')
+    , auth = require('./api/auth')
+    , comment = require('./api/comment')
+    , raiting = require('./api/raiting')
+    , related = require('./api/related')
+    , machines = require('./api/machines')
+    , products = require('./api/products')
+    , transactions = require('./api/transaction')
+    , api = require('../models/api')
+    , jobs = require('./api/jobs')
+    // , scheduler = require('../models/scheduler')
+    // , notificationSender = require('../models/notifications-sender')
+    , mongo_express = require('mongo-express/lib/middleware')
+    , mongo_express_config = require('../../config/mongo-config');
 
 // notificationSender.sendPushNotification(['83b123425bdcde70833c354b5b9db49f3ea35bd97ed310418290f1f986f31aea'], 'test')
 //     .then((r) => {
@@ -121,6 +122,17 @@ module.exports = (app) => {
     app.get('/api/v1/product-order-cancel/:machineId/:orderId', user.checkUserRights, products.cancelOrderHandler.bind(products));
 
 
+    //Jobs routes
+
+    app.get('/api/v1/jobs/:jobId', user.checkUserRights, products.getProductHandler.bind(products));
+
+    app.post('/api/v1/jobs', admin.checkAdminRights, jobs.addJobHandler.bind(jobs));
+
+    app.delete('/api/v1/jobs/:jobId', admin.checkAdminRights, jobs.deleteJobHandler.bind(jobs));
+
+    app.put('/api/v1/cancel-job/:jobId', admin.checkAdminRights, jobs.cancelJobHandler.bind(jobs));
+
+
     //Transaction routes
 
     app.get('/api/v1/transactions-datatable', admin.checkAdminRights, transactions.datatableTransactionsHandler);
@@ -131,12 +143,11 @@ module.exports = (app) => {
     app.put('/api/v1/mobile-token', auth.saveTokenHandler);
 
 
-
     //Mongo express
 
     app.use('/mongo_express', mongo_express(mongo_express_config));
 
-    app.use( (req, res, next) => {
+    app.use((req, res, next) => {
         res.json({'error': 404});
     });
 
