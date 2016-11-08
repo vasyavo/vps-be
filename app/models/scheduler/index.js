@@ -27,6 +27,12 @@ const Job = new Schema({
     },
     job_options: {
         type: Object
+    },
+    time_created: {
+        type: String
+    },
+    executing_num: {
+        type: String
     }
 });
 
@@ -66,6 +72,7 @@ class Scheduler extends CrudManager {
 
         this.STATUSES = {
             NEW: 'new',
+            IN_PROGRESS: 'in progress',
             EXECUTED: 'executed',
             CANCELED: 'canceled'
         };
@@ -121,7 +128,8 @@ class Scheduler extends CrudManager {
             this.jobsMethods[job.job_metod].call(schedulerMethods, job.job_options || null)
                 .then((result) => {
                     if(job.job_type === this.TYPES.custom) {
-                        this.update({_id: job}, {status: this.STATUSES.EXECUTED});
+                        let newStatus = job.executing_num === 'one' ? this.STATUSES.EXECUTED : this.STATUSES.IN_PROGRESS;
+                        this.update({_id: job}, {status: newStatus});
                     }
                 });
         });

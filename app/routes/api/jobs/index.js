@@ -27,6 +27,7 @@ class JobsRoutes {
             users_ids: req.body.userIds || [],
             type: req.body.jobType,
             date: req.body.date,
+            executing_num: req.body.executingNum,
             job_metod: 'sendCustomNotification',
             job_options: {
                 message: req.body.message
@@ -39,6 +40,7 @@ class JobsRoutes {
                 helperFunctions.generateResponse(200, null, {job: job}, 'Event successfully created.', res);
             })
             .catch((err) => {
+                console.log(err);
                 helperFunctions.generateResponse(422, err, null, null, res);
             });
     }

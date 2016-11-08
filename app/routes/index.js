@@ -124,7 +124,9 @@ module.exports = (app) => {
 
     //Jobs routes
 
-    app.get('/api/v1/jobs/:jobId', user.checkUserRights, products.getProductHandler.bind(products));
+    // app.get('/api/v1/jobs/:jobId', admin.checkAdminRights, products.getProductHandler.bind(products));
+
+    app.get('/api/v1/jobs-datatable', admin.checkAdminRights, jobs.datatableJobsHandler.bind(jobs));
 
     app.post('/api/v1/jobs', admin.checkAdminRights, jobs.addJobHandler.bind(jobs));
 
