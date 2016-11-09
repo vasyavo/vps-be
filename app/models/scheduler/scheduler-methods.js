@@ -1,7 +1,7 @@
 const mongo = require('../mongo')
     , moment = require('moment')
     , Schema = mongo.Schema
-    , userModel = require('../crud-manager')
+    , userModel = require('../user')
     , notificationSender = require('../notifications-sender');
 
 
@@ -29,7 +29,7 @@ class SchedulerMethods {
             _id: {$in: options.userIds}
         };
 
-        return userModel.get(findOptionsUsers)
+        return userModel.getUser(findOptionsUsers)
             .then((users = []) => {
                 let deviceTokens = [];
                 for (let i = 0, l = users.length; i < l; ++i) {

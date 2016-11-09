@@ -70,6 +70,32 @@ class JobsRoutes {
             });
     }
 
+
+    /**
+     * Update job handler
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next route
+     */
+
+    updateJobHandler(req, res, next) {
+        let jobId = req.params.jobId || null;
+        let jobData = req.body || {};
+
+        if (!jobId || !Object.keys(jobData).length) {
+            helperFunctions.generateResponse(422, 'Incorrect info for updating job', null, null, res);
+            return;
+        }
+
+        schedulerModel.update({_id: jobId}, jobData)
+            .then((job) => {
+                helperFunctions.generateResponse(200, null, {job: job}, 'Job successfully canceled.', res);
+            })
+            .catch((err) => {
+                helperFunctions.generateResponse(422, err, null, null, res);
+            });
+    }
+
     /**
      * Datatable jobs handler
      * @param {object} req - request

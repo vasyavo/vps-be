@@ -56,6 +56,15 @@ let Users = new Schema({
     },
     device_tokens: {
         type: Array
+    },
+    referral_code: {
+        type: String
+    },
+    referral_link: {
+        type: String
+    },
+    gift_pack_ids: {
+        type: Array
     }
 });
 
@@ -85,6 +94,13 @@ Users.pre('save', function (next) {
                 let token = buf.toString('hex');
                 callback(null, token);
             });
+        },
+
+        referralCode(callback) {
+            crypto.randomBytes(4, (err, buf) => {
+                let referral = buf.toString('hex');
+                callback(null, referral);
+            });
         }
 
     }, (err, result) => {
@@ -100,6 +116,10 @@ Users.pre('save', function (next) {
         if (!self.isModified('time_register')) {
             let now = moment().unix();
             self.time_register = now;
+        }
+
+        if (!self.isModified('referral_code')) {
+            self.referral_code = result.referralCode;
         }
         next();
     });
@@ -204,11 +224,11 @@ class UsersManager {
 
     addMobileToken(user, token) {
         return new Promise((resolve, reject) => {
-            if(!user.device_tokens || !user.device_tokens.length) {
+            if (!user.device_tokens || !user.device_tokens.length) {
                 user.device_tokens = []
             }
 
-            if(user.device_tokens.includes(token) || !token) {
+            if (user.device_tokens.includes(token) || !token) {
                 return resolve(user);
             }
 
@@ -318,7 +338,7 @@ class UsersManager {
                             return reject('Wrong user name or password');
                         }
 
-                        if(user.banned) {
+                        if (user.banned) {
                             return reject('Your account has been banned. Please, contact administrator.');
                         }
 
@@ -428,9 +448,15 @@ class UsersManager {
 
                     user.token.push(this._generateJWTToken(user));
 
-                    user.save()
-                        .then(resolve)
-                        .catch(reject);
+                    if (user.referral_link) {
+                        this.addGift(user, true)
+                            .then(resolve)
+                            .catch(reject);
+                    } else {
+                        user.save()
+                            .then(resolve)
+                            .catch(reject);
+                    }
 
                 });
         });
@@ -561,8 +587,50 @@ class UsersManager {
         return jwt.sign(signUser, config.get('jwt').secret, {expiresIn: tokenExpire});
     };
 
+
+    /**
+     * Add gift to user
+     * @param {string} user - user object
+     * @param {boolean} registrationGift - flag, if gift from registration or from purchase
+     */
+
+    addGift(user, registrationGift) {
+        let packId = '';
+        //let packPromise = //TODO load gift pack
+        let userPromise = this.getUser({referral_code: user.referral_link});
+        // console.log(user, registrationGift);
+        return new Promise((resolve, reject) => {
+            Promise.all([userPromise])
+                .then((result) => {
+                    let refUser = (result[0] && result[0].length) ? result[0][0] : null;
+                    let updateEntity = registrationGift ? user : refUser;
+
+                    // console.log(refUser);
+
+                    if (!refUser) {
+                        updateEntity.save()
+                            .then(resolve)
+                            .catch(reject);
+                    }
+
+                    if (!updateEntity.gift_pack_ids) {
+                        updateEntity.gift_pack_ids = [];
+                    }
+
+                    updateEntity.gift_pack_ids.push(packId);
+                    console.log(updateEntity);
+                    updateEntity.markModified('gift_pack_ids');
+                    updateEntity.save()
+                        .then(resolve)
+                        .catch(reject);
+                })
+                .catch(reject);
+
+        });
+
+    };
+
 }
-;
 
 const usersManager = new UsersManager();
 

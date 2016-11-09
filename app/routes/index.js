@@ -134,6 +134,8 @@ module.exports = (app) => {
 
     app.put('/api/v1/cancel-job/:jobId', admin.checkAdminRights, jobs.cancelJobHandler.bind(jobs));
 
+    app.put('/api/v1/job/:jobId', admin.checkAdminRights, jobs.updateJobHandler.bind(jobs));
+
 
     //Transaction routes
 

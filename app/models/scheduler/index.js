@@ -51,6 +51,7 @@ const preMethods = [
 ];
 
 
+
 /**
  * Scheduler class.
  * @constructor
@@ -79,6 +80,8 @@ class Scheduler extends CrudManager {
 
         this.jobsInProgress = {};
         this.jobsMethods = schedulerMethods;
+
+        // this.initJobs();
     };
 
 
@@ -89,9 +92,17 @@ class Scheduler extends CrudManager {
      */
 
     createJob(options) {
-        options.job_type = this.TYPES[options.type] || this.TYPES.custom;
-        options.status = this.STATUSES.NEW;
-        return this.create(options);
+        return new Promise((resolve, reject) => {
+            options.job_type = this.TYPES[options.type] || this.TYPES.custom;
+            options.status = this.STATUSES.NEW;
+            this.create(options)
+                .then((job) => {
+                    return this._addNewJob(job);
+                })
+                .then(resolve)
+                .catch(reject);
+
+        });
     };
 
 
@@ -102,7 +113,14 @@ class Scheduler extends CrudManager {
 
     initJobs() {
         return new Promise((resolve, reject) => {
-            this.list({status: this.STATUSES.NEW})
+            let query = {
+                $or: [
+                    {status: this.STATUSES.NEW},
+                    {status: this.STATUSES.IN_PROGRESS}
+                ]
+            };
+
+            this.list(query)
                 .then((jobs) => {
                     jobs.forEach((job) => {
                         this._addNewJob(job)
@@ -124,15 +142,23 @@ class Scheduler extends CrudManager {
      */
 
     _addNewJob(job) {
-        this.jobsInProgress[job._id] = this.scheduler.scheduleJob(job.date, () => {
-            this.jobsMethods[job.job_metod].call(schedulerMethods, job.job_options || null)
-                .then((result) => {
-                    if(job.job_type === this.TYPES.custom) {
-                        let newStatus = job.executing_num === 'one' ? this.STATUSES.EXECUTED : this.STATUSES.IN_PROGRESS;
-                        this.update({_id: job}, {status: newStatus});
-                    }
-                });
+        return new Promise((resolve, reject) => {
+            console.log(job.date);
+            this.jobsInProgress[job._id] = this.scheduler.scheduleJob(job.date, () => {
+                this.jobsMethods[job.job_metod].call(schedulerMethods, job.job_options || null)
+                    .then((result) => {
+                        if (job.job_type === this.TYPES.custom) {
+                            let newStatus = job.executing_num === 'one' ? this.STATUSES.EXECUTED
+                                : this.STATUSES.IN_PROGRESS;
+                            this.update({_id: job}, {status: newStatus})
+                                .then(resolve)
+                                .catch(reject);
+                        }
+                    })
+                    .catch(reject);
+            });
         });
+
     };
 
 
