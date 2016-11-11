@@ -30,9 +30,9 @@ class JobsRoutes {
             executing_num: req.body.executingNum,
             job_metod: 'sendCustomNotification',
             job_options: {
-                message: req.body.message
+                message: req.body.message,
+                userIds: req.body.userIds || []
             }
-
         };
 
         schedulerModel.createJob(createOptions)

@@ -7,6 +7,7 @@ const admin = require('./api/admin')
     , machines = require('./api/machines')
     , products = require('./api/products')
     , transactions = require('./api/transaction')
+    , promoPacks = require('./api/promo-packs')
     , api = require('../models/api')
     , jobs = require('./api/jobs')
     // , scheduler = require('../models/scheduler')
@@ -135,6 +136,19 @@ module.exports = (app) => {
     app.put('/api/v1/cancel-job/:jobId', admin.checkAdminRights, jobs.cancelJobHandler.bind(jobs));
 
     app.put('/api/v1/job/:jobId', admin.checkAdminRights, jobs.updateJobHandler.bind(jobs));
+
+
+    //Promo Packs routes
+
+    app.get('/api/v1/promo-pack/:packId', admin.checkAdminRights, promoPacks.getPromoPackageHandler.bind(promoPacks));
+
+    app.get('/api/v1/promo-pack-datatable', admin.checkAdminRights, promoPacks.datatablePromoPackagesHandler.bind(promoPacks));
+
+    app.post('/api/v1/promo-pack', admin.checkAdminRights, promoPacks.addPromoPackageHandler.bind(promoPacks));
+
+    app.delete('/api/v1/promo-pack/:packId', admin.checkAdminRights, promoPacks.deletePromoPackageHandler.bind(promoPacks));
+
+    app.put('/api/v1/promo-pack/:packId', admin.checkAdminRights, promoPacks.updatePromoPackageHandler.bind(promoPacks));
 
 
     //Transaction routes

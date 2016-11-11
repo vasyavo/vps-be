@@ -51,7 +51,6 @@ const preMethods = [
 ];
 
 
-
 /**
  * Scheduler class.
  * @constructor

@@ -9,8 +9,7 @@ const mongo = require('../mongo')
     , Schema = mongo.Schema
     , mongoose = mongo.mongoose
     , mailerModel = require('../mailer')
-    , mobileDevicesModels = require('../mobile-devices')
-    , helperFunctions = require('../helpers');
+    , promoPackagesModel = require('../promo-packs');
 
 
 let Users = new Schema({
@@ -63,7 +62,7 @@ let Users = new Schema({
     referral_link: {
         type: String
     },
-    gift_pack_ids: {
+    gift_packs: {
         type: Array
     }
 });
@@ -448,6 +447,8 @@ class UsersManager {
 
                     user.token.push(this._generateJWTToken(user));
 
+                    console.log(user);
+
                     if (user.referral_link) {
                         this.addGift(user, true)
                             .then(resolve)
@@ -595,31 +596,34 @@ class UsersManager {
      */
 
     addGift(user, registrationGift) {
-        let packId = '';
-        //let packPromise = //TODO load gift pack
+        let packPromise = promoPackagesModel.list({free: true});
         let userPromise = this.getUser({referral_code: user.referral_link});
-        // console.log(user, registrationGift);
+
         return new Promise((resolve, reject) => {
-            Promise.all([userPromise])
+            Promise.all([userPromise, packPromise])
                 .then((result) => {
                     let refUser = (result[0] && result[0].length) ? result[0][0] : null;
+                    let freePackage = (result[1] && result[1].length) ? result[1][0] : null;
+
                     let updateEntity = registrationGift ? user : refUser;
 
-                    // console.log(refUser);
-
-                    if (!refUser) {
+                    if (!refUser || !freePackage) {
                         updateEntity.save()
                             .then(resolve)
                             .catch(reject);
                     }
 
-                    if (!updateEntity.gift_pack_ids) {
-                        updateEntity.gift_pack_ids = [];
+                    if (!updateEntity.gift_packs) {
+                        updateEntity.gift_packs = [];
                     }
 
-                    updateEntity.gift_pack_ids.push(packId);
-                    console.log(updateEntity);
-                    updateEntity.markModified('gift_pack_ids');
+                    updateEntity.gift_packs.push({
+                        id: freePackage._id,
+                        expireDate: moment().unix() + (+freePackage.expire * 86400),
+                        status: 'new'
+                    });
+
+                    updateEntity.markModified('gift_packs');
                     updateEntity.save()
                         .then(resolve)
                         .catch(reject);

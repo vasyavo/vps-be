@@ -35,6 +35,9 @@ const Order = new Schema({
     },
     status: {
         type: String
+    },
+    expire: {
+        type: String
     }
 });
 
