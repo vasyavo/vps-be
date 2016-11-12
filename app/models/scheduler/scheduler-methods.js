@@ -65,7 +65,6 @@ class SchedulerMethods {
                     user.gift_packs = user.gift_packs.map((pack) => {
                         if (pack.status === 'new') {
                             let now = moment().unix();
-                            console.log(pack);
                             if (now > pack.expireDate) {
                                 pack.status = 'expired';
                             }
@@ -100,6 +99,8 @@ class SchedulerMethods {
                             .then()
                             .catch();
 
+                        //TODO make a refund with fee
+
                         userModel.getUser({_id: order.user_id})
                             .then((user) => {
                                 if(!user || !user[0]) {
@@ -118,7 +119,7 @@ class SchedulerMethods {
 
     /**
      * Check expires orders job
-     * @returns {Promise} - promise with result of checking gifst job
+     * @returns {Promise} - promise with result of checking expired orders job
      */
 
     remindOrders() {
@@ -130,18 +131,21 @@ class SchedulerMethods {
             .then((orders = []) => {
                 orders.forEach((order) => {
                     let now = moment().unix();
-                    if (now + this.orderReminder > order.expire) {
-                        //TODO check if not sended
-                        //if not - send and change status
+                    if ((now + this.orderReminder > order.expire) && order.notificationStatus !== 'sended') {
                         userModel.getUser({_id: order.user_id})
                             .then((user) => {
                                 if(!user || !user[0]) {
                                     return;
                                 }
                                 deviceTokens = user[0].device_tokens;
-                                notificationSender.sendPushNotification(deviceTokens, 'Your order has expired in less than one day');
+                                notificationSender.sendPushNotification(deviceTokens, 'One of your order has expired in less than one day');
                             })
                             .catch();
+
+                        order.notificationStatus = 'sended';
+                        order.save()
+                            .then()
+                            .catch(err => console.log(err));
                     }
                 });
 

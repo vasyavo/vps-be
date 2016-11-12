@@ -38,6 +38,9 @@ const Order = new Schema({
     },
     expire: {
         type: String
+    },
+    notificationStatus: {
+        type: String
     }
 });
 
