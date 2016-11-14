@@ -26,7 +26,6 @@ class MachinesManager {
                     let result = (res.GetMachinesResult.machines && res.GetMachinesResult.machines.length)
                         ? res.GetMachinesResult.machines
                         : [];
-                    console.log(result);
 
                     resolve(result.filter(m => !!m.active));
                 })

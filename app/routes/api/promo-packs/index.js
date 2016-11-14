@@ -54,8 +54,10 @@ class PromoPackRoutes {
 
     getPromoPackageHandler(req, res, next) {
         let packageId = req.params.packId || null;
+        let options = packageId ? {_id: packageId, free: {$ne: true}} : {free: {$ne: true}};
 
-        promoPacksModel.list({_id: packageId})
+
+        promoPacksModel.list(options)
             .then((promoPackage) => {
                 helperFunctions.generateResponse(200, null, {promoPackage: promoPackage}, '', res);
             })

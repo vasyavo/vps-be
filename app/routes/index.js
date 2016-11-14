@@ -140,7 +140,7 @@ module.exports = (app) => {
 
     //Promo Packs routes
 
-    app.get('/api/v1/promo-pack/:packId', admin.checkAdminRights, promoPacks.getPromoPackageHandler.bind(promoPacks));
+    app.get('/api/v1/promo-pack/:packId?', promoPacks.getPromoPackageHandler.bind(promoPacks));
 
     app.get('/api/v1/promo-pack-datatable', admin.checkAdminRights, promoPacks.datatablePromoPackagesHandler.bind(promoPacks));
 

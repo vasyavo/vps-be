@@ -74,7 +74,9 @@ class SchedulerMethods {
                     user.markModified('gift_packs');
                     user.save()
                         .then()
-                        .catch();
+                        .catch((err) => {
+                            console.log(err);
+                        });
                 });
             });
     };
