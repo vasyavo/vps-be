@@ -304,9 +304,14 @@ class UsersManager {
 
                             this.addMobileToken(user, options.mobileToken)
                                 .then((user) => {
-                                    coinsModel.addBonusCoins(user, 'firstRegister')
-                                        .then(resolve)
-                                        .catch(reject);
+                                    console.log(user);
+                                    if(user.status === this.ACTIVE_STATTUS) {
+                                        coinsModel.addBonusCoins(user, 'firstRegister')
+                                            .then(resolve)
+                                            .catch(reject);
+                                        return;
+                                    }
+                                    resolve(user);
                                 })
                                 .catch(reject);
                         });
@@ -455,8 +460,12 @@ class UsersManager {
                     user.token.push(this._generateJWTToken(user));
 
                     let methodName = user.referral_link ? 'referralRegister' : 'firstRegister';
+
                     coinsModel.addBonusCoins(user, methodName)
-                        .then(resolve)
+                        .then((user) => {
+                            console.log(user);
+                            resolve(user);
+                        })
                         .catch(reject);
 
                 });

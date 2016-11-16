@@ -88,15 +88,15 @@ class CoinsSettingsManager extends CrudManager {
     addBonusCoins(user, action) {
         return new Promise((resolve, reject) => {
             this.list({})
-                .then(options => options)
                 .then((options) => {
                     user.coins = user.coins || 0;
-                    user.coins += parseFloat(options.rules[action].coinsNum).toFixed(2);
+                    user.coins += parseFloat(options[0].rules[action].coinsNum).toFixed(2);
+
                     user.save()
                         .then(resolve)
                         .catch(reject);
 
-                    this.saveCoinTransaction(user._id, 'get', action, options.rules[action].coinsNum)
+                    this.saveCoinTransaction(user._id, 'get', action, options[0].rules[action].coinsNum)
                         .then()
                         .catch();
                 })
