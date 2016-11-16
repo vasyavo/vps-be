@@ -80,7 +80,7 @@ class Scheduler extends CrudManager {
         this.jobsInProgress = {};
         this.jobsMethods = schedulerMethods;
 
-        this.initJobs();
+        // this.initJobs();
     };
 
 

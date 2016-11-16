@@ -62,7 +62,7 @@ class ApiManager {
 
     get products() {
         return {
-            pictures: (...rest) => { return this.sendRequest('/ProductsPictures/:appId/:companyId/:machineId/:signature', 'GET', ...rest); },
+            picture: (...rest) => { return this.sendRequest('/Image/:appId/:companyId/:machineId/:pictureName/:signature', 'GET', ...rest); },
             makeOrder: (...rest) => { return this.sendRequest('/saveOrder/:appId/:companyId/:machineId/:signature', 'POST', ...rest); },
             getOrderStatus: (...rest) => { return this.sendRequest('/getOrderStatus/:appId/:companyId/:machineId/:orderId/:signature', 'GET', ...rest); },
             cancelOrder: (...rest) => { return this.sendRequest('/cancelOrder/:appId/:companyId/:machineId/:orderId/:signature', 'GET', ...rest); },

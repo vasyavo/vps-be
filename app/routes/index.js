@@ -8,6 +8,7 @@ const admin = require('./api/admin')
     , products = require('./api/products')
     , transactions = require('./api/transaction')
     , promoPacks = require('./api/promo-packs')
+    , coinRules = require('./api/coins')
     , api = require('../models/api')
     , jobs = require('./api/jobs')
     // , scheduler = require('../models/scheduler')
@@ -149,6 +150,15 @@ module.exports = (app) => {
     app.delete('/api/v1/promo-pack/:packId', admin.checkAdminRights, promoPacks.deletePromoPackageHandler.bind(promoPacks));
 
     app.put('/api/v1/promo-pack/:packId', admin.checkAdminRights, promoPacks.updatePromoPackageHandler.bind(promoPacks));
+
+
+    //Rules
+
+    app.get('/api/v1/coin-rules', admin.checkAdminRights, coinRules.getRulesHandler.bind(coinRules));
+
+    app.post('/api/v1/coin-rules', admin.checkAdminRights, coinRules.createCoinRulesHandler.bind(coinRules));
+
+    app.put('/api/v1/coin-rules/:id', admin.checkAdminRights, coinRules.updateRuleHandler.bind(coinRules));
 
 
     //Transaction routes

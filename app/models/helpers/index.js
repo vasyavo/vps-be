@@ -100,6 +100,18 @@ class Helpers {
         };
     };
 
+
+    /**
+     * From byte array to base64 string
+     * @param {array} bytesArray - array of bytes
+     * @returns {string} - base64 string
+     */
+
+    fromByteToBase64(bytesArray) {
+        var base64String = btoa(String.fromCharCode.apply(null, new Uint8Array(bytesArray)));
+        return "data:image/png;base64," + base64String;
+    };
+
 }
 
 const helpers = new Helpers();

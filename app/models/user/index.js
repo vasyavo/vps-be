@@ -9,7 +9,7 @@ const mongo = require('../mongo')
     , Schema = mongo.Schema
     , mongoose = mongo.mongoose
     , mailerModel = require('../mailer')
-    , promoPackagesModel = require('../promo-packs');
+    , coinsModel = require('../coins');
 
 
 let Users = new Schema({
@@ -62,8 +62,8 @@ let Users = new Schema({
     referral_link: {
         type: String
     },
-    gift_packs: {
-        type: Array
+    coins: {
+        type: Number
     }
 });
 
@@ -283,9 +283,12 @@ class UsersManager {
                         userEntity.token = [];
                         userEntity.token.push(this._generateJWTToken(userEntity));
                         userEntity.unratedProducts = [];
+
                     } else {
                         userEntity.status = this.INACTIVE_STATTUS;
                     }
+
+
                     userEntity.save()
                         .then((user) => {
                             if (!Object.keys(user.facebook_data).length) {
@@ -300,7 +303,11 @@ class UsersManager {
                             }
 
                             this.addMobileToken(user, options.mobileToken)
-                                .then(resolve)
+                                .then((user) => {
+                                    coinsModel.addBonusCoins(user, 'firstRegister')
+                                        .then(resolve)
+                                        .catch(reject);
+                                })
                                 .catch(reject);
                         });
                 }
@@ -447,17 +454,10 @@ class UsersManager {
 
                     user.token.push(this._generateJWTToken(user));
 
-                    console.log(user);
-
-                    if (user.referral_link) {
-                        this.addGift(user, true)
-                            .then(resolve)
-                            .catch(reject);
-                    } else {
-                        user.save()
-                            .then(resolve)
-                            .catch(reject);
-                    }
+                    let methodName = user.referral_link ? 'referralRegister' : 'firstRegister';
+                    coinsModel.addBonusCoins(user, methodName)
+                        .then(resolve)
+                        .catch(reject);
 
                 });
         });
@@ -586,52 +586,6 @@ class UsersManager {
         };
 
         return jwt.sign(signUser, config.get('jwt').secret, {expiresIn: tokenExpire});
-    };
-
-
-    /**
-     * Add gift to user
-     * @param {string} user - user object
-     * @param {boolean} registrationGift - flag, if gift from registration or from purchase
-     */
-
-    addGift(user, registrationGift) {
-        let packPromise = promoPackagesModel.list({free: true});
-        let userPromise = this.getUser({referral_code: user.referral_link});
-
-        return new Promise((resolve, reject) => {
-            Promise.all([userPromise, packPromise])
-                .then((result) => {
-                    let refUser = (result[0] && result[0].length) ? result[0][0] : null;
-                    let freePackage = (result[1] && result[1].length) ? result[1][0] : null;
-
-                    let updateEntity = registrationGift ? user : refUser;
-
-                    if (!refUser || !freePackage) {
-                        updateEntity.save()
-                            .then(resolve)
-                            .catch(reject);
-                    }
-
-                    if (!updateEntity.gift_packs) {
-                        updateEntity.gift_packs = [];
-                    }
-
-                    updateEntity.gift_packs.push({
-                        id: freePackage._id,
-                        expireDate: moment().unix() + (+freePackage.expire * 86400),
-                        status: 'new'
-                    });
-
-                    updateEntity.markModified('gift_packs');
-                    updateEntity.save()
-                        .then(resolve)
-                        .catch(reject);
-                })
-                .catch(reject);
-
-        });
-
     };
 
 }
