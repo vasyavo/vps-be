@@ -1,6 +1,7 @@
 const fs = require('fs')
     , path = require('path')
     , coinsModel = require(__dirname + '/../../../models/coins')
+    , coinsTransactionModel = require(__dirname + '/../../../models/coins/coinsTransactions')
     , helperFunctions = require(__dirname + '/../../../models/helpers');
 
 
@@ -74,6 +75,31 @@ class CoinsRoutes {
         coinsModel.update({_id: ruleId}, ruleData)
             .then((coinSettings) => {
                 helperFunctions.generateResponse(200, null, {coinSettings: coinSettings}, 'Rules successfully updated!', res);
+            })
+            .catch((err) => {
+                helperFunctions.generateResponse(422, err, null, null, res);
+            });
+    }
+
+
+    /**
+     * Datatable coin transactions handler
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next route
+     */
+
+    listCoinTransactionsHandler(req, res, next) {
+        let userId = req.params.userId || null;
+        let options = {};
+
+        if (userId) {
+            options['user_id'] = userId
+        }
+
+        coinsTransactionModel.list(options)
+            .then((transactions) => {
+                helperFunctions.generateResponse(200, null, {transactions: transactions}, '', res);
             })
             .catch((err) => {
                 helperFunctions.generateResponse(422, err, null, null, res);

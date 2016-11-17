@@ -119,11 +119,11 @@ class CoinsSettingsManager extends CrudManager {
             let obj = {
                 user_id: userId,
                 transaction_type: transactionType,
-                transaction_name: transactionName,
+                methodName: transactionName,
                 amount: amount
             };
 
-            coinsTransactionsModel.create(obj)
+            coinsTransactionsModel.createOverride(obj)
                 .then(resolve)
                 .catch(reject);
         });

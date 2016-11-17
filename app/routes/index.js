@@ -152,13 +152,15 @@ module.exports = (app) => {
     app.put('/api/v1/promo-pack/:packId', admin.checkAdminRights, promoPacks.updatePromoPackageHandler.bind(promoPacks));
 
 
-    //Rules
+    //Coins
 
     app.get('/api/v1/coin-rules', admin.checkAdminRights, coinRules.getRulesHandler.bind(coinRules));
 
     app.post('/api/v1/coin-rules', admin.checkAdminRights, coinRules.createCoinRulesHandler.bind(coinRules));
 
     app.put('/api/v1/coin-rules/:id', admin.checkAdminRights, coinRules.updateRuleHandler.bind(coinRules));
+
+    app.get('/api/v1/coin-transactions/:userId', user.checkUserRights, coinRules.listCoinTransactionsHandler.bind(coinRules));
 
 
     //Transaction routes

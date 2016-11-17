@@ -14,6 +14,9 @@ const CoinsTransactions = new Schema({
     transaction_name: {
         type: String
     },
+    transaction_text: {
+        type: String
+    },
     amount: {
         type: String
     }
@@ -42,7 +45,7 @@ class CoinsTransactionsManager extends CrudManager {
     constructor() {
         super('CoinsTransactions', CoinsTransactions, preMethods);
         this.dictionaryMethods = {
-            firstRegister: 'Registration bonus',
+            firstRegister: 'Welcome to our App!',
             facebookPost: 'Facebook posting',
             referralRegister: 'Referral registration',
             referralBought: 'Referral bought something'
@@ -58,7 +61,8 @@ class CoinsTransactionsManager extends CrudManager {
 
     createOverride(options) {
         return new Promise((resolve, reject) => {
-            options.transaction_name = this.dictionaryMethods[options.methodName];
+            options.transaction_text = this.dictionaryMethods[options.methodName];
+            options.transaction_name = options.methodName;
             this.create(options)
                 .then(resolve)
                 .catch(reject);
