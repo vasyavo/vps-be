@@ -33,6 +33,11 @@
         "profile": "ios"
     },
     "externalApiUrl": "http://jsuitedes.smartfutura.com:9302/RemotingWcfRestFullApi",
+    "externalApiSettings": {
+        "signature": "J311ui11cEFRoMtherAW",
+        "password": "Jftr01-",
+        "username": "Jftr2016"
+    },
     "appDomain": "http://localhost:3000",
     "qrCodesUrl": "/qrCodes",
     "debug": true
