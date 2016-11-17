@@ -162,6 +162,8 @@ module.exports = (app) => {
 
     app.get('/api/v1/coin-transactions/:userId', user.checkUserRights, coinRules.listCoinTransactionsHandler.bind(coinRules));
 
+    app.post('/api/v1/coin-sharing/:userId', user.checkUserRights, coinRules.addSharingBonusesHandler.bind(coinRules));
+
 
     //Transaction routes
 

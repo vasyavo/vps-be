@@ -1,6 +1,7 @@
 const fs = require('fs')
     , path = require('path')
     , coinsModel = require(__dirname + '/../../../models/coins')
+    , usersModel = require(__dirname + '/../../../models/user')
     , coinsTransactionModel = require(__dirname + '/../../../models/coins/coinsTransactions')
     , helperFunctions = require(__dirname + '/../../../models/helpers');
 
@@ -100,6 +101,34 @@ class CoinsRoutes {
         coinsTransactionModel.list(options)
             .then((transactions) => {
                 helperFunctions.generateResponse(200, null, {transactions: transactions}, '', res);
+            })
+            .catch((err) => {
+                helperFunctions.generateResponse(422, err, null, null, res);
+            });
+    }
+
+
+    /**
+     * Add sharing bonuses
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next route
+     */
+
+    addSharingBonusesHandler(req, res, next) {
+        let userId = req.params.userId || null;
+        if(!userId) {
+            helperFunctions.generateResponse(422, 'Incorrect info for adding bonuses', null, null, res);
+            return;
+        }
+
+        usersModel.getUser({_id: userId})
+            .then( user => user[0] || null)
+            .then((user) => {
+                return coinsModel.addBonusCoins(user, 'facebookPost')
+            })
+            .then((user) => {
+                helperFunctions.generateResponse(200, null, {user: user}, 'Bonus coins added', res);
             })
             .catch((err) => {
                 helperFunctions.generateResponse(422, err, null, null, res);

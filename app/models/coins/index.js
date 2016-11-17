@@ -90,7 +90,7 @@ class CoinsSettingsManager extends CrudManager {
             this.list({})
                 .then((options) => {
                     user.coins = user.coins || 0;
-                    user.coins += parseFloat(options[0].rules[action].coinsNum).toFixed(2);
+                    user.coins = parseFloat(user.coins) + parseFloat(options[0].rules[action].coinsNum);
 
                     user.save()
                         .then(resolve)
