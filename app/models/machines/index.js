@@ -24,7 +24,6 @@ class MachinesManager {
         return new Promise((resolve, reject) => {
             this.api.machines.list(options.params, options.data, options.headers)
                 .then((res) => {
-                    console.log(res);
                     let result = (res.GetMachinesResult.machines && res.GetMachinesResult.machines.length)
                         ? res.GetMachinesResult.machines
                         : [];
