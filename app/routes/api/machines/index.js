@@ -33,7 +33,8 @@ class MachinesRoutes {
      */
 
     getMachinesHandler(req, res, next) {
-        machinesModel.getMachinesList(this.basicOptions)
+        let machinesOptions = JSON.parse(JSON.stringify(this.basicOptions));
+        machinesModel.getMachinesList(machinesOptions)
             .then((machines) => {
                 helperFunctions.generateResponse(200, null, {machines: machines}, '', res);
             })
@@ -52,8 +53,10 @@ class MachinesRoutes {
      */
 
     getMachineHandler(req, res, next) {
-        this.basicOptions.params.machineId = req.params.machineId;
-        machinesModel.getMachine(this.basicOptions)
+        let machinesOptions = JSON.parse(JSON.stringify(this.basicOptions));
+        machinesOptions.params.machineId = req.params.machineId;
+
+        machinesModel.getMachine(machinesOptions)
             .then((result) => {
                 helperFunctions.generateResponse(200, null, {result: result}, '', res);
             })

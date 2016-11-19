@@ -1,5 +1,6 @@
 const config = global.config
     , api = require('../api')
+    , imagesModel = require('../images')
     , helper = require('../helpers');
 
 /**
@@ -43,13 +44,11 @@ class MachinesManager {
 
     getMachine(options) {
         return new Promise((resolve, reject) => {
-            console.log(options);
             let machineStock = this.api.machines.get(options.params, options.data, options.headers);
             let machineCatalog = this.api.machines.getCatalog(options.params, options.data, options.headers);
 
             Promise.all([machineStock, machineCatalog])
                 .then((result) => {
-                    console.log(result);
                     let stockResult = result[0].GetStockMachineResult;
                     let catalogResult = result[1].GetCatalogResult;
 
@@ -78,22 +77,38 @@ class MachinesManager {
                         }
                     }
 
-                    //TODO do something with images
                     responseObject.items = items;
 
-                    this._parseImages(items, options)
-                        .then((result) => {
-                            for(prop in result) {
-                                if(!items[prop]) {
-                                    continue;
+                    this._loadCachedImages(responseObject.items)
+                        .then((items) => {
+                            let itemsWithoutImage = {};
+
+                            for(let prop in items) {
+                                if(!items[prop].imageSource) {
+                                    itemsWithoutImage[prop] = items[prop];
                                 }
-                                items[prop].articles_VO.image = helper.fromByteToBase64(result[prop].DownloadImageResult.fileImage);
                             }
                             responseObject.items = items;
+                            return this._parseImages(itemsWithoutImage, options)
+                        })
+                        .then((result) => {
+                            for (let prop in result) {
+                                if (!responseObject.items[prop]) {
+                                    continue;
+                                }
+                                let base64Image = helper.fromByteToBase64(result[prop].DownloadImageResult.fileImage);
+
+                                imagesModel.create({item_id: prop, image_name: responseObject.items[prop].articles_VO.image, image_base64: base64Image, machine_id: responseObject.machineId})
+                                    .then()
+                                    .catch();
+
+                                responseObject.items[prop].articles_VO.image = base64Image;
+
+                            }
                             resolve(responseObject);
                         })
-                        .catch(() => {
-
+                        .catch((err) => {
+                            console.log(err);
                             resolve(responseObject);
                         })
 
@@ -123,15 +138,45 @@ class MachinesManager {
 
                 let currentOptions = JSON.parse(JSON.stringify(options));
                 currentOptions.params.pictureName = currentItem.articles_VO.image;
-                promisesObject[prop] = this.api.products.picture(currentOptions.params, currentOptions.data, currentOptions.headers)
+                promisesObject[prop] = this.api.products.picture(currentOptions.params, currentOptions.data, currentOptions.headers);
 
             }
+
             this._promisedProperties(promisesObject)
                 .then(resolve)
-                .catch(error);
+                .catch(reject);
         });
     };
 
+
+    /**
+     * Load Cached images
+     * @param {object} items - object with items in machine
+     * @returns {Promise} - promise with result with items and cached images
+     */
+
+    _loadCachedImages(items) {
+        let idsArray = Object.keys(items).map(prop => prop);
+        let findOptions = {
+            item_id: {
+                $in: idsArray
+            }
+        };
+
+        return new Promise((resolve, reject) => {
+            imagesModel.list(findOptions)
+                .then((images) => {
+                    images.forEach((image) => {
+                        if(items[image.item_id]) {
+                            items[image.item_id].imageSource = image.image_base64;
+                        }
+                    });
+                    resolve(items);
+                })
+                .catch(reject);
+        });
+
+    };
 
     _promisedProperties(object) {
 

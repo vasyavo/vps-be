@@ -7,9 +7,11 @@
   "description": "From The Row API",
   "dependencies": {
     "async": "*",
+    "base64-js": "^1.2.0",
     "bcryptjs": "^2.3.0",
     "bluebird": "^3.4.0",
     "body-parser": "^1.14.1",
+    "btoa": "^1.1.2",
     "cookie-parser": "^1.4.1",
     "crypto-js": "^3.1.6",
     "ejs": "^2.4.1",

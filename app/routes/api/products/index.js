@@ -30,7 +30,6 @@ class ProductsRoutes {
         return {
             params: {
                 appId: 1,
-                signature: 1,
                 companyId: 49
             },
             data: {},

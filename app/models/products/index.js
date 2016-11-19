@@ -21,10 +21,13 @@ class ProductManager {
      */
 
     getProduct(options) {
+        let productId = options.params.productId;
+        delete options.params.productId;
+
         return new Promise((resolve, reject) => {
             machinesModel.getMachine(options)
                 .then((result) => {
-                    resolve(result.items[options.params.productId] || {});
+                    resolve(result.items[productId] || {});
                 })
                 .catch(reject);
         });

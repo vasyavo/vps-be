@@ -19,6 +19,9 @@ const CoinsTransactions = new Schema({
     },
     amount: {
         type: String
+    },
+    time_created: {
+        type: String
     }
 
 });

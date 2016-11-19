@@ -1,4 +1,5 @@
-const mongoose = require('../mongo').mongoose;
+const mongoose = require('../mongo').mongoose
+    , base64 = require('base64-js');
 
 
 /**
@@ -108,7 +109,7 @@ class Helpers {
      */
 
     fromByteToBase64(bytesArray) {
-        var base64String = btoa(String.fromCharCode.apply(null, new Uint8Array(bytesArray)));
+        var base64String = base64.fromByteArray(bytesArray);
         return "data:image/png;base64," + base64String;
     };
 
