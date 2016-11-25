@@ -11,18 +11,24 @@ const admin = require('./api/admin')
     , coinRules = require('./api/coins')
     , api = require('../models/api')
     , jobs = require('./api/jobs')
-    // , scheduler = require('../models/scheduler')
-    // , notificationSender = require('../models/notifications-sender')
     , mongo_express = require('mongo-express/lib/middleware')
     , mongo_express_config = require('../../config/mongo-config');
 
-// notificationSender.sendPushNotification(['83b123425bdcde70833c354b5b9db49f3ea35bd97ed310418290f1f986f31aea'], 'test')
-//     .then((r) => {
-//         console.log(r);
-//     })
-//     .catch((e) => {
-//         console.log(e);
-//     });
+
+// let storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, 'public/userFiles/uploads/');
+//     },
+//     onFileUploadStart: function (file) {
+//         if (file.mimetype !== 'image/png' || file.mimetype !== 'image/jpg' || file.mimetype !== 'image/jpeg') {
+//             return false;
+//         }
+//     },
+//     filename: function (req, file, cb) {
+//         cb(null, file.fieldname + '-' + Date.now());
+//     }
+// });
+
 
 module.exports = (app) => {
 
@@ -84,7 +90,7 @@ module.exports = (app) => {
 
     //Related products routes
 
-    app.get('/api/v1/related/:id', admin.checkAdminRights, related.getRelatedProductsHandler);
+    app.get('/api/v1/related/:id', related.getRelatedProductsHandler);
 
     app.put('/api/v1/related/:id', admin.checkAdminRights, related.updateRelatedProductsHandler);
 
@@ -115,13 +121,17 @@ module.exports = (app) => {
 
     //Products routes
 
-    app.get('/api/v1/product/:machineId/:productId', user.checkUserRights, products.getProductHandler.bind(products));
+    app.get('/api/v1/product/:machineId/:productId', products.getProductHandler.bind(products));
+
+    app.get('/api/v1/product-list', products.getProductListHandler.bind(products));
 
     app.post('/api/v1/product-order/:machineId/:productId', user.checkUserRights, products.createOrderHandler.bind(products));
 
     app.get('/api/v1/product-order-status/:machineId/:orderId', user.checkUserRights, products.getOrderStatusHandler.bind(products));
 
     app.get('/api/v1/product-order-cancel/:machineId/:orderId', user.checkUserRights, products.cancelOrderHandler.bind(products));
+
+    app.put('/api/v1/existing-products', admin.checkAdminRights, products.updateNewProductsHandler.bind(products));
 
 
     //Jobs routes

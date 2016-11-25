@@ -304,7 +304,6 @@ class UsersManager {
 
                             this.addMobileToken(user, options.mobileToken)
                                 .then((user) => {
-                                    console.log(user);
                                     if(user.status === this.ACTIVE_STATTUS) {
                                         coinsModel.addBonusCoins(user, 'firstRegister')
                                             .then(resolve)
@@ -463,7 +462,6 @@ class UsersManager {
 
                     coinsModel.addBonusCoins(user, methodName)
                         .then((user) => {
-                            console.log(user);
                             resolve(user);
                         })
                         .catch(reject);

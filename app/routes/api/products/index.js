@@ -1,6 +1,7 @@
 const fs = require('fs')
     , path = require('path')
     , productsModel = require(__dirname + '/../../../models/products')
+    , existingProductsModel = require(__dirname + '/../../../models/products/existingProducts')
     , orderModel = require(__dirname + '/../../../models/orders')
     , helperFunctions = require(__dirname + '/../../../models/helpers');
 
@@ -53,6 +54,53 @@ class ProductsRoutes {
         productsModel.getProduct(basicOptions)
             .then((currentProduct) => {
                 helperFunctions.generateResponse(200, null, {product: currentProduct}, '', res);
+            })
+            .catch((err) => {
+                console.log(err);
+                helperFunctions.generateResponse(422, err, null, null, res);
+            });
+    }
+
+
+    /**
+     * Get products list handler
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next route
+     */
+
+    getProductListHandler(req, res, next) {
+        let basicOptions = this._getDefaultOptions();
+        productsModel.getProductsList(basicOptions)
+            .then((products) => {
+                helperFunctions.generateResponse(200, null, {products: products}, '', res);
+            })
+            .catch((err) => {
+                console.log(err);
+                helperFunctions.generateResponse(422, err, null, null, res);
+            });
+    }
+
+
+    /**
+     * Update new products handler
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next route
+     */
+
+    updateNewProductsHandler(req, res, next) {
+        let options = req.body || {};
+        existingProductsModel.list({})
+            .then((p) => {
+                if(!p || !p.length) {
+                    return existingProductsModel.create(options)
+                } else {
+                    return existingProductsModel.update({_id: p[0]._id}, options);
+                }
+            })
+            .then((products) => {
+                helperFunctions.generateResponse(200, null, {products: products}, '', res);
             })
             .catch((err) => {
                 console.log(err);

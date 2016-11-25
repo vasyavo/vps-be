@@ -21,15 +21,15 @@ class RelatedRoutes {
      */
 
     getRelatedProductsHandler(req, res, next) {
-        let itemId = req.params.itemId || null;
+        let itemId = req.params.id || null;
 
         if(!itemId) {
             return helperFunctions.generateResponse(422, 'Wrong item id', null, null, res);
         }
 
-        relatedProductsModel.list(findOptions)
+        relatedProductsModel.list({item_id: itemId})
             .then((product) => {
-                helperFunctions.generateResponse(200, null, {product: product}, '', res);
+                helperFunctions.generateResponse(200, null, {product: product[0] || null}, '', res);
             })
             .catch((err) => {
                 console.log(err);

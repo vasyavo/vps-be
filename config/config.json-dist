@@ -5,7 +5,7 @@
     },
     "mailgun": {
         "api": "key-00ff1bad35d36a6bf1ac37e95eac1b08",
-        "domain": "sandbox35da72bd198f4fc0b4eb3556fe73d3ae.mailgun.org",
+        "domain": "fromtheraw.codemotion.ninja",
         "fromName": "support@ftr.com",
         "emailTo": "v@codemotion.eu"
     },
