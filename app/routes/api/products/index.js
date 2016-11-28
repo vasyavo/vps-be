@@ -2,6 +2,7 @@ const fs = require('fs')
     , path = require('path')
     , productsModel = require(__dirname + '/../../../models/products')
     , existingProductsModel = require(__dirname + '/../../../models/products/existingProducts')
+    , productCategoriesModel = require(__dirname + '/../../../models/products/productCategories')
     , orderModel = require(__dirname + '/../../../models/orders')
     , helperFunctions = require(__dirname + '/../../../models/helpers');
 
@@ -101,6 +102,52 @@ class ProductsRoutes {
             })
             .then((products) => {
                 helperFunctions.generateResponse(200, null, {products: products}, '', res);
+            })
+            .catch((err) => {
+                console.log(err);
+                helperFunctions.generateResponse(422, err, null, null, res);
+            });
+    }
+
+
+    /**
+     * Product categories list handler
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next route
+     */
+
+    productCategoriesListHandler(req, res, next) {
+        productCategoriesModel.list({})
+            .then((products) => {
+                helperFunctions.generateResponse(200, null, {categories: products}, '', res);
+            })
+            .catch((err) => {
+                console.log(err);
+                helperFunctions.generateResponse(422, err, null, null, res);
+            });
+    }
+
+
+    /**
+     * Product categories image updated handler
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next route
+     */
+
+    updateCategoryPictureHandler(req, res, next) {
+        let categoryId = req.params.id || null;
+        let filePath = req.file.path || null;
+        if(!categoryId || !filePath) {
+            helperFunctions.generateResponse(422, 'Wrong incoming params', null, null, res);
+            return;
+        }
+        filePath = filePath.replace('public/', config.get('serverUrl'));
+
+        productCategoriesModel.update({_id: categoryId}, {photo: filePath})
+            .then((category) => {
+                helperFunctions.generateResponse(200, null, {category: category}, '', res);
             })
             .catch((err) => {
                 console.log(err);

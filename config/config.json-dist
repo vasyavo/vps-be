@@ -9,6 +9,7 @@
         "fromName": "support@ftr.com",
         "emailTo": "v@codemotion.eu"
     },
+    "serverUrl": "http://localhost:9000/",
     "jwt": {
         "secret": "nBpSSm2"
     },

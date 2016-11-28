@@ -11,23 +11,26 @@ const admin = require('./api/admin')
     , coinRules = require('./api/coins')
     , api = require('../models/api')
     , jobs = require('./api/jobs')
+    , multer = require('multer')
     , mongo_express = require('mongo-express/lib/middleware')
     , mongo_express_config = require('../../config/mongo-config');
 
 
-// let storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//         cb(null, 'public/userFiles/uploads/');
-//     },
-//     onFileUploadStart: function (file) {
-//         if (file.mimetype !== 'image/png' || file.mimetype !== 'image/jpg' || file.mimetype !== 'image/jpeg') {
-//             return false;
-//         }
-//     },
-//     filename: function (req, file, cb) {
-//         cb(null, file.fieldname + '-' + Date.now());
-//     }
-// });
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/userFiles/uploads/');
+    },
+    onFileUploadStart: function (file) {
+        if (file.mimetype !== 'image/png' || file.mimetype !== 'image/jpg' || file.mimetype !== 'image/jpeg') {
+            return false;
+        }
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now() + '.png');
+    }
+});
+
+const upload = multer({storage: storage});
 
 
 module.exports = (app) => {
@@ -178,6 +181,13 @@ module.exports = (app) => {
     //Transaction routes
 
     app.get('/api/v1/transactions-datatable', admin.checkAdminRights, transactions.datatableTransactionsHandler);
+
+
+    //Products Categories
+
+    app.get('/api/v1/product-categories-list', admin.checkAdminRights, products.productCategoriesListHandler);
+
+    app.post('/api/v1/product-categories/:id', admin.checkAdminRights, upload.single('img'), products.updateCategoryPictureHandler);
 
 
     //Mobile device tokens

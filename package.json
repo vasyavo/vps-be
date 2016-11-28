@@ -24,6 +24,7 @@
     "mongo-express": "^0.30.23",
     "mongoose": "^4.2.8",
     "mongoose-datatables": "^2.0.1",
+    "multer": "^1.2.0",
     "nconf": "^0.8.2",
     "node-schedule": "^1.2.0",
     "object-hash": "^1.1.2",
