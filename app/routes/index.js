@@ -117,9 +117,11 @@ module.exports = (app) => {
 
     //Machines routes
 
-    app.get('/api/v1/machines', user.checkUserRights, machines.getMachinesHandler.bind(machines));
+    app.get('/api/v1/machines', machines.getMachinesHandler.bind(machines));
 
     app.get('/api/v1/machine/:machineId', user.checkUserRights, machines.getMachineHandler.bind(machines));
+
+    app.post('/api/v1/machine/:machineId', admin.checkAdminRights, upload.single('img'), machines.machineImagesUploadHandler.bind(machines));
 
 
     //Products routes

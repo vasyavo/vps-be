@@ -1,6 +1,7 @@
 const config = global.config
     , api = require('../api')
     , imagesModel = require('../images')
+    , machineImagesModel = require('./machinesImages')
     , helper = require('../helpers');
 
 /**
@@ -29,8 +30,38 @@ class MachinesManager {
                         ? res.GetMachinesResult.machines
                         : [];
 
-                    resolve(result.filter(m => !!m.active));
+                    let machines = result.filter(m => !!m.active);
+                    let machinesIds = machines.map(m => m.machineId);
+
+                    this.loadMachineImages(machinesIds)
+                        .then((images) => {
+                            machines = machines.map((m) => {
+                                images.forEach((img) => {
+                                    if(img.machine_id === m.machineId) {
+                                        m.photo = img.photo;
+                                    }
+                                });
+                                return m;
+                            });
+                            resolve(machines);
+                        })
+                        .catch(err => console.log(err));
                 })
+                .catch(reject);
+        });
+    };
+
+
+    /**
+     * Load machines images
+     * @param {array} machinesIds - object with options for find machines
+     * @returns {Promise} - promise with result of getting images machines
+     */
+
+    loadMachineImages(machinesIds) {
+        return new Promise((resolve, reject) => {
+            machineImagesModel.list({machine_id: machinesIds})
+                .then(resolve)
                 .catch(reject);
         });
     };
