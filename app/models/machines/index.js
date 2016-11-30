@@ -37,7 +37,7 @@ class MachinesManager {
                         .then((images) => {
                             machines = machines.map((m) => {
                                 images.forEach((img) => {
-                                    if(img.machine_id === m.machineId) {
+                                    if(img.machine_id == m.machineId) {
                                         m.photo = img.photo;
                                     }
                                 });

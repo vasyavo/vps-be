@@ -84,27 +84,29 @@ class MachinesRoutes {
             return;
         }
 
+        filePath = filePath.replace('public/', config.get('serverUrl'));
+
         let findOptions = {machine_id: machineId};
 
         machinesImagesModel.list(findOptions)
             .then((val) => {
 
                 if(!val || !val.length) {
+                    let newImageObject = {
+                        machine_id: machineId,
+                        photo: filePath
+                    };
+
+                    machinesImagesModel.create(newImageObject)
+                        .then((result) => {
+                            helperFunctions.generateResponse(200, null, {result: result}, '', res);
+                        });
+                } else {
                     machinesImagesModel.update(findOptions, {photo: filePath})
-                        .then((res) => {
-                            helperFunctions.generateResponse(200, null, {res: res}, '', res);
+                        .then((result) => {
+                            helperFunctions.generateResponse(200, null, {result: result}, '', res);
                         })
                 }
-
-                let newImageObject = {
-                    machine_id: machineId,
-                    photo: filePath
-                };
-
-                machinesImagesModel.create(newImageObject)
-                    .then((res) => {
-                        helperFunctions.generateResponse(200, null, {res: res}, '', res);
-                    })
 
             })
             .catch(() => {

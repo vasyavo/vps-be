@@ -2,12 +2,13 @@ const config = global.config
     , mongo = require('../mongo')
     , Schema = mongo.Schema
     , CrudManager = require('../crud-manager')
+    , moment = require('moment')
     , helper = require('../helpers');
 
 
 const MachinesImages = new Schema({
     machine_id: {
-        type: Array,
+        type: String,
     },
     photo: {
         type: String
