@@ -15,7 +15,6 @@ const Transaction = new Schema({
     },
     order_id: {
         type: String,
-        required: true
     },
     product_id: {
         type: String
@@ -32,10 +31,16 @@ const Transaction = new Schema({
     details: {
         type: String
     },
+    card_num: {
+        type: String
+    },
     status: {
         type: String
     },
     amount: {
+        type: String
+    },
+    time_created: {
         type: String
     }
 

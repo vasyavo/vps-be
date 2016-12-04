@@ -64,6 +64,9 @@ let Users = new Schema({
     },
     coins: {
         type: Number
+    },
+    credit_cards: {
+        type: Array
     }
 });
 

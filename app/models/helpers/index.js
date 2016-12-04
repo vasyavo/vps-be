@@ -113,6 +113,25 @@ class Helpers {
         return "data:image/png;base64," + base64String;
     };
 
+
+    /**
+     * Query string parser
+     * @param {string} queryStr - query request string
+     * @returns {object} - parsed query string
+     */
+
+    queryStringParser(queryStr) {
+        let match;
+        let pl = /\+/g;
+        let search = /([^&=]+)=?([^&]*)/g;
+        let decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); };
+        let urlParams = {};
+        while (match = search.exec(queryStr)) {
+            urlParams[decode(match[1])] = decode(match[2]);
+        }
+        return urlParams;
+    };
+
 }
 
 const helpers = new Helpers();

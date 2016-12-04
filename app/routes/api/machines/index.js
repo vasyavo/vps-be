@@ -1,10 +1,7 @@
 const fs = require('fs')
     , path = require('path')
-    , moment = require('moment')
-    , async = require('async')
     , machinesModel = require(__dirname + '/../../../models/machines')
     , machinesImagesModel = require(__dirname + '/../../../models/machines/machinesImages')
-    , commentModel = require(__dirname + '/../../../models/comment')
     , helperFunctions = require(__dirname + '/../../../models/helpers');
 
 
@@ -85,18 +82,15 @@ class MachinesRoutes {
         }
 
         filePath = filePath.replace('public/', config.get('serverUrl'));
-
         let findOptions = {machine_id: machineId};
 
         machinesImagesModel.list(findOptions)
             .then((val) => {
-
                 if(!val || !val.length) {
                     let newImageObject = {
                         machine_id: machineId,
                         photo: filePath
                     };
-
                     machinesImagesModel.create(newImageObject)
                         .then((result) => {
                             helperFunctions.generateResponse(200, null, {result: result}, '', res);
@@ -107,7 +101,6 @@ class MachinesRoutes {
                             helperFunctions.generateResponse(200, null, {result: result}, '', res);
                         })
                 }
-
             })
             .catch(() => {
                 helperFunctions.generateResponse(422, err, null, null, res);

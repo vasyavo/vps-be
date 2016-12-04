@@ -184,6 +184,8 @@ module.exports = (app) => {
 
     app.get('/api/v1/transactions-datatable', admin.checkAdminRights, transactions.datatableTransactionsHandler);
 
+    app.post('/api/v1/add-credit-card', user.checkUserRights, transactions.addCreditCardHandler);
+
 
     //Products Categories
 

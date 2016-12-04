@@ -92,12 +92,16 @@ class ProductsRoutes {
 
     updateNewProductsHandler(req, res, next) {
         let options = req.body || {};
+        let productId = req.body.productId.toString() || null;
+
         existingProductsModel.list({})
             .then((p) => {
-                if(!p || !p.length) {
-                    return existingProductsModel.create(options)
+                if (!p || !p.length) {
+                    return existingProductsModel.create({product_ids: [productId]});
                 } else {
-                    return existingProductsModel.update({_id: p[0]._id}, options);
+                    if (!p[0].product_ids.includes(productId)) {
+                        return existingProductsModel.update({_id: p[0]._id}, { $addToSet: {product_ids: productId } });
+                    }
                 }
             })
             .then((products) => {
@@ -139,7 +143,7 @@ class ProductsRoutes {
     updateCategoryPictureHandler(req, res, next) {
         let categoryId = req.params.id || null;
         let filePath = req.file.path || null;
-        if(!categoryId || !filePath) {
+        if (!categoryId || !filePath) {
             helperFunctions.generateResponse(422, 'Wrong incoming params', null, null, res);
             return;
         }
@@ -168,7 +172,7 @@ class ProductsRoutes {
         let itemId = req.params.itemId || null;
         let machineId = req.params.machineId || null;
 
-        if(!itemId || !machineId) {
+        if (!itemId || !machineId) {
             helperFunctions.generateResponse(422, 'Wrong incoming params', null, null, res);
             return;
         }
@@ -214,11 +218,12 @@ class ProductsRoutes {
                 return productsModel.orderProduct(options);
             })
             .then((response) => {
-                let newOrderStatus = response.Return.code === 0 ? this.ORDER_STATUSES.booked : this.ORDER_STATUSES.error;
+                let newOrderStatus = response.Return.code === 0 ? this.ORDER_STATUSES.booked
+                    : this.ORDER_STATUSES.error;
                 return orderModel.update({_id: preparedOrder._id}, {status: newOrderStatus});
             })
             .then((order) => {
-               //TODO create transaction and all payments stuff
+                //TODO create transaction and all payments stuff
                 helperFunctions.generateResponse(200, null, {order: order}, '', res);
             })
             .catch((err) => {
@@ -241,7 +246,7 @@ class ProductsRoutes {
         let orderId = req.params.orderId || null;
         let machineId = req.params.machineId || null;
 
-        if(!orderId || !machineId) {
+        if (!orderId || !machineId) {
             helperFunctions.generateResponse(422, 'Wrong incoming params', null, null, res);
             return;
         }
@@ -273,7 +278,7 @@ class ProductsRoutes {
         let orderId = req.params.orderId || null;
         let machineId = req.params.machineId || null;
 
-        if(!orderId || !machineId) {
+        if (!orderId || !machineId) {
             helperFunctions.generateResponse(422, 'Wrong incoming params', null, null, res);
             return;
         }
