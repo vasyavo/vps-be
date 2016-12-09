@@ -9,6 +9,7 @@ const admin = require('./api/admin')
     , transactions = require('./api/transaction')
     , promoPacks = require('./api/promo-packs')
     , coinRules = require('./api/coins')
+    , graphics = require('./api/graphics')
     , api = require('../models/api')
     , jobs = require('./api/jobs')
     , multer = require('multer')
@@ -186,12 +187,21 @@ module.exports = (app) => {
 
     app.post('/api/v1/add-credit-card', user.checkUserRights, transactions.addCreditCardHandler);
 
+    app.post('/api/v1/pay-with-credit-card', user.checkUserRights, transactions.makePaymentHandler);
+
 
     //Products Categories
 
     app.get('/api/v1/product-categories-list', admin.checkAdminRights, products.productCategoriesListHandler);
 
     app.post('/api/v1/product-categories/:id', admin.checkAdminRights, upload.single('img'), products.updateCategoryPictureHandler);
+
+
+    //graphics
+
+    app.get('/api/v1/graphics/coins-transactions', admin.checkAdminRights, graphics.getCoinsTransactionsDataHandler);
+
+    app.get('/api/v1/graphics/machines-transactions', admin.checkAdminRights, graphics.getMachinesTransactionsDataHandler);
 
 
     //Mobile device tokens

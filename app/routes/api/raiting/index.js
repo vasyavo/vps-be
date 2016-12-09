@@ -60,7 +60,7 @@ class RaitingRoutes {
         if(itemId) {
             findOptions.item_id = itemId;
         }
-        if(visited !== 'undefined') {
+        if(typeof visited != 'undefined') {
             findOptions.visited = visited;
         }
 

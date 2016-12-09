@@ -28,6 +28,7 @@ class UsaepayManager {
 
     processUsaEpayRequest(data = {}) {
         let preparedData = this._prepareCreditCardData(data);
+        console.log(preparedData);
         return this._makeUsaEpayRequest(preparedData);
     }
 
@@ -65,7 +66,7 @@ class UsaepayManager {
         let response = 'y'; //Request a response hash. If omitted, defaults to 'n'
         let amount = data.amount || '0.00';
         let invoice = '1';
-        let itemsToHash = [config.get('usaEpay').saveCommand, pin, amount, invoice, seed];
+        let itemsToHash = [config.get('usaEpay')[data.command], pin, amount, invoice, seed];
 
         let hashedPin = crypto.createHash('md5').update(itemsToHash.join(':')).digest('hex');
         let hashedString = `${hashMethod}/${seed}/${hashedPin}/${response}`;

@@ -7,8 +7,6 @@ const fs = require('fs')
     , userModel = require(__dirname + '/../../../models/user')
     , helperFunctions = require(__dirname + '/../../../models/helpers');
 
-// usaEpayModel.createCardToken();
-
 
 /**
  * Transactions routes class.
@@ -137,6 +135,7 @@ class TransactionsRoutes {
 
         usaEpayModel.processUsaEpayRequest(usaEpayData)
             .then((usaEpayResponse) => {
+                console.log(usaEpayResponse);
                 //TODO create new transaction and make order
             });
 

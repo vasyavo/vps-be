@@ -96,6 +96,9 @@ class MachinesManager {
 
                     for (let i = 0; i < CATALOG_FIELDS.length; ++i) {
                         let currentFields = CATALOG_FIELDS[i];
+                        if(!catalogResult[currentFields]) {
+                            continue;
+                        }
                         for (let j = 0, l = catalogResult[currentFields].length; j < l; ++j) {
                             let currentProductField = catalogResult[currentFields][j];
 

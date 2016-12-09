@@ -2,7 +2,7 @@ const fs = require('fs')
     , path = require('path')
     , coinsModel = require(__dirname + '/../../../models/coins')
     , usersModel = require(__dirname + '/../../../models/user')
-    , coinsTransactionModel = require(__dirname + '/../../../models/coins/coinsTransactions')
+    , graphicsBuilder = require(__dirname + '/../../../models/graphics-builder/')
     , helperFunctions = require(__dirname + '/../../../models/helpers');
 
 
