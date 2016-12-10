@@ -99,24 +99,27 @@ class GraphicsBuilderManager {
      */
 
     buildMachinesGraphicData(period, type) {
+        console.log(this.ranges[period]);
+        let periodRangeTimestamp = (moment().unix() - this.ranges[period]) || 0;
+
         return new Promise((resolve, reject) => {
 
-            //TODO make query to transactions and get transactions by period and machines
+            //TODO make query to transactions and get transactions by period and machines and sort by time_created asc
             let dummyTransactions = [
                 {
-                    time_created: 1474280775,
+                    time_created: 1476626375,
                     machine_id: '350',
                     amount: 100,
                     status: 'approved'
                 },
                 {
-                    time_created: 1474367175,
+                    time_created: 1479600000,
                     machine_id: '350',
                     amount: 10,
                     status: 'approved'
                 },
                 {
-                    time_created: 1476626375,
+                    time_created: 1479859200,
                     machine_id: '350',
                     amount: 50,
                     status: 'approved'
@@ -134,7 +137,7 @@ class GraphicsBuilderManager {
                     status: 'approved'
                 },
                 {
-                    time_created: 1476726375,
+                    time_created: 1479340800,
                     machine_id: '330',
                     amount: 140,
                     status: 'approved'
@@ -146,24 +149,28 @@ class GraphicsBuilderManager {
                     status: 'approved'
                 },
                 {
-                    time_created: 1476453575,
+                    time_created: 1479340800,
                     machine_id: '230',
                     amount: 100,
                     status: 'approved'
                 },
                 {
-                    time_created: 1476539975,
+                    time_created: 1479427200,
                     machine_id: '230',
                     amount: 30,
                     status: 'approved'
                 },
                 {
-                    time_created: 1476626375,
+                    time_created: 1480982400,
                     machine_id: '230',
                     amount: 50,
                     status: 'approved'
                 }
             ];
+
+            dummyTransactions = dummyTransactions.filter(t => t.time_created >= periodRangeTimestamp);
+
+
 
             let graphicData = [];
 

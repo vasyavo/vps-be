@@ -41,8 +41,9 @@ class GraphicsRoutes {
 
     getMachinesTransactionsDataHandler(req, res, next) {
         let type = 'cash';
+        let currentRange = req.query.range || 'A';
 
-        graphicsBuilder.buildMachinesGraphicData(null, type)
+        graphicsBuilder.buildMachinesGraphicData(currentRange, type)
             .then((data) => {
                 helperFunctions.generateResponse(200, null, {data: data}, '', res);
             })
