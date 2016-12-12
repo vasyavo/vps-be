@@ -203,6 +203,8 @@ module.exports = (app) => {
 
     app.get('/api/v1/graphics/machines-transactions', admin.checkAdminRights, graphics.getMachinesTransactionsDataHandler);
 
+    app.get('/api/v1/graphics/top-buyers', admin.checkAdminRights, graphics.getTopBuyresDataHandler);
+
 
     //Mobile device tokens
 

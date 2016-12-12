@@ -52,6 +52,24 @@ class GraphicsRoutes {
             });
     }
 
+
+    /**
+     * Get machines graphic data handler
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next route
+     */
+
+    getTopBuyresDataHandler(req, res, next) {
+        graphicsBuilder.getTopBuyresData()
+            .then((data) => {
+                helperFunctions.generateResponse(200, null, {data: data}, '', res);
+            })
+            .catch((err) => {
+                helperFunctions.generateResponse(422, err, null, null, res);
+            });
+    }
+
 }
 
 const graphicsRoutes = new GraphicsRoutes();
