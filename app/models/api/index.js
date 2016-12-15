@@ -39,9 +39,12 @@ class ApiManager {
             method: method,
             uri: `${this.API_URL}${url}/${signature}`,
             headers: headers,
-            body: data,
             json: true
         };
+
+        if (Object.keys(data).length) {
+            options.body = data;
+        }
 
         return rp(options);
     };
@@ -99,6 +102,21 @@ class ApiManager {
             makeOrder: (...rest) => { return this.sendRequest('/saveOrder/:appId/:companyId/:machineId', 'POST', ...rest); },
             getOrderStatus: (...rest) => { return this.sendRequest('/getOrderStatus/:appId/:companyId/:machineId/:orderId', 'GET', ...rest); },
             cancelOrder: (...rest) => { return this.sendRequest('/cancelOrder/:appId/:companyId/:machineId/:orderId', 'GET', ...rest); },
+        }
+    };
+
+
+    /**
+     * Orders methods
+     * @returns {Object} - object with products methods
+     */
+
+    get orders() {
+        return {
+            reservation: (...rest) => { return this.sendRequest('/Reservation/:appId/:companyId/:machineId', 'POST', ...rest); },
+            getReservationStatus: (...rest) => { return this.sendRequest('/ReservationStatus/:appId/:companyId/:machineId/:reservationId', 'GET', ...rest); },
+            confirmReservation: (...rest) => { return this.sendRequest('/ConfirmationReservation/:appId/:companyId/:machineId/:reservationId', 'PUT', ...rest); },
+            cancelReservation: (...rest) => { return this.sendRequest('/CancelationReservation/:appId/:companyId/:machineId/:reservationId', 'PUT', ...rest); },
         }
     };
 

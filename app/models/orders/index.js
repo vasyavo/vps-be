@@ -6,12 +6,11 @@ const mongo = require('../mongo')
     , userModel = require('../user')
     , QRGenerator = require('../qr-generator')
     , productsModel = require('../products')
+    , usaEpayModel = require('../usaepay')
+    , api = require('../api')
     , CrudManager = require('../crud-manager');
 
 const Order = new Schema({
-    item_id: {
-        type: String
-    },
     user_id: {
         type: String
     },
@@ -34,6 +33,9 @@ const Order = new Schema({
         type: String
     },
     status: {
+        type: String
+    },
+    reservation_expired: {
         type: String
     },
     expire: {
@@ -67,8 +69,242 @@ const preMethods = [
 class OrderManager extends CrudManager {
     constructor() {
         super('Order', Order, preMethods);
-        this.CANCEL_TIME = 15 * 60 * 1000; //15 min
         this.schema.post('save', this.saveOrderQRCode.bind(this));
+        this.transactionTypes = {
+            esaePay: 'UsaEpay Transaction',
+            coins: 'Coins Transaction'
+        };
+        this.defaultExpireTime = 86400 * 3; // 3 days
+        this.reservationTimeExpired = 60 * 15; //in minutes
+        this.APPROVED_STATUS = 'approved';
+
+        userModel.getUser({login: 'v@codemotion.eu'})
+            .then((user) => {
+                this.processNewOrder(['32773', '32774'], '350', 'payment', user[0], 1);
+            });
+    };
+
+
+    /**
+     * Create order reservation
+     * @param {object} queryOptions - options for reservation order on external API
+     * @param {object} orderOptions - options for reservation order on external API
+     * @returns {Promise} promise - promise with a result of reservation order
+     */
+
+    createOrderReservation(queryOptions, orderOptions = {}) {
+        return new Promise((resolve, reject) => {
+            api.orders.reservation(queryOptions.params, orderOptions, queryOptions.headers || {})
+                .then(resolve)
+                .catch(reject);
+        });
+    };
+
+
+    /**
+     * Get order reservation status
+     * @param {object} queryOptions - options for getting status of reservation order on external API
+     * @param {object} reservationId - id of order reservation
+     * @returns {Promise} promise - promise with a result of reservation order status
+     */
+
+    getOrderReservationStatus(queryOptions, reservationId) {
+        return new Promise((resolve, reject) => {
+            queryOptions.params.reservationId = reservationId;
+            api.orders.getReservationStatus(queryOptions.params, {}, queryOptions.headers || {})
+                .then(resolve)
+                .catch(reject);
+        });
+    };
+
+
+    /**
+     * Confirm order reservation
+     * @param {object} queryOptions - options for confirm reservation order on external API
+     * @param {object} reservationId - id of order reservation
+     * @param {object} orderOptions - options for reservation order on external API
+     * @returns {Promise} promise - promise with a result of reservation confirmation
+     */
+
+    confirmOrderReservation(queryOptions, reservationId, orderOptions) {
+        return new Promise((resolve, reject) => {
+            queryOptions.params.reservationId = reservationId;
+            api.orders.confirmReservation(queryOptions.params, orderOptions, queryOptions.headers || {})
+                .then(resolve)
+                .catch(reject);
+        });
+    };
+
+
+    /**
+     * Cancel order reservation
+     * @param {object} queryOptions - options for cancel reservation order on external API
+     * @param {object} reservationId - id of order reservation
+     * @param {object} orderOptions - options for reservation order on external API
+     * @returns {Promise} promise - promise with a result of cancel reservation
+     */
+
+    cancelOrderReservation(queryOptions, reservationId, orderOptions) {
+        return new Promise((resolve, reject) => {
+            queryOptions.params.reservationId = reservationId;
+            api.orders.cancelReservation(queryOptions.params, orderOptions, queryOptions.headers || {})
+                .then(resolve)
+                .catch(reject);
+        });
+    };
+
+
+    /**
+     * Process new order
+     * @param {array} itemsIds - array with item ids for order
+     * @param {string} machineId - machine id
+     * @param {object} paymentType - payment type (coins or payment system)
+     * @param {string} user - user object
+     * @param {int} selectedCardIdx - selected card index
+     * @returns {Promise} promise - promise with a result of reservation confirmation
+     */
+
+    processNewOrder(itemsIds, machineId, paymentType = 'esaePay', user, selectedCardIdx = 0) {
+        let options = {
+            params: {
+                appId: 1,
+                companyId: 49,
+                machineId: machineId,
+            },
+            data: {},
+            headers: {}
+        };
+        let currentOrder = null;
+        let reservationOptions = {};
+
+        return new Promise((resolve, reject) => {
+            this._getOrderProducts(Object.assign({}, options), itemsIds)
+                .then((items) => {
+
+                    let orderSum = items.reduce((a, b) => a.articlesTariffs_VO.price + b.articlesTariffs_VO.price);
+
+                    items = items.map((e) => {
+                        return {
+                            productId: e.productId,
+                            productPriceUnit: e.articlesTariffs_VO.price,
+                            productReference: e.productId,
+                            productQuantity: 1,
+                            productEanCode: 'yyy',
+                            productName: e.productName
+                        };
+                    });
+
+                    let orderEntityOptions = {
+                        user_id: user._id,
+                        machine_id: machineId,
+                        status: 'new',
+                        expire: null,
+                        notificationStatus: 'new',
+                        products: items,
+                        price: orderSum,
+                    };
+                    return this.create(orderEntityOptions);
+                })
+                .then((order) => {
+                    currentOrder = order;
+
+                    reservationOptions = {
+                        machineId: order.machine_id,
+                        codeQr: order.codeQr,
+                        codeManual: order.codeManual,
+                        products: order.products,
+                        id: -1
+                    };
+
+                    return this.createOrderReservation(Object.assign({}, options), reservationOptions);
+                })
+                .then((r) => {
+                    if (r.result.code != '0') {
+                        throw r.result.message;
+                    }
+                    return this.update({_id: currentOrder._id}, {
+                        status: 'reserved',
+                        reservation_expired: this.reservationTimeExpired
+                    });
+                })
+                .then((order) => {
+
+                    if(paymentType === 'coins') { //TODO: add here check if enough coins
+                        return this.APPROVED_STATUS;
+                    }
+
+                    let usaEpayData = {
+                        command: 'saleCommand',
+                        amount: order.price,
+                        ccNumber: user.credit_cards[selectedCardIdx].token,
+                        expire: '0000',
+                        cvv: ''
+                    };
+
+                    return usaEpayModel.processUsaEpayRequest(usaEpayData);
+                })
+                .then((response) => {
+                    let transactionEntity = {
+                        user_id: user._id,
+                        user_login: user.login,
+                        order_id: currentOrder._id,
+                        event: this.transactionTypes[paymentType],
+                        details: '',
+                        card_num: user.credit_cards[selectedCardIdx].maskedNum,
+                        amount: currentOrder.price,
+                        status: response.UMstatus ? response.UMstatus : response
+                    };
+
+                    return transactionModel.create(transactionEntity);
+                })
+                .then((transaction) => {
+                    if (transaction.status.toLowerCase() !== this.APPROVED_STATUS) {
+                        throw 'Transaction not approved';
+                    }
+
+                    return this.confirmOrderReservation(Object.assign({}, options), -1, reservationOptions);
+                })
+                .then((r) => {
+                    this.update({_id: currentOrder._id}, {status: 'done', expire: moment().unix() + this.defaultExpireTime})
+                        .then(resolve)
+                        .catch(reject);
+                })
+                .catch((err) => {
+                    if(currentOrder) {
+                        let promises = [
+                            this.cancelOrderReservation(Object.assign({}, options), -1, reservationOptions),
+                            this.update({_id: currentOrder._id}, {status: 'canceled'})
+                        ];
+
+                        Promise.all(promises)
+                            .then((result) => console.log(result))
+                            .catch();
+
+                    }
+                    reject(err);
+                });
+        });
+
+    };
+
+
+    /**
+     * Load items by ids
+     * @param {object} options - object with options for request
+     * @param {array} itemsIds - array with item ids for order
+     * @returns {Promise} promise - promise with a result of items
+     */
+
+    _getOrderProducts(options, itemsIds) {
+        let promises = itemsIds.map((e) => {
+            options.params.productId = e;
+            return productsModel.getProduct(options);
+        });
+        return new Promise((resolve, reject) => {
+            Promise.all(promises)
+                .then(resolve)
+                .catch(reject);
+        });
     };
 
 
@@ -80,7 +316,7 @@ class OrderManager extends CrudManager {
 
     saveOrderQRCode(order) {
         let fileName = 'qr' + order._id;
-        let cryptedStr = crypto.createHash("sha256").update(order._id).digest("base64");
+        let cryptedStr = crypto.createHash("sha256").update(order._id.toString()).digest("base64");
 
         order.codeQr = fileName;
         order.codeManual = cryptedStr;
@@ -88,10 +324,8 @@ class OrderManager extends CrudManager {
         QRGenerator.generateQR(cryptedStr, fileName, {})
             .then(() => {
                 order.save();
-                next();
             })
             .catch(() => {
-                next();
             });
     };
 

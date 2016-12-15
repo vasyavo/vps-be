@@ -88,7 +88,7 @@ class SchedulerMethods {
 
     checkOrdersExpired() {
         let findOptionsOrders = {
-            status: 'paid'
+            status: 'done'
         };
 
         return ordersModel.list(findOptionsOrders)
@@ -126,7 +126,7 @@ class SchedulerMethods {
 
     remindOrders() {
         let findOptionsOrders = {
-            status: 'paid'
+            status: 'done'
         };
 
         return ordersModel.list(findOptionsOrders)
