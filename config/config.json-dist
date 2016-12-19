@@ -18,7 +18,7 @@
         "url": "https://sandbox.usaepay.com/gate.php",
         "pin": "12345",
         "saveCommand": "cc:save",
-        "saleCommand": "cc:sale"
+        "refundCommand": "refund"
     },
     "pushNotifications": {
         "url": "https://api.ionic.io/push/notifications",

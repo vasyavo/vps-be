@@ -37,7 +37,7 @@ class MachinesManager {
                         .then((images) => {
                             machines = machines.map((m) => {
                                 images.forEach((img) => {
-                                    if(img.machine_id == m.machineId) {
+                                    if (img.machine_id == m.machineId) {
                                         m.photo = img.photo;
                                     }
                                 });
@@ -96,7 +96,7 @@ class MachinesManager {
 
                     for (let i = 0; i < CATALOG_FIELDS.length; ++i) {
                         let currentFields = CATALOG_FIELDS[i];
-                        if(!catalogResult[currentFields]) {
+                        if (!catalogResult[currentFields]) {
                             continue;
                         }
                         for (let j = 0, l = catalogResult[currentFields].length; j < l; ++j) {
@@ -117,8 +117,8 @@ class MachinesManager {
                         .then((items) => {
                             let itemsWithoutImage = {};
 
-                            for(let prop in items) {
-                                if(!items[prop].imageSource) {
+                            for (let prop in items) {
+                                if (!items[prop].imageSource) {
                                     itemsWithoutImage[prop] = items[prop];
                                 }
                             }
@@ -132,7 +132,12 @@ class MachinesManager {
                                 }
                                 let base64Image = helper.fromByteToBase64(result[prop].DownloadImageResult.fileImage);
 
-                                imagesModel.create({item_id: prop, image_name: responseObject.items[prop].articles_VO.image, image_base64: base64Image, machine_id: responseObject.machineId})
+                                imagesModel.create({
+                                    item_id: prop,
+                                    image_name: responseObject.items[prop].articles_VO.image,
+                                    image_base64: base64Image,
+                                    machine_id: responseObject.machineId
+                                })
                                     .then()
                                     .catch();
 
@@ -201,7 +206,7 @@ class MachinesManager {
             imagesModel.list(findOptions)
                 .then((images) => {
                     images.forEach((image) => {
-                        if(items[image.item_id]) {
+                        if (items[image.item_id]) {
                             items[image.item_id].imageSource = image.image_base64;
                         }
                     });

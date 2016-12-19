@@ -43,6 +43,9 @@ const Order = new Schema({
     },
     notificationStatus: {
         type: String
+    },
+    credit_card_num: {
+        type: String
     }
 });
 
@@ -72,16 +75,19 @@ class OrderManager extends CrudManager {
         this.schema.post('save', this.saveOrderQRCode.bind(this));
         this.transactionTypes = {
             esaePay: 'UsaEpay Transaction',
-            coins: 'Coins Transaction'
+            coins: 'Coins Transaction',
+            cancel: 'Canceling Order'
         };
         this.defaultExpireTime = 86400 * 3; // 3 days
         this.reservationTimeExpired = 60 * 15; //in minutes
         this.APPROVED_STATUS = 'approved';
 
-        userModel.getUser({login: 'v@codemotion.eu'})
-            .then((user) => {
-                this.processNewOrder(['32773', '32774'], '350', 'payment', user[0], 1);
-            });
+        this.refundPercent = 0.3; //refund percent
+
+        // userModel.getUser({login: 'v@codemotion.eu'})
+        //     .then((user) => {
+        //         this.processNewOrder(['32773', '32774'], '350', 'payment', user[0], 1);
+        //     });
     };
 
 
@@ -201,6 +207,7 @@ class OrderManager extends CrudManager {
                         expire: null,
                         notificationStatus: 'new',
                         products: items,
+                        credit_card_num: user.credit_cards[selectedCardIdx].maskedNum,
                         price: orderSum,
                     };
                     return this.create(orderEntityOptions);
@@ -285,6 +292,81 @@ class OrderManager extends CrudManager {
                 });
         });
 
+    };
+
+
+    /**
+     * Cancel order with refund
+     * @param {string} orderId - id of order for refund
+     * @param {object} user - user object
+     * @returns {Promise} promise - promise with a result of canceling order
+     */
+
+    processCancelOrder(orderId, user) {
+
+        let options = {
+            params: {
+                appId: 1,
+                companyId: 49,
+                machineId: null,
+            },
+            data: {},
+            headers: {}
+        };
+
+        let currentOrder = null;
+
+        return new Promise((resolve, reject) => {
+            this.find({_id: orderId})
+                .then((order) => {
+
+                    order = order[0] || null;
+                    if(!order) {
+                        return reject('Wrong order id');
+                    }
+
+                    currentOrder = order;
+
+                    let cancelOrderOptions = {
+                        machineId: order.machine_id,
+                        codeQr: order.codeQr,
+                        codeManual: order.codeManual,
+                        products: order.products,
+                        id: -1
+                    };
+                    options.params.machineId = order.machine_id;
+
+                    return this.cancelOrderReservation(Object.assign({}, options), cancelOrderOptions);
+
+                })
+                .then((r) => {
+                    let usaEpayData = {
+                        command: 'refundCommand',
+                        amount: parseFloat(currentOrder.price) - parseFloat(currentOrder.price * this.refundPercent).toFixed(2),
+                        ccNumber: user.credit_cards[0].token,
+                        expire: '0000',
+                        cvv: ''
+                    };
+
+                    return usaEpayModel.processUsaEpayRequest(usaEpayData);
+                })
+                .then((usaePayResponse) => {
+                    let transactionEntity = {
+                        user_id: user._id,
+                        user_login: user.login,
+                        order_id: currentOrder._id,
+                        event: this.transactionTypes.cancel,
+                        details: '',
+                        card_num: user.credit_cards[0].maskedNum,
+                        amount: parseFloat(currentOrder.price) - parseFloat(currentOrder.price * this.refundPercent).toFixed(2),
+                        status: 'approved'
+                    };
+
+                    return transactionModel.create(transactionEntity)
+                })
+                .then(resolve)
+                .catch(reject);
+        });
     };
 
 
