@@ -87,7 +87,9 @@ class TransactionsRoutes {
                     type: usaEpayResponse.UMcardType,
                     token: usaEpayResponse.UMcardRef,
                     maskedNum: usaEpayResponse.UMmaskedCardNum,
+                    active: true
                 };
+
                 if (!currentUser.credit_cards || !currentUser.credit_cards.length) {
                     currentUser.credit_cards = [];
                 }
@@ -139,6 +141,28 @@ class TransactionsRoutes {
                 //TODO create new transaction and make order
             });
 
+    }
+
+
+    /**
+     * Delete card handler
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next route
+     */
+
+    deleteCardHandler(req, res, next) {
+        let cardIndex = req.params.cardIdx || null;
+        let user = req.user;
+
+        user.credit_cards[cardIndex].active = false;
+        user.save()
+            .then((user) => {
+                helperFunctions.generateResponse(200, null, {user: user}, 'Card successfully deleted', res);
+            })
+            .catch((err) => {
+                helperFunctions.generateResponse(422, err, null, null, res);
+            });
     }
 
 }

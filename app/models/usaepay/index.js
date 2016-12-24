@@ -28,7 +28,6 @@ class UsaepayManager {
 
     processUsaEpayRequest(data = {}) {
         let preparedData = this._prepareCreditCardData(data);
-        console.log(preparedData);
         return this._makeUsaEpayRequest(preparedData);
     }
 

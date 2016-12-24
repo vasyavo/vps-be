@@ -187,7 +187,7 @@ class OrderManager extends CrudManager {
             this._getOrderProducts(Object.assign({}, options), itemsIds)
                 .then((items) => {
 
-                    let orderSum = items.reduce((a, b) => a.articlesTariffs_VO.price + b.articlesTariffs_VO.price);
+                    let orderSum = items.reduce((a, b) => a.articlesTariffs_VO.price + b.articlesTariffs_VO.price) - (items.length > 1 ? items.length : 0);
 
                     items = items.map((e) => {
                         return {
@@ -315,6 +315,7 @@ class OrderManager extends CrudManager {
         };
 
         let currentOrder = null;
+        let creditCardIdx = null;
 
         return new Promise((resolve, reject) => {
             this.find({_id: orderId})
@@ -326,6 +327,7 @@ class OrderManager extends CrudManager {
                     }
 
                     currentOrder = order;
+                    creditCardIdx = user.credit_cards.find((e, idx) => (e.maskedNum === order.card_num) ? idx : null);
 
                     let cancelOrderOptions = {
                         machineId: order.machine_id,

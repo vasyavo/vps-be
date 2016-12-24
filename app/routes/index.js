@@ -10,6 +10,7 @@ const admin = require('./api/admin')
     , promoPacks = require('./api/promo-packs')
     , coinRules = require('./api/coins')
     , graphics = require('./api/graphics')
+    , questions = require('./api/questions')
     , api = require('../models/api')
     , jobs = require('./api/jobs')
     , multer = require('multer')
@@ -155,6 +156,17 @@ module.exports = (app) => {
     app.put('/api/v1/job/:jobId', admin.checkAdminRights, jobs.updateJobHandler.bind(jobs));
 
 
+    //Questions routes
+
+    app.get('/api/v1/questions/:id?', questions.getQuestionsHandler.bind(questions));
+
+    app.post('/api/v1/questions', admin.checkAdminRights, questions.createQuestionHandler.bind(questions));
+
+    app.delete('/api/v1/questions/:id', admin.checkAdminRights, questions.deleteQuestionHandler.bind(questions));
+
+    app.put('/api/v1/questions/:id', admin.checkAdminRights, questions.updateQuestionHandler.bind(questions));
+
+
     //Promo Packs routes
 
     app.get('/api/v1/promo-pack/:packId?', promoPacks.getPromoPackageHandler.bind(promoPacks));
@@ -186,6 +198,8 @@ module.exports = (app) => {
     app.get('/api/v1/transactions-datatable', admin.checkAdminRights, transactions.datatableTransactionsHandler);
 
     app.post('/api/v1/add-credit-card', user.checkUserRights, transactions.addCreditCardHandler);
+
+    app.delete('/api/v1/delete-card/:cardIdx', user.checkUserRights, transactions.deleteCardHandler);
 
     app.post('/api/v1/pay-with-credit-card', user.checkUserRights, transactions.makePaymentHandler);
 

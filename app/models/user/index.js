@@ -35,6 +35,9 @@ let Users = new Schema({
     last_name: {
         type: String
     },
+    birth_date: {
+        type: String
+    },
     facebook_data: {
         type: Object
     },
