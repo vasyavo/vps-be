@@ -297,6 +297,35 @@ class ProductsRoutes {
 
     }
 
+
+
+    /**
+     * Update order status
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next route
+     */
+
+    updateOrderHandler(req, res, next) {
+        let orderId = req.params.orderId || null;
+        let bodyParams = req.body.params || {};
+
+        if (!orderId) {
+            helperFunctions.generateResponse(422, 'Wrong order id', null, null, res);
+            return;
+        }
+
+        orderModel.update({_id: order._id}, bodyParams)
+            .then((order) => {
+                helperFunctions.generateResponse(200, null, {result: order}, 'Successfully updated.', res);
+            })
+            .catch((err) => {
+                console.log(err);
+                helperFunctions.generateResponse(422, err, null, null, res);
+            });
+
+    }
+
 }
 
 const productsRoutes = new ProductsRoutes();
