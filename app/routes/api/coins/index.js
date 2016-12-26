@@ -1,6 +1,7 @@
 const fs = require('fs')
     , path = require('path')
     , coinsModel = require(__dirname + '/../../../models/coins')
+    , coinsTransactionsModel = require(__dirname + '/../../../models/coins/coinsTransactions.js')
     , usersModel = require(__dirname + '/../../../models/user')
     , graphicsBuilder = require(__dirname + '/../../../models/graphics-builder/')
     , helperFunctions = require(__dirname + '/../../../models/helpers');
@@ -98,7 +99,7 @@ class CoinsRoutes {
             options['user_id'] = userId
         }
 
-        coinsModel.list(options)
+        coinsTransactionsModel.list(options)
             .then((transactions) => {
                 helperFunctions.generateResponse(200, null, {transactions: transactions}, '', res);
             })
