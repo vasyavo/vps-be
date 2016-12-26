@@ -17,7 +17,6 @@ class TestsManager {
     constructor() {
         testLoader();
         this.testsModels = testsModels;
-        this.runAllTests();
     };
 
     runAllTests() {
@@ -26,3 +25,4 @@ class TestsManager {
 }
 
 const testsManager = new TestsManager();
+testsManager.runAllTests();

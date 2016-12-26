@@ -98,7 +98,7 @@ class CoinsRoutes {
             options['user_id'] = userId
         }
 
-        coinsTransactionModel.list(options)
+        coinsModel.list(options)
             .then((transactions) => {
                 helperFunctions.generateResponse(200, null, {transactions: transactions}, '', res);
             })
