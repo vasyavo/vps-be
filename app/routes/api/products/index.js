@@ -308,7 +308,7 @@ class ProductsRoutes {
 
     updateOrderHandler(req, res, next) {
         let orderId = req.params.orderId || null;
-        let bodyParams = req.body.params || {};
+        let bodyParams = req.body || {};
 
         console.log(bodyParams);
         console.log(orderId);
