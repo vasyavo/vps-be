@@ -318,7 +318,7 @@ class ProductsRoutes {
             return;
         }
 
-        orderModel.update({_id: order._id}, bodyParams)
+        orderModel.update({_id: orderId}, bodyParams)
             .then((order) => {
                 helperFunctions.generateResponse(200, null, {result: order}, 'Successfully updated.', res);
             })
