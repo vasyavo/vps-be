@@ -310,6 +310,9 @@ class ProductsRoutes {
         let orderId = req.params.orderId || null;
         let bodyParams = req.body.params || {};
 
+        console.log(bodyParams);
+        console.log(orderId);
+
         if (!orderId) {
             helperFunctions.generateResponse(422, 'Wrong order id', null, null, res);
             return;
