@@ -61,6 +61,6 @@
     "shelljs": "^0.2.6"
   },
   "scripts": {
-    "test": "mocha --timeout 10000"
+    "test": "mocha"
   }
 }

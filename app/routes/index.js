@@ -205,6 +205,8 @@ module.exports = (app) => {
 
     app.put('/api/v1/order/:orderId', admin.checkAdminRights, products.updateOrderHandler);
 
+    app.get('/api/v1/orders-list', user.checkUserRights, products.ordersListHandler);
+
 
     //Products Categories
 

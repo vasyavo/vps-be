@@ -41,6 +41,9 @@ const Order = new Schema({
     expire: {
         type: String
     },
+    picked_up_time: {
+        type: String
+    },
     notificationStatus: {
         type: String
     },

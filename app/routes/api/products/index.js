@@ -310,9 +310,6 @@ class ProductsRoutes {
         let orderId = req.params.orderId || null;
         let bodyParams = req.body || {};
 
-        console.log(bodyParams);
-        console.log(orderId);
-
         if (!orderId) {
             helperFunctions.generateResponse(422, 'Wrong order id', null, null, res);
             return;
@@ -321,6 +318,27 @@ class ProductsRoutes {
         orderModel.update({_id: orderId}, bodyParams)
             .then((order) => {
                 helperFunctions.generateResponse(200, null, {result: order}, 'Successfully updated.', res);
+            })
+            .catch((err) => {
+                console.log(err);
+                helperFunctions.generateResponse(422, err, null, null, res);
+            });
+
+    }
+
+
+    /**
+     * Get orders list
+     * @param {object} req - request
+     * @param {object} res - response
+     * @param {function} next - next route
+     */
+
+    ordersListHandler(req, res, next) {
+        let currentUser = req.user;
+        orderModel.list({user_id: currentUser._id})
+            .then((orders) => {
+                helperFunctions.generateResponse(200, null, {orders: orders}, '', res);
             })
             .catch((err) => {
                 console.log(err);
