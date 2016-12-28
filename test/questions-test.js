@@ -19,8 +19,7 @@ class QuestionsTestMethods {
 
     runTests() {
         describe('Q&A', (...r) => {
-            //this.timeout(5000);
-            //GET All questions list
+            // GET All questions list
             describe('GET questions list', () => {
                 it('It should GET all the books', this._getQuestionsListHandler.bind(this));
             });

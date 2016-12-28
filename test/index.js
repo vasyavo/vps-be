@@ -20,11 +20,10 @@ class TestsManager {
     };
 
     runAllTests() {
-        // console.log(this.testsModels);
-        this.testsModels.forEach((m, idx) => {
+        this.testsModels.forEach((m) => {
             m.runTests();
         });
-    }
+    };
 }
 
 const testsManager = new TestsManager();
