@@ -15,12 +15,8 @@ class CommentsTestMethods {
             title: 'Comment Title',
             text: 'Comment Text',
             item_name: 'Sumo BBQ'
-        };
-        this.newCommentUpdate = {
-            title: 'Comment Title (Updated)',
-            text: 'Comment Text (Updated)',
-            item_name: 'Sumo BBQ'
-        }
+            };
+        this.token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6ImFkbWluQGdtYWlsLmNvbSIsInN0YXR1cyI6ImFjdGl2ZSIsImV4cGlyZSI6MzExMDQwMDAsImlhdCI6MTQ3NTIzNjE1MiwiZXhwIjoxNTA2MzQwMTUyfQ.YFc5oFaMXwT4n18F4GaxRXIQ5Fg7O5fLTU4eEc6_QwA'
     }
 
     runTests() {
@@ -57,8 +53,8 @@ class CommentsTestMethods {
 
     _getCommentsListForAdminHandler(done) {
         chai.request(server)
-            .get(`${this.BASE_URL}/comments-datatable/2`)
-            .set('x-access-token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6ImFkbWluQGdtYWlsLmNvbSIsInN0YXR1cyI6ImFjdGl2ZSIsImV4cGlyZSI6MzExMDQwMDAsImlhdCI6MTQ3NTIzNjE1MiwiZXhwIjoxNTA2MzQwMTUyfQ.YFc5oFaMXwT4n18F4GaxRXIQ5Fg7O5fLTU4eEc6_QwA')
+            .get(`${this.BASE_URL}/comments-datatable`)
+            .set('x-access-token', this.token)
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.data.content.comment.should.be.a('array');
@@ -68,8 +64,8 @@ class CommentsTestMethods {
 
     _getCommentsListForUserHandler(done) {
         chai.request(server)
-            .get(`${this.BASE_URL}/comments/2`)
-            .set('x-access-token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6ImFkbWluQGdtYWlsLmNvbSIsInN0YXR1cyI6ImFjdGl2ZSIsImV4cGlyZSI6MzExMDQwMDAsImlhdCI6MTQ3NTIzNjE1MiwiZXhwIjoxNTA2MzQwMTUyfQ.YFc5oFaMXwT4n18F4GaxRXIQ5Fg7O5fLTU4eEc6_QwA')
+            .get(`${this.BASE_URL}/comments`)
+            .set('x-access-token', this.token)
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.data.content.comment.should.be.a('array');
@@ -80,7 +76,7 @@ class CommentsTestMethods {
     _getCommentForAdminHandler(done) {
         chai.request(server)
             .get(`${this.BASE_URL}/comment/2`)
-            .set('x-access-token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6ImFkbWluQGdtYWlsLmNvbSIsInN0YXR1cyI6ImFjdGl2ZSIsImV4cGlyZSI6MzExMDQwMDAsImlhdCI6MTQ3NTIzNjE1MiwiZXhwIjoxNTA2MzQwMTUyfQ.YFc5oFaMXwT4n18F4GaxRXIQ5Fg7O5fLTU4eEc6_QwA')
+            .set('x-access-token', this.token)
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.data.content.comment.should.be.a('object');
@@ -93,7 +89,7 @@ class CommentsTestMethods {
         chai.request(server)
             .post(`${this.BASE_URL}/comments/1`)
             .send(this.newComment)
-            .set('x-access-token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6InZAY29kZW1vdGlvbi5ldSIsInN0YXR1cyI6ImFjdGl2ZSIsImV4cGlyZSI6MzExMDQwMDAsImlhdCI6MTQ3NTI0MzY3NiwiZXhwIjoxNTA2MzQ3Njc2fQ.ovUjkoSA0NRX72Ia_rE8_c2-5cmYOrD2-OrVkRtHNJE')
+            .set('x-access-token', this.token)
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('object');
@@ -107,8 +103,8 @@ class CommentsTestMethods {
         commentModel.create(this.newComment)
             .then((comment) => {
                 chai.request(server)
-                    .delete(`${this.BASE_URL}/comments/1`)
-                    .set('x-access-token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6InZAY29kZW1vdGlvbi5ldSIsInN0YXR1cyI6ImFjdGl2ZSIsImV4cGlyZSI6MzExMDQwMDAsImlhdCI6MTQ3NTI0MzY3NiwiZXhwIjoxNTA2MzQ3Njc2fQ.ovUjkoSA0NRX72Ia_rE8_c2-5cmYOrD2-OrVkRtHNJE')
+                    .delete(`${this.BASE_URL}/comments/${comment._id}`)
+                    .set('x-access-token', this.token)
                     .end((err, res) => {
                         res.should.have.status(200);
                         res.body.should.be.a('object');
@@ -123,13 +119,18 @@ class CommentsTestMethods {
         commentModel.create(this.newComment)
             .then((comment) => {
                 chai.request(server)
-                    .put(`${this.BASE_URL}/comments/2`)
-                    .send(this.newCommentUpdate)
-                    .set('x-access-token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6InZAY29kZW1vdGlvbi5ldSIsInN0YXR1cyI6ImFjdGl2ZSIsImV4cGlyZSI6MzExMDQwMDAsImlhdCI6MTQ3NTI0MzY3NiwiZXhwIjoxNTA2MzQ3Njc2fQ.ovUjkoSA0NRX72Ia_rE8_c2-5cmYOrD2-OrVkRtHNJE')
+                    .put(`${this.BASE_URL}/comments/${comment._id}`)
+                    .send({
+                       title: 'Updated Comment Title',
+                       text: 'Updated Comment Text',
+                       item_name: 'Sumo BBQ'   
+                    })
+                    .set('x-access-token', this.token)
                     .end((err, res) => {
                         res.should.have.status(200);
                         res.body.should.be.a('object');
-                        res.body.data.content.comment.should.have.property(this.newCommentUpdate);
+                        res.body.data.content.comment.should.have.property('title').eql('Updated Comment Title');
+                        res.body.data.content.comment.should.have.property('text').eql('Updated Comment Text');
                         done();
                     });
             })
