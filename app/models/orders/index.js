@@ -89,7 +89,9 @@ class OrderManager extends CrudManager {
 
         // userModel.getUser({login: 'v@codemotion.eu'})
         //     .then((user) => {
-        //         this.processNewOrder(['32773', '32774'], '350', 'payment', user[0], 1);
+        //         this.processNewOrder(['32773', '32774'], '350', 'payment', user[0], 1)
+        //             .then(r => console.log(r))
+        //             .catch(err => console.log(err));
         //     });
     };
 
@@ -189,13 +191,12 @@ class OrderManager extends CrudManager {
         return new Promise((resolve, reject) => {
             this._getOrderProducts(Object.assign({}, options), itemsIds)
                 .then((items) => {
-
-                    let orderSum = items.reduce((a, b) => a.articlesTariffs_VO.price + b.articlesTariffs_VO.price) - (items.length > 1 ? items.length : 0);
+                    let orderSum = items.reduce((a, b) => (a.articlesTariffs_VO ? a.articlesTariffs_VO.price : 0) + (b.articlesTariffs_VO ? b.articlesTariffs_VO.price : 0) - (items.length > 1 ? items.length : 0));
 
                     items = items.map((e) => {
                         return {
                             productId: e.productId,
-                            productPriceUnit: e.articlesTariffs_VO.price,
+                            productPriceUnit: e.articlesTariffs_VO ? e.articlesTariffs_VO.price : 0,
                             productReference: e.productId,
                             productQuantity: 1,
                             productEanCode: 'yyy',
@@ -213,6 +214,7 @@ class OrderManager extends CrudManager {
                         credit_card_num: user.credit_cards[selectedCardIdx].maskedNum,
                         price: orderSum,
                     };
+                    console.log('step1');
                     return this.create(orderEntityOptions);
                 })
                 .then((order) => {
@@ -225,6 +227,7 @@ class OrderManager extends CrudManager {
                         products: order.products,
                         id: -1
                     };
+                    console.log('step2');
 
                     return this.createOrderReservation(Object.assign({}, options), reservationOptions);
                 })
@@ -232,6 +235,7 @@ class OrderManager extends CrudManager {
                     if (r.result.code != '0') {
                         throw r.result.message;
                     }
+                    console.log('step3');
                     return this.update({_id: currentOrder._id}, {
                         status: 'reserved',
                         reservation_expired: this.reservationTimeExpired
@@ -250,7 +254,7 @@ class OrderManager extends CrudManager {
                         expire: '0000',
                         cvv: ''
                     };
-
+                    console.log('step4');
                     return usaEpayModel.processUsaEpayRequest(usaEpayData);
                 })
                 .then((response) => {
@@ -264,22 +268,25 @@ class OrderManager extends CrudManager {
                         amount: currentOrder.price,
                         status: response.UMstatus ? response.UMstatus : response
                     };
-
+                    console.log('step5');
                     return transactionModel.create(transactionEntity);
                 })
                 .then((transaction) => {
                     if (transaction.status.toLowerCase() !== this.APPROVED_STATUS) {
                         throw 'Transaction not approved';
                     }
-
+                    console.log('step6');
                     return this.confirmOrderReservation(Object.assign({}, options), -1, reservationOptions);
                 })
                 .then((r) => {
+                    console.log('final7');
                     this.update({_id: currentOrder._id}, {status: 'done', expire: moment().unix() + this.defaultExpireTime})
                         .then(resolve)
                         .catch(reject);
                 })
                 .catch((err) => {
+                    console.log('err');
+                    console.log(err);
                     if(currentOrder) {
                         let promises = [
                             this.cancelOrderReservation(Object.assign({}, options), -1, reservationOptions),
@@ -383,10 +390,12 @@ class OrderManager extends CrudManager {
      */
 
     _getOrderProducts(options, itemsIds) {
+        itemsIds = ['32773', '32774'];
         let promises = itemsIds.map((e) => {
             options.params.productId = e;
             return productsModel.getProduct(options);
         });
+
         return new Promise((resolve, reject) => {
             Promise.all(promises)
                 .then(resolve)

@@ -132,7 +132,7 @@ module.exports = (app) => {
 
     app.get('/api/v1/product-list', products.getProductListHandler.bind(products));
 
-    app.post('/api/v1/product-order/:machineId/:productId', user.checkUserRights, products.createOrderHandler.bind(products));
+    app.post('/api/v1/product-order/:machineId', user.checkUserRights, products.createOrderHandler.bind(products));
 
     app.get('/api/v1/product-order-status/:machineId/:orderId', user.checkUserRights, products.getOrderStatusHandler.bind(products));
 
