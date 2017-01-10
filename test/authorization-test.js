@@ -11,7 +11,6 @@ class AuthorizationTestMethods {
 
     constructor() {
         this.BASE_URL = '/api/v1'
-        };
     }
 
     runTests() {
@@ -87,6 +86,7 @@ class AuthorizationTestMethods {
                 res.body.data.should.have.property('message').eql('Account successfully created');
                 done();
         });
+    };
 
     _registrationRegisteredUserHandler(done) {
         const body = {
@@ -102,6 +102,7 @@ class AuthorizationTestMethods {
                 res.body.should.be.a('object');
                 done();
         });
+    };
 
     _confirmRegistrationWrongTokenHandler(done) {
         const confirm_hash = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6ImFkbWluQGdtYWlsLmNvbSIsInN0YXR1cyI6ImFjdGl2ZSIsImV4cGlyZSI6MzExMDQwMDAsImlhdCI6MTQ3NTIzNjE1MiwiZXhwIjoxNTA2MzQwMTUyfQ.YFc5oFaMXwT4n18F4GaxRXIQ5Fg7O5fLTU4eEc6_Qwb';
@@ -114,6 +115,7 @@ class AuthorizationTestMethods {
                 res.body.data.should.have.property('message').eql('Incorrect hash params');
                 done();
         });
+    };
 
     _confirmRegistrationHandler(done) {
         userModel.hash()
@@ -128,6 +130,7 @@ class AuthorizationTestMethods {
                     done();
             });
         });
+    };
 
     _authorizationWrongDataHandler(done) {
         const body = {
@@ -144,6 +147,7 @@ class AuthorizationTestMethods {
                 res.body.data.should.have.property('message').eql('Incorrect info for authenticate');
                 done();
         });
+    };
 
     _authorizationUserHandler(done) {
         const body = {
@@ -164,11 +168,10 @@ class AuthorizationTestMethods {
                 //res.body.data.content.user.should.have.property('device');
                 done();
         });
-
     };
 }
-const questionTestInstance = new QuestionsTestMethods();
-module.exports = questionTestInstance;
+const authorizationTestInstance = new AuthorizationTestMethods();
+module.exports = authorizationTestInstance;
 
 
 

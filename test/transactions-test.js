@@ -79,7 +79,7 @@ class TransactionsTestMethods {
                 done();
             });
 
-        transactionModel.list()
+        transactionsModel.list()
             .then((transactions) => {
                 const lastTransaction = transactions[transactions.length - 1];
                         lastTransaction.should.have.property('status').eql('Approved');
@@ -100,7 +100,7 @@ class TransactionsTestMethods {
                 done();
             });
 
-        transactionModel.list()
+        transactionsModel.list()
             .then((transactions) => {
                 const lastTransaction = transactions[transactions.length - 1];
                         lastTransaction.should.have.property('status').eql('Approved');
@@ -119,7 +119,7 @@ class TransactionsTestMethods {
 
         chai.request(server)
             .post(`${this.BASE_URL}/pay-with-credit-card`)
-            .send(body);
+            .send(body)
             .set('x-access-token', this.userToken)
             .end((err, res) => {
                 res.should.have.status(200);
@@ -127,7 +127,7 @@ class TransactionsTestMethods {
                 done();
             });
 
-        transactionModel.list()
+        transactionsModel.list()
             .then((transactions) => {
                 const lastTransaction = transactions[transactions.length - 1];
                         lastTransaction.should.have.property('status').eql('Error');
@@ -138,7 +138,7 @@ class TransactionsTestMethods {
             });
     };
 
-    _updateOrderTransactionstHandler(done) { 
+    _updateOrderTransactionsHandler(done) { 
         const orderId = 1;
         const body = {
             status: 'picked_up'
@@ -146,7 +146,7 @@ class TransactionsTestMethods {
 
         chai.request(server)
             .put(`${this.BASE_URL}/order/${orderId}`)
-            .send(body);
+            .send(body)
             .set('x-access-token', this.token)
             .end((err, res) => {
                 res.should.have.status(200);
@@ -154,7 +154,7 @@ class TransactionsTestMethods {
                 done();
             });
 
-        transactionModel.list()
+        transactionsModel.list()
             .then((transactions) => {
                 const lastTransaction = transactions[transactions.length - 1];
                         lastTransaction.should.have.property('status').eql('picked_up');
@@ -180,7 +180,7 @@ class TransactionsTestMethods {
                 done();
             });
 
-        transactionModel.list()
+        transactionsModel.list()
             .then((transactions) => {
                 const lastTransaction = transactions[transactions.length - 1];
                         lastTransaction.should.have.property('status').eql('Canceled');
@@ -191,8 +191,8 @@ class TransactionsTestMethods {
 
     };
 }
-const questionTestInstance = new QuestionsTestMethods();
-module.exports = questionTestInstance;
+const transactionsTestInstance = new TransactionsTestMethods();
+module.exports = transactionsTestInstance;
 
 
 
