@@ -47,10 +47,10 @@ class OrderTestMethods {
                 it('Should get order status', this._getOrderStatusHandler.bind(this));
             });
 
-            //Update order
-            describe('Change order status', () => {
-                it('Should change order status', this._updateOrderHandler.bind(this));
-            });
+            // //Update order
+            // describe('Change order status', () => {
+            //     it('Should change order status', this._updateOrderHandler.bind(this));
+            // });
 
             // GET All orders list
             describe('GET orders list', () => {
@@ -71,7 +71,6 @@ class OrderTestMethods {
             describe('Add removed credit card)', () => {
                  it('Should add removed credit card', this._AddRemovedCreditCardHandler.bind(this));
             });
-
         });
     };
 
@@ -251,8 +250,8 @@ class OrderTestMethods {
             .set('x-access-token', this.userToken)
             .end((err, res) => {
                 res.should.have.status(200);
-                res.body.data.content.user.credit_cards[cardIdx].should.be.a('object');
-                res.body.data.content.user.credit_cards[cardIdx].should.have.property('active').eql(false);
+                res.body.data.content.user.credit_cards[res.body.data.content.user.credit_cards.length - 1].should.be.a('object');
+                res.body.data.content.user.credit_cards[res.body.data.content.user.credit_cards.length - 1].should.have.property('active').eql(false);
                 res.body.data.should.have.property('message').eql('Card successfully deleted');
                 // res.body.should.have.property('errors');
                 // res.body.errors.should.have.property('pages');
