@@ -12,6 +12,7 @@ class OrderTestMethods {
     constructor() {
         this.BASE_URL = '/api/v1';
         this.userToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6InZAY29kZW1vdGlvbi5ldSIsInN0YXR1cyI6ImFjdGl2ZSIsImV4cGlyZSI6MzExMDQwMDAsImlhdCI6MTQ3NTI0MzY3NiwiZXhwIjoxNTA2MzQ3Njc2fQ.ovUjkoSA0NRX72Ia_rE8_c2-5cmYOrD2-OrVkRtHNJE';
+        this.token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6ImFkbWluQGdtYWlsLmNvbSIsInN0YXR1cyI6ImFjdGl2ZSIsImV4cGlyZSI6MzExMDQwMDAsImlhdCI6MTQ3NTIzNjE1MiwiZXhwIjoxNTA2MzQwMTUyfQ.YFc5oFaMXwT4n18F4GaxRXIQ5Fg7O5fLTU4eEc6_QwA';
     }
 
     runTests() {
@@ -37,6 +38,11 @@ class OrderTestMethods {
                  it('Should Add card that was lost', this._addPickupCreditCardHandler.bind(this));
             });
 
+            //Add Declined Card
+            describe('Add credit card that was declined', () => {
+                 it('Should Add card that was declined', this._addDeclinedCreditCardHandler.bind(this));
+            });
+
             //Create order
             describe('Create new order', () => {
                 it('Should create a new order', this._createOrderHandler.bind(this));
@@ -47,10 +53,10 @@ class OrderTestMethods {
                 it('Should get order status', this._getOrderStatusHandler.bind(this));
             });
 
-            // //Update order
-            // describe('Change order status', () => {
-            //     it('Should change order status', this._updateOrderHandler.bind(this));
-            // });
+            //Update Order status
+            describe('Update order status', () => {
+                it('Should update order status', this._updateOrderHandler.bind(this));
+            });
 
             // GET All orders list
             describe('GET orders list', () => {
@@ -147,6 +153,24 @@ class OrderTestMethods {
             });     
     };
 
+    _addDeclinedCreditCardHandler(done) {
+        const cardIdx = 0;
+        const newCC = {
+            ccNumber: '4000300011112220',
+            CVV: '999',
+            expire: '09/19'
+        };
+        chai.request(server)
+            .post(`${this.BASE_URL}/add-credit-card`)
+            .send(newCC)
+            .set('x-access-token', this.userToken)
+            .end((err, res) => {
+                res.should.have.status(422);
+                //res.body.data.should.have.property('message').eql('Wrong Card Information.');
+                done();
+            });     
+    };
+
     _createOrderHandler(done) {
 
         const machineID = 350;
@@ -177,7 +201,7 @@ class OrderTestMethods {
     _getOrderStatusHandler(done) {
 
         const machineID = 350;
-        const orderId = 1;
+        const orderId = 0;
 
         chai.request(server)
             .get(`${this.BASE_URL}/product-order-status/${machineID}/${orderId}`)
@@ -194,25 +218,26 @@ class OrderTestMethods {
 
     };
 
-    // _updateOrderHandler(done) {
-    //     const machineID = 350;
-    //     const orderId = 1;
-    //     const body = {
-    //         status: ''
-    //     };
+    _updateOrderHandler(done) {
+        const machineID = 350;
+        const orderId = 0;
+        const body = {
+            status: 'picked_up'
+        };
 
-    //     chai.request(server)
-    //         .put(`${this.BASE_URL}/order/${orderId}`)
-    //         .set('x-access-token', this.userToken)
-    //         .end((err, res) => {
-    //             console.log(err);
-    //             console.log(res);
-    //             res.should.have.status(200);
-    //             res.body.data.content.result.should.be.a('object');
-    //             res.body.data.content.result.should.have.property('status').eql('');
-    //             done();
-    //         });
-    // };
+        chai.request(server)
+            .put(`${this.BASE_URL}/order/${orderId}`)
+            .send(body)
+            .set('x-access-token', this.token)
+            .end((err, res) => {
+                console.log(err);
+                console.log(res);
+                res.should.have.status(200);
+                res.body.data.content.result.should.be.a('object');
+                res.body.data.content.result.should.have.property('status').eql('picked_up');
+                done();
+            });
+    };
 
     _getOrdersListHandler(done) {
         chai.request(server)
@@ -225,6 +250,7 @@ class OrderTestMethods {
                 done();
             });
     };
+
     _cancelOrderHandler(done) {
         const machineID = 350;
         const orderId = 1;
@@ -237,7 +263,7 @@ class OrderTestMethods {
                 console.log(res);
                 res.should.have.status(200);
                 res.body.data.content.result.should.be.a('object');
-                res.body.data.content.result.should.have.property('status').eql('cancel');
+                res.body.data.content.result.should.have.property('status').eql('Canceled');
                 done();
             });
     };
