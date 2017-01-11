@@ -75,11 +75,11 @@ class TransactionsTestMethods {
             .set('x-access-token', this.userToken)
             .end((err, res) => {
                 res.should.have.status(200);
-                res.body.should.be.a('object');
+                res.body.data.content.user.should.be.a('object');
                 done();
             });
 
-        transactionsModel.list()
+        TransactionsModel.list()
             .then((transactions) => {
                 const lastTransaction = transactions[transactions.length - 1];
                         lastTransaction.should.have.property('status').eql('Approved');
@@ -100,7 +100,7 @@ class TransactionsTestMethods {
                 done();
             });
 
-        transactionsModel.list()
+        TransactionsModel.list()
             .then((transactions) => {
                 const lastTransaction = transactions[transactions.length - 1];
                         lastTransaction.should.have.property('status').eql('Approved');
@@ -123,11 +123,11 @@ class TransactionsTestMethods {
             .set('x-access-token', this.userToken)
             .end((err, res) => {
                 res.should.have.status(200);
-                res.body.should.be.a('object');
+                res.body.data.content.user.should.be.a('object');
                 done();
             });
 
-        transactionsModel.list()
+        TransactionsModel.list()
             .then((transactions) => {
                 const lastTransaction = transactions[transactions.length - 1];
                         lastTransaction.should.have.property('status').eql('Error');
@@ -150,11 +150,11 @@ class TransactionsTestMethods {
             .set('x-access-token', this.token)
             .end((err, res) => {
                 res.should.have.status(200);
-                res.body.should.be.a('object');
+                res.body.data.content.user.should.be.a('object');
                 done();
             });
 
-        transactionsModel.list()
+        TransactionsModel.list()
             .then((transactions) => {
                 const lastTransaction = transactions[transactions.length - 1];
                         lastTransaction.should.have.property('status').eql('picked_up');
@@ -180,7 +180,7 @@ class TransactionsTestMethods {
                 done();
             });
 
-        transactionsModel.list()
+        TransactionsModel.list()
             .then((transactions) => {
                 const lastTransaction = transactions[transactions.length - 1];
                         lastTransaction.should.have.property('status').eql('Canceled');

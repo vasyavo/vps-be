@@ -96,7 +96,7 @@ class CommentsTestMethods {
             .set('x-access-token', this.userToken)
             .end((err, res) => {
                 res.should.have.status(200);
-                res.body.should.be.a('object');
+                res.body.data.content.comment.should.be.a('object');
                 res.body.data.should.have.property('message').eql('Thanks for your comment. Its under review.');
                 res.body.data.content.comment.should.have.property('status').eql(false);
                 done();
@@ -133,7 +133,7 @@ class CommentsTestMethods {
                     .set('x-access-token', this.token)
                     .end((err, res) => {
                         res.should.have.status(200);
-                        res.body.should.be.a('object');
+                        res.body.data.content.comment.should.be.a('object');
                         res.body.data.content.comment.should.have.property('title').eql('Updated Comment Title');
                         res.body.data.content.comment.should.have.property('text').eql('Updated Comment Text');
                         res.body.data.content.comment.should.have.property('status').eql(true);
