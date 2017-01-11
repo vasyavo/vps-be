@@ -266,9 +266,10 @@ class ProductsRoutes {
 
     updateOrderHandler(req, res, next) {
         let orderId = req.params.orderId || null;
+        let machineId = req.params.machineId || null;
         let bodyParams = req.body || {};
 
-        if (!orderId) {
+        if (!orderId || !machineId) {
             helperFunctions.generateResponse(422, 'Wrong order id', null, null, res);
             return;
         }

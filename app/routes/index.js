@@ -203,7 +203,7 @@ module.exports = (app) => {
 
     app.post('/api/v1/pay-with-credit-card', user.checkUserRights, transactions.makePaymentHandler);
 
-    app.put('/api/v1/order/:orderId', admin.checkAdminRights, products.updateOrderHandler);
+    app.put('/api/v1/order/:machineId/:orderId', admin.checkAdminRights, products.updateOrderHandler);
 
     app.get('/api/v1/orders-list', user.checkUserRights, products.ordersListHandler);
 
