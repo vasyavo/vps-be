@@ -111,7 +111,7 @@ class CommentsTestMethods {
                     .set('x-access-token', this.token)
                     .end((err, res) => {
                         res.should.have.status(200);
-                        res.body.should.be.a('object');
+                        res.body.data.content.comment.should.be.a('object');
                         res.body.data.should.have.property('message').eql('Comment successfully deleted');
                         done();
                     });

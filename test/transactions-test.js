@@ -96,7 +96,7 @@ class TransactionsTestMethods {
             .set('x-access-token', this.userToken)
             .end((err, res) => {
                 res.should.have.status(200);
-                res.body.should.be.a('object');
+                res.body.data.content.user.should.be.a('object');
                 done();
             });
 

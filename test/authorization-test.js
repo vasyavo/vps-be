@@ -112,7 +112,7 @@ class AuthorizationTestMethods {
             .send(body)
             .end((err, res) => {
                 res.should.have.status(422);
-                res.body.data.should.be.a('object');
+                res.body.data.content.user.should.be.a('object');
                 res.body.data.should.have.property('message').eql('Incorrect info for registration');
                 done();
         });
@@ -129,7 +129,7 @@ class AuthorizationTestMethods {
             .send(body)
             .end((err, res) => {
                 res.should.have.status(200);
-                res.body.should.be.a('object');
+                res.body.data.content.user.should.be.a('object');
                 res.body.data.should.have.property('message').eql('Account successfully created.');
                 res.body.data.content.user.should.have.property('status').eql('inactive');
             
@@ -139,7 +139,7 @@ class AuthorizationTestMethods {
                     .get(`${this.BASE_URL}/users/confirm/${confirm_hash}`)
                     .end((err, res) => {
                         res.should.have.status(200);
-                        res.body.should.be.a('object');
+                        res.body.data.content.user.should.be.a('object');
                         res.body.data.should.have.property('message').eql('Successfully activated.');
                         res.body.data.content.user.should.have.property('status').eql('active');
                         res.body.data.content.user.should.have.property('roles').eql('user');
@@ -160,7 +160,7 @@ class AuthorizationTestMethods {
             .send(body)
             .end((err, res) => {
                 res.should.have.status(422);
-                res.body.should.be.a('object');
+                res.body.data.content.user.should.be.a('object');
                 done();
         });
     };
@@ -176,7 +176,7 @@ class AuthorizationTestMethods {
             .send(body)
             .end((err, res) => {
                 res.should.have.status(200);
-                res.body.should.be.a('object');
+                res.body.data.content.user.should.be.a('object');
                 res.body.data.should.have.property('message').eql('Account successfully created.');
                 res.body.data.content.user.should.have.property('status').eql('inactive');
             
@@ -206,7 +206,7 @@ class AuthorizationTestMethods {
             .send(body)
             .end((err, res) => {
                 res.should.have.status(422);
-                res.body.should.be.a('object');
+                res.body.data.content.user.should.be.a('object');
                 res.body.data.should.have.property('message').eql('Incorrect info for authenticate');
                 done();
         });
@@ -223,7 +223,7 @@ class AuthorizationTestMethods {
             .send(body)
             .end((err, res) => {
                 res.should.have.status(200);
-                res.body.should.be.a('object');
+                rres.body.data.content.user.should.be.a('object');
                 res.body.data.content.user.should.have.property('token');
                 res.body.data.content.user.should.have.property('status').eql('active');
                 done();
@@ -253,7 +253,7 @@ class AuthorizationTestMethods {
             .set('x-access-token', this.userToken)
             .end((err, res) => {
                 res.should.have.status(200);
-                res.body.should.be.a('object');
+                res.body.data.content.user.should.be.a('object');
                 res.body.data.should.have.property('message').eql('Successfully logged out');
                 done();
         });
@@ -283,7 +283,7 @@ class AuthorizationTestMethods {
                 .send(body)
                 .end((err, res) => {
                     res.should.have.status(422);
-                    res.body.should.be.a('object');
+                    res.body.data.content.user.should.be.a('object');
                     res.body.data.should.have.property('message').eql('Bad data for restoring password');
                     done();
             });
@@ -298,7 +298,7 @@ class AuthorizationTestMethods {
                 .send(body)
                 .end((err, res) => {
                     res.should.have.status(422);
-                    res.body.should.be.a('object');
+                    res.body.data.content.user.should.be.a('object');
                     res.body.data.should.have.property('message').eql('User does not exist.');
                     done();
             });
@@ -313,7 +313,7 @@ class AuthorizationTestMethods {
                 .send(body)
                 .end((err, res) => {
                     res.should.have.status(200);
-                    res.body.should.be.a('object');
+                    res.body.data.content.user.should.be.a('object');
                     res.body.data.should.have.property('message').eql('Email sent.');
                     
                     const restore_hash = res.body.data.content.user.restore_hash;
@@ -327,7 +327,7 @@ class AuthorizationTestMethods {
                         .send(body)
                         .end((err, res) => {
                             res.should.have.status(200);
-                            res.body.should.be.a('object');
+                            res.body.data.content.user.should.be.a('object');
                             res.body.data.should.have.property('message').eql('Password successfully changed.');
                             done();
                     });
@@ -343,7 +343,7 @@ class AuthorizationTestMethods {
                 .send(body)
                 .end((err, res) => {
                     res.should.have.status(200);
-                    res.body.should.be.a('object');
+                    res.body.data.content.user.should.be.a('object');
                     res.body.data.should.have.property('message').eql('Email sent.');
                     
                     const restore_hash = res.body.data.content.user.restore_hash;
@@ -357,7 +357,7 @@ class AuthorizationTestMethods {
                         .send(body)
                         .end((err, res) => {
                             res.should.have.status(422);
-                            res.body.should.be.a('object');
+                            res.body.data.content.user.should.be.a('object');
                             res.body.data.should.have.property('message').eql('Bad data for restoring password');
                             done();
                     });
@@ -373,7 +373,7 @@ class AuthorizationTestMethods {
                 .send(body)
                 .end((err, res) => {
                     res.should.have.status(200);
-                    res.body.should.be.a('object');
+                    res.body.data.content.user.should.be.a('object');
                     res.body.data.should.have.property('message').eql('Email sent.');
                     
                     const restore_hash = res.body.data.content.user.restore_hash;
@@ -387,7 +387,7 @@ class AuthorizationTestMethods {
                         .send(body)
                         .end((err, res) => {
                             res.should.have.status(422);
-                            res.body.should.be.a('object');
+                            res.body.data.content.user.should.be.a('object');
                             res.body.data.should.have.property('message').eql('Bad data for restoring password');
                             done();
                     });
@@ -405,7 +405,7 @@ class AuthorizationTestMethods {
             .send(body)
             .end((err, res) => {
                 res.should.have.status(200);
-                res.body.should.be.a('object');
+                res.body.data.content.user.should.be.a('object');
                 res.body.data.content.user.should.have.property('token');
                 res.body.data.content.user.should.have.property('status').eql('active');
                 done();
@@ -423,7 +423,7 @@ class AuthorizationTestMethods {
             .send(body)
             .end((err, res) => {
                 res.should.have.status(422);
-                res.body.should.be.a('object');
+                res.body.data.content.user.should.be.a('object');
                 done();
         });
     };

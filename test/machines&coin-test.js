@@ -69,12 +69,12 @@ class MachinesTestMethods {
                 res.should.have.status(200);
             
                 const userId = res.body.data.content.user._id;
-                const token = res.body.data.content.token;
+                const token = res.body.data.content.token[0];
 
                 chai.request(server)
                     .post(`${this.BASE_URL}/coin-sharing/${userId}`)
                     .send()
-                    .set('x-access-token', 'token')
+                    .set('x-access-token', token)
                     .end((err, res) => {
                         res.should.have.status(200);
                         res.body.data.content.user.should.be.a('object');
