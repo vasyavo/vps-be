@@ -18,28 +18,28 @@ class QuestionsTestMethods {
     }
 
     runTests() {
-        describe('Q&A', (...r) => {
-            // GET All questions list
-            describe('GET questions list', () => {
-                it('It should GET all the books', this._getQuestionsListHandler.bind(this));
-            });
-
-            //Create new question
-            describe('POST create question', () => {
-                it('It should POST and create new question', this._createQuestionHandler.bind(this));
-            });
-
-            //Delete question
-            describe('DELETE question', () => {
-                it('It should DELETE created question', this._deleteQuestionHandler.bind(this));
-            });
-
-            //Update question
-            describe('PUT question', () => {
-                it('It should UPDATE question and answer to My second question and My second answer', this._updateQuestionHandler.bind(this));
-            });
-
-        });
+        // describe('Q&A', (...r) => {
+        //     // GET All questions list
+        //     describe('GET questions list', () => {
+        //         it('It should GET all the books', this._getQuestionsListHandler.bind(this));
+        //     });
+        //
+        //     //Create new question
+        //     describe('POST create question', () => {
+        //         it('It should POST and create new question', this._createQuestionHandler.bind(this));
+        //     });
+        //
+        //     //Delete question
+        //     describe('DELETE question', () => {
+        //         it('It should DELETE created question', this._deleteQuestionHandler.bind(this));
+        //     });
+        //
+        //     //Update question
+        //     describe('PUT question', () => {
+        //         it('It should UPDATE question and answer to My second question and My second answer', this._updateQuestionHandler.bind(this));
+        //     });
+        //
+        // });
     };
 
     _getQuestionsListHandler(done) {

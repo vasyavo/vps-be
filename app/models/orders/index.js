@@ -236,6 +236,7 @@ class OrderManager extends CrudManager {
                         throw r.result.message;
                     }
                     console.log('step3');
+                    //TODO save reservationId!!!
                     return this.update({_id: currentOrder._id}, {
                         status: 'reserved',
                         reservation_expired: this.reservationTimeExpired

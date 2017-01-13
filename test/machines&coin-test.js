@@ -11,12 +11,12 @@ chai.use(chaiHttp);
 class MachinesTestMethods {
 
     constructor() {
-        this.BASE_URL = '/api/v1',
-        this.userToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6ImFuQGNvZGVtb3Rpb24uZXUiLCJzdGF0dXMiOiJpbmFjdGl2ZSIsImV4cGlyZSI6MzExMDQwMDAsImlhdCI6MTQ4NDE0MzUxNSwiZXhwIjoxNTE1MjQ3NTE1fQ.nWY1ymNk94BX6H2HxJJR1vVtrq4xW8sbYeOruqNnh-U'
+        this.BASE_URL = '/api/v1';
+        this.userToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6InZAY29kZW1vdGlvbi5ldSIsInN0YXR1cyI6ImFjdGl2ZSIsImV4cGlyZSI6MzExMDQwMDAsImlhdCI6MTQ3NTI0MzY3NiwiZXhwIjoxNTA2MzQ3Njc2fQ.ovUjkoSA0NRX72Ia_rE8_c2-5cmYOrD2-OrVkRtHNJE';
     }
 
     runTests() {
-        describe('Q&A', (...r) => {
+        describe('Products list', (...r) => {
             // GET All machines list
             describe('GET machines list', () => {
                 it('It should GET machines list', this._getMachinesListHandler.bind(this));
@@ -27,7 +27,7 @@ class MachinesTestMethods {
                 it('It should GET machine', this._getMachineHandler.bind(this));
             });
 
-            // Coins sharing
+            // // Coins sharing
             describe('POST add sharing bonuses', () => {
                 it('It should add sharing bonuses', this._coinsSharingHandler.bind(this));
             });
@@ -59,7 +59,8 @@ class MachinesTestMethods {
     _coinsSharingHandler(done) {
         const body = {
             login: 'an@codemotion.eu',
-            password: '123456'
+            password: '654321',
+            device: 'mobile'
         };
 
         chai.request(server)
@@ -69,7 +70,7 @@ class MachinesTestMethods {
                 res.should.have.status(200);
             
                 const userId = res.body.data.content.user._id;
-                const token = res.body.data.content.token[0];
+                const token = res.body.data.content.user.token[0];
 
                 chai.request(server)
                     .post(`${this.BASE_URL}/coin-sharing/${userId}`)
@@ -78,7 +79,7 @@ class MachinesTestMethods {
                     .end((err, res) => {
                         res.should.have.status(200);
                         res.body.data.content.user.should.be.a('object');
-                        es.body.data.should.have.property('message').eql('Bonus coins added');
+                        res.body.data.should.have.property('message').eql('Bonus coins added');
                         done();
                 });
         });

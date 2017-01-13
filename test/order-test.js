@@ -16,68 +16,68 @@ class OrderTestMethods {
     }
 
     runTests() {
-        describe('Orders', () => {
-            
-            //Add credit card
-            describe('Add new credit card', () => {
-                 it('Should add new card to user', this._addCreditCardHandler.bind(this));
-            });
-            
-            //Add credit card with wrong CVV by User
-            describe('Add credit card with wrong CVV', () => {
-                 it('Should Add card with Wrong CVV by user', this._addCreditCardWrongCVVHandler.bind(this));
-            });
-
-            //Add existing in the system credit card 
-            describe('Add credit card that already exists in the system', () => {
-                 it('Should Add card that already exists in the system', this._addExistingCreditCardHandler.bind(this));
-            });
-
-            //Add Pickup Card
-            describe('Add credit card that was lost', () => {
-                 it('Should Add card that was lost', this._addPickupCreditCardHandler.bind(this));
-            });
-
-            //Add Declined Card
-            describe('Add credit card that was declined', () => {
-                 it('Should Add card that was declined', this._addDeclinedCreditCardHandler.bind(this));
-            });
-
-            //Create order
-            describe('Create new order', () => {
-                it('Should create a new order', this._createOrderHandler.bind(this));
-            });
-
-            //Get Order status
-            describe('Get order status', () => {
-                it('Should get order status', this._getOrderStatusHandler.bind(this));
-            });
-
-            //Update Order status
-            describe('Update order status', () => {
-                it('Should update order status', this._updateOrderHandler.bind(this));
-            });
-
-            // GET All orders list
-            describe('GET orders list', () => {
-                 it('It should GET all orders by user token', this._getOrdersListHandler.bind(this));
-            });
-
-            //Cancel order
-            describe('Cancel existing order', () => {
-                it('Should cancel existing order', this._cancelOrderHandler.bind(this));
-            });
-
-             //Remove added credit card
-            describe('Delete credit card(make status inactive)', () => {
-                 it('Should deactivate last card', this._removeCreditCardHandler.bind(this));
-            });
-
-            //Add removed credit card
-            describe('Add removed credit card)', () => {
-                 it('Should add removed credit card', this._AddRemovedCreditCardHandler.bind(this));
-            });
-        });
+        // describe('Orders', () => {
+        //
+        //     //Add credit card
+        //     describe('Add new credit card', () => {
+        //          it('Should add new card to user', this._addCreditCardHandler.bind(this));
+        //     });
+        //
+        //     //Add credit card with wrong CVV by User
+        //     describe('Add credit card with wrong CVV', () => {
+        //          it('Should Add card with Wrong CVV by user', this._addCreditCardWrongCVVHandler.bind(this));
+        //     });
+        //
+        //     //Add existing in the system credit card
+        //     describe('Add credit card that already exists in the system', () => {
+        //          it('Should Add card that already exists in the system', this._addExistingCreditCardHandler.bind(this));
+        //     });
+        //
+        //     //Add Pickup Card
+        //     describe('Add credit card that was lost', () => {
+        //          it('Should Add card that was lost', this._addPickupCreditCardHandler.bind(this));
+        //     });
+        //
+        //     //Add Declined Card
+        //     describe('Add credit card that was declined', () => {
+        //          it('Should Add card that was declined', this._addDeclinedCreditCardHandler.bind(this));
+        //     });
+        //
+        //     //Create order
+        //     describe('Create new order', () => {
+        //         it('Should create a new order', this._createOrderHandler.bind(this));
+        //     });
+        //
+        //     //Get Order status
+        //     describe('Get order status', () => {
+        //         it('Should get order status', this._getOrderStatusHandler.bind(this));
+        //     });
+        //
+        //     //Update Order status
+        //     describe('Update order status', () => {
+        //         it('Should update order status', this._updateOrderHandler.bind(this));
+        //     });
+        //
+        //     // GET All orders list
+        //     describe('GET orders list', () => {
+        //          it('It should GET all orders by user token', this._getOrdersListHandler.bind(this));
+        //     });
+        //
+        //     //Cancel order
+        //     describe('Cancel existing order', () => {
+        //         it('Should cancel existing order', this._cancelOrderHandler.bind(this));
+        //     });
+        //
+        //      //Remove added credit card
+        //     describe('Delete credit card(make status inactive)', () => {
+        //          it('Should deactivate last card', this._removeCreditCardHandler.bind(this));
+        //     });
+        //
+        //     //Add removed credit card
+        //     describe('Add removed credit card)', () => {
+        //          it('Should add removed credit card', this._AddRemovedCreditCardHandler.bind(this));
+        //     });
+        // });
     };
 
     _addCreditCardHandler(done) {
@@ -148,7 +148,6 @@ class OrderTestMethods {
             .set('x-access-token', this.userToken)
             .end((err, res) => {
                 res.should.have.status(422);
-                //res.body.data.should.have.property('message').eql('Wrong Card Information.');
                 done();
             });     
     };
@@ -187,8 +186,6 @@ class OrderTestMethods {
             .send(body)
             .set('x-access-token', this.userToken)
             .end((err, res) => {
-                console.log(err);
-                console.log(res);
                 res.should.have.status(200);
                 res.body.data.content.result.should.be.a('object');
                 res.body.data.content.result.should.have.property('orderId');
@@ -207,8 +204,6 @@ class OrderTestMethods {
             .get(`${this.BASE_URL}/product-order-status/${machineID}/${orderId}`)
             .set('x-access-token', this.userToken)
             .end((err, res) => {
-                console.log(err);
-                console.log(res);
                 res.should.have.status(200);
                 res.body.data.content.result.should.be.a('object');
                 res.body.data.content.result.should.have.property('${orderId}');
@@ -230,8 +225,6 @@ class OrderTestMethods {
             .send(body)
             .set('x-access-token', this.token)
             .end((err, res) => {
-                console.log(err);
-                console.log(res);
                 res.should.have.status(200);
                 res.body.data.content.result.should.be.a('object');
                 res.body.data.content.result.should.have.property('status').eql('picked_up');
@@ -259,8 +252,6 @@ class OrderTestMethods {
             .get(`${this.BASE_URL}/product-order-cancel/${machineID}/${orderId}`)
             .set('x-access-token', this.userToken)
             .end((err, res) => {
-                console.log(err);
-                console.log(res);
                 res.should.have.status(200);
                 res.body.data.content.result.should.be.a('object');
                 res.body.data.content.result.should.have.property('status').eql('Canceled');
@@ -279,9 +270,6 @@ class OrderTestMethods {
                 res.body.data.content.user.credit_cards[res.body.data.content.user.credit_cards.length - 1].should.be.a('object');
                 res.body.data.content.user.credit_cards[res.body.data.content.user.credit_cards.length - 1].should.have.property('active').eql(false);
                 res.body.data.should.have.property('message').eql('Card successfully deleted');
-                // res.body.should.have.property('errors');
-                // res.body.errors.should.have.property('pages');
-                // res.body.errors.pages.should.have.property('kind').eql('required');
                 done();
             });
     };

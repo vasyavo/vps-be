@@ -21,35 +21,35 @@ class CommentsTestMethods {
     }
 
     runTests() {
-        describe('Q&A', (...r) => {
-            // GET All comments list for Admin
-            describe('GET comments list for Admin', () => {
-                it('It should GET all the comments', this._getCommentsListForAdminHandler.bind(this));
-            });
-            // GET All comments list for User
-            describe('GET comments list for User', () => {
-                it('It should GET all the comments', this._getCommentsListForUserHandler.bind(this));
-            });
-            // GET Comment for Admin
-            describe('GET comment for Admin', () => {
-                it('It should GET the comment', this._getCommentForAdminHandler.bind(this));
-            });
-            //Create new comment
-            describe('POST create comment', () => {
-                it('It should POST and create new comment', this._createCommentHandler.bind(this));
-            });
-
-            //Delete comment
-            describe('DELETE comment', () => {
-                it('It should DELETE created comment', this._deleteCommentHandler.bind(this));
-            });
-
-            //Update comment
-            describe('PUT comment', () => {
-                it('It should UPDATE comment', this._updateCommentHandler.bind(this));
-            });
-
-        });
+        // describe('Comments', (...r) => {
+        //     // GET All comments list for Admin
+        //     describe('GET comments list for Admin', () => {
+        //         it('It should GET all the comments', this._getCommentsListForAdminHandler.bind(this));
+        //     });
+        //     // GET All comments list for User
+        //     describe('GET comments list for User', () => {
+        //         it('It should GET all the comments', this._getCommentsListForUserHandler.bind(this));
+        //     });
+        //     // GET Comment for Admin
+        //     describe('GET comment for Admin', () => {
+        //         it('It should GET the comment', this._getCommentForAdminHandler.bind(this));
+        //     });
+        //     //Create new comment
+        //     describe('POST create comment', () => {
+        //         it('It should POST and create new comment', this._createCommentHandler.bind(this));
+        //     });
+        //
+        //     //Delete comment
+        //     describe('DELETE comment', () => {
+        //         it('It should DELETE created comment', this._deleteCommentHandler.bind(this));
+        //     });
+        //
+        //     //Update comment
+        //     describe('PUT comment', () => {
+        //         it('It should UPDATE comment', this._updateCommentHandler.bind(this));
+        //     });
+        //
+        // });
     };
 
     _getCommentsListForAdminHandler(done) {

@@ -16,33 +16,33 @@ class TransactionsTestMethods {
     }
 
     runTests() {
-        describe('Q&A', (...r) => {
+        describe('Transactions', (...r) => {
             // GET All transactions list
             describe('GET transactions list', () => {
                 it('It should GET all transactions list', this._getTransactionsListHandler.bind(this));
             });
 
-            //Transactions - Add credit card 
+            //Transactions - Add credit card
             describe('POST add credit card', () => {
                 it('It should POST and create new transactions', this._createTransactionAddCardHandler.bind(this));
             });
 
-            //Transactions - Delete credit card 
+            // //Transactions - Delete credit card
             describe('DELETE credit card', () => {
                 it('It should DELETE and delete credit card', this._deleteCardTransactionHandler.bind(this));
             });
-
-            //Pay with credit card
+            //
+            // //Pay with credit card
             describe('POST make payment', () => {
                 it('It should POST and pay with credit card', this._makePaymentHandler.bind(this));
             });
-
-            //Update order status
+            //
+            // //Update order status
             describe('PUT update order status', () => {
                 it('It should UPDATE order status', this._updateOrderTransactionsHandler.bind(this));
             });
-
-            //Cancel Order
+            //
+            // //Cancel Order
             describe('GET cancel order', () => {
                 it('It should cancel order', this._cancelOrderTransactionsHandler.bind(this));
             });
@@ -53,7 +53,7 @@ class TransactionsTestMethods {
     _getTransactionsListHandler(done) {
         chai.request(server)
             .get(`${this.BASE_URL}/transactions-datatable`)
-            .set('x-access-token', this.userToken)
+            .set('x-access-token', this.token)
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.data.content.transactions.should.be.a('object');
@@ -82,9 +82,9 @@ class TransactionsTestMethods {
         TransactionsModel.list()
             .then((transactions) => {
                 const lastTransaction = transactions[transactions.length - 1];
-                        lastTransaction.should.have.property('status').eql('Approved');
-                        lastTransaction.should.have.property('time_created');
-                        lastTransaction.should.have.property('event').eql('Add Card');
+                lastTransaction.should.have.property('status').eql('Approved');
+                lastTransaction.should.have.property('time_created');
+                lastTransaction.should.have.property('event').eql('Add Card');
             });
     };
 
@@ -103,9 +103,9 @@ class TransactionsTestMethods {
         TransactionsModel.list()
             .then((transactions) => {
                 const lastTransaction = transactions[transactions.length - 1];
-                        lastTransaction.should.have.property('status').eql('Approved');
-                        lastTransaction.should.have.property('time_created');
-                        lastTransaction.should.have.property('event').eql('Delete Card');
+                lastTransaction.should.have.property('status').eql('Approved');
+                lastTransaction.should.have.property('time_created');
+                lastTransaction.should.have.property('event').eql('Delete Card');
             });
     };
 
@@ -130,11 +130,11 @@ class TransactionsTestMethods {
         TransactionsModel.list()
             .then((transactions) => {
                 const lastTransaction = transactions[transactions.length - 1];
-                        lastTransaction.should.have.property('status').eql('Error');
-                        lastTransaction.should.have.property('time_created');
-                        lastTransaction.should.have.property('event').eql('UsaEpay Transaction');
-                        lastTransaction.should.have.property('amount');
-                        lastTransaction.should.have.property('orderId');
+                lastTransaction.should.have.property('status').eql('Error');
+                lastTransaction.should.have.property('time_created');
+                lastTransaction.should.have.property('event').eql('UsaEpay Transaction');
+                lastTransaction.should.have.property('amount');
+                lastTransaction.should.have.property('orderId');
             });
     };
 
@@ -142,7 +142,7 @@ class TransactionsTestMethods {
         const orderId = 1;
         const body = {
             status: 'picked_up'
-        }
+        };
 
         chai.request(server)
             .put(`${this.BASE_URL}/order/${orderId}`)
@@ -157,10 +157,10 @@ class TransactionsTestMethods {
         TransactionsModel.list()
             .then((transactions) => {
                 const lastTransaction = transactions[transactions.length - 1];
-                        lastTransaction.should.have.property('status').eql('picked_up');
-                        lastTransaction.should.have.property('time_created');
-                        lastTransaction.should.have.property('event').eql('Update Order Status');
-                        lastTransaction.should.have.property('orderId');
+                lastTransaction.should.have.property('status').eql('picked_up');
+                lastTransaction.should.have.property('time_created');
+                lastTransaction.should.have.property('event').eql('Update Order Status');
+                lastTransaction.should.have.property('orderId');
             });
     };
 
@@ -172,8 +172,6 @@ class TransactionsTestMethods {
             .get(`${this.BASE_URL}/product-order-cancel/${machineID}/${orderId}`)
             .set('x-access-token', this.userToken)
             .end((err, res) => {
-                console.log(err);
-                console.log(res);
                 res.should.have.status(200);
                 res.body.data.content.result.should.be.a('object');
                 res.body.data.content.result.should.have.property('status').eql('Canceled');
@@ -183,10 +181,10 @@ class TransactionsTestMethods {
         TransactionsModel.list()
             .then((transactions) => {
                 const lastTransaction = transactions[transactions.length - 1];
-                        lastTransaction.should.have.property('status').eql('Canceled');
-                        lastTransaction.should.have.property('time_created');
-                        lastTransaction.should.have.property('event').eql('Cancel Order');
-                        lastTransaction.should.have.property('orderId');
+                lastTransaction.should.have.property('status').eql('Canceled');
+                lastTransaction.should.have.property('time_created');
+                lastTransaction.should.have.property('event').eql('Cancel Order');
+                lastTransaction.should.have.property('orderId');
             });
 
     };

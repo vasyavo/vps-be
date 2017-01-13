@@ -10,95 +10,81 @@ chai.use(chaiHttp);
 class AuthorizationTestMethods {
 
     constructor() {
-        this.BASE_URL = '/api/v1',
-        this.userToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6ImFkbWluQGZ0ci5jb20iLCJzdGF0dXMiOiJhY3RpdmUiLCJleHBpcmUiOjMxMTA0MDAwLCJpYXQiOjE0NzU4NTIzNTUsImV4cCI6MTUwNjk1NjM1NX0.p0Oqi1OlFDAEt8pRSDMbGNG8GfEYlZW2MSbflgGsXqM'
+        this.BASE_URL = '/api/v1';
+        this.userToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpbiI6ImFkbWluQGZ0ci5jb20iLCJzdGF0dXMiOiJhY3RpdmUiLCJleHBpcmUiOjMxMTA0MDAwLCJpYXQiOjE0NzU4NTIzNTUsImV4cCI6MTUwNjk1NjM1NX0.p0Oqi1OlFDAEt8pRSDMbGNG8GfEYlZW2MSbflgGsXqM';
     }
 
     runTests() {
-        describe('Q&A', (...r) => {
-
-            // Registration by using wrong data
-            describe('POST user registers by using wrong data', () => {
-                it('It should POST and user registers by using wrong data', this._registrationWrongDataHandler.bind(this));
-            });
-
-            // Registration by using correct data and confirm registration
-            describe('POST user registers and confirm registration', () => {
-                it('It should user registers and confirm registration', this._registrationAndConfirmHandler.bind(this));
-            });
-
-            // Registration by registered user
-            describe('POST registered user registers', () => {
-                it('It should POST and registered user registers', this._registrationRegisteredUserHandler.bind(this));
-            });
-
-            // Confirm registration by using wrong token
-            describe('GET confirm registration by using wrong token', () => {
-                it('It should GET confirm registration by using wrong token', this._confirmRegistrationWrongTokenHandler.bind(this));
-            });
-
-            // Authorization by using wrong data
-            describe('POST authorization by using wrong data', () => {
-                it('It should authorization by using wrong data', this._authorizationWrongDataHandler.bind(this));
-            });
-
-            // Authorization by User
-            describe('POST authorization by User', () => {
-                it('It should authorization by User', this._authorizationUserHandler.bind(this));
-            });
-
-            // // Attach Facebook to profile
-            // describe('POST attach Facebook', () => {
-            //     it('It should attach Facebook', this._facebookAttachHandler.bind(this));
-            // });
-
-            // User logout
-            describe('GET User logout', () => {
-                it('It should user logout', this._logoutUserHandler.bind(this));
-            });
-
-            // // Facebook authorization
-            // describe('POST User login via Facebook', () => {
-            //     it('It should user login via Facebook', this._facebookAuthorizationHandler.bind(this));
-            // });
-
-            // Restore password - wrong email
-            describe('POST User enters wrong email', () => {
-                it('It should user enters wrong email', this._changePasswordWrongEmailHandler.bind(this));
-            });
-
-            // Restore password - non-existent email
-            describe('POST User enters non-existent email', () => {
-                it('It should user enters non-existent email', this._changePasswordNonExistentEmailHandler.bind(this));
-            });
-
-            // Restore and change password 
-            describe('POST User restores and changes password', () => {
-                it('It should user restores and changes password', this._restoreAndChangePasswordHandler.bind(this));
-            });
-
-
-            // Change password (wrong length)
-            describe('POST User changes password (wrong length)', () => {
-                it('It should user changes password (wrong length)', this._changePasswordWrongLengthHandler.bind(this));
-            });
-
-            // Change password (wrong confirming password)
-            describe('POST User changes password (wrong confirming password)', () => {
-                it('It should user changes password (wwrong confirming password)', this._changePasswordWrongConfirmingPassHandler.bind(this));
-            });
-
-            // Login by using changed password
-            describe('POST login by using changed password', () => {
-                it('It should login by using changed password', this._authorizationChangedPasswordHandler.bind(this));
-            });
-
-            // Login by using old password
-            describe('POST login by using old password', () => {
-                it('It should login by using old password', this._authorizationOldPasswordHandler.bind(this));
-            });
-
-        });
+        // describe('User Auth', (...r) => {
+        //
+        //     // Registration by using wrong data
+        //     describe('POST user registers by using wrong data', () => {
+        //         it('It should POST and user registers by using wrong data', this._registrationWrongDataHandler.bind(this));
+        //     });
+        //
+        //     // Registration by using correct data and confirm registration
+        //     describe('POST user registers and confirm registration', () => {
+        //         it('It should user registers and confirm registration', this._registrationAndConfirmHandler.bind(this));
+        //     });
+        //
+        //
+        //     //Confirm registration by using wrong token
+        //     describe('GET confirm registration by using wrong token', () => {
+        //         it('It should GET confirm registration by using wrong token', this._confirmRegistrationWrongTokenHandler.bind(this));
+        //     });
+        //
+        //     // Authorization by using wrong data
+        //     describe('POST authorization by using wrong data', () => {
+        //         it('It should authorization by using wrong data', this._authorizationWrongDataHandler.bind(this));
+        //     });
+        //
+        //     // Authorization by User
+        //     describe('POST authorization by User', () => {
+        //         it('It should authorization by User', this._authorizationUserHandler.bind(this));
+        //     });
+        //
+        //     // User logout
+        //     describe('GET User logout', () => {
+        //         it('It should user logout', this._logoutUserHandler.bind(this));
+        //     });
+        //
+        //     // Restore password - wrong email
+        //     describe('POST User enters wrong email', () => {
+        //         it('It should user enters wrong email', this._changePasswordWrongEmailHandler.bind(this));
+        //     });
+        //
+        //     // Restore password - non-existent email
+        //     describe('POST User enters non-existent email', () => {
+        //         it('It should user enters non-existent email', this._changePasswordNonExistentEmailHandler.bind(this));
+        //     });
+        //
+        //     // Restore and change password
+        //     describe('POST User restores and changes password', () => {
+        //         it('It should user restores and changes password', this._restoreAndChangePasswordHandler.bind(this));
+        //     });
+        //
+        //
+        //     // Change password (wrong length)
+        //     describe('POST User changes password (wrong length)', () => {
+        //         it('It should user changes password (wrong length)', this._changePasswordWrongLengthHandler.bind(this));
+        //     });
+        //
+        //     // Change password (wrong confirming password)
+        //     describe('POST User changes password (wrong confirming password)', () => {
+        //         it('It should user changes password (wwrong confirming password)', this._changePasswordWrongConfirmingPassHandler.bind(this));
+        //     });
+        //
+        //     // Login by using changed password
+        //     describe('POST login by using changed password', () => {
+        //         it('It should login by using changed password', this._authorizationChangedPasswordHandler.bind(this));
+        //     });
+        //
+        //     // Login by using old password
+        //     describe('POST login by using old password', () => {
+        //         it('It should login by using old password', this._authorizationOldPasswordHandler.bind(this));
+        //     });
+        //
+        // });
     };
 
     _registrationWrongDataHandler(done) {
@@ -112,15 +98,14 @@ class AuthorizationTestMethods {
             .send(body)
             .end((err, res) => {
                 res.should.have.status(422);
-                res.body.data.content.user.should.be.a('object');
-                res.body.data.should.have.property('message').eql('Incorrect info for registration');
+                res.body.error.should.have.property('message').eql('Incorrect info for registration');
                 done();
         });
     };
 
     _registrationAndConfirmHandler(done) {
         const body = {
-            login: 'an@codemotion.eu',
+            login: 'agk@codemotion.eu',
             password: '123456'
         };
 
@@ -142,32 +127,14 @@ class AuthorizationTestMethods {
                         res.body.data.content.user.should.be.a('object');
                         res.body.data.should.have.property('message').eql('Successfully activated.');
                         res.body.data.content.user.should.have.property('status').eql('active');
-                        res.body.data.content.user.should.have.property('roles').eql('user');
                         done();
             });
-        //done();
-        });
-    };
-
-    _registrationRegisteredUserHandler(done) {
-        const body = {
-            login: 'an@codemotion.eu',
-            password: '123456'
-        };
-
-        chai.request(server)
-            .post(`${this.BASE_URL}/users/register`)
-            .send(body)
-            .end((err, res) => {
-                res.should.have.status(422);
-                res.body.data.content.user.should.be.a('object');
-                done();
         });
     };
 
     _confirmRegistrationWrongTokenHandler(done) {
         const body = {
-            login: 'ag.serheeva@gmail.com',
+            login: 'aggs.serheeva@gmail.com',
             password: '123456'
         };
 
@@ -185,9 +152,10 @@ class AuthorizationTestMethods {
                 chai.request(server)
                     .get(`${this.BASE_URL}/users/confirm/${confirm_hash}`)
                     .end((err, res) => {
+                        console.log(res.body);
                         res.should.have.status(422);
                         res.body.should.be.a('object');
-                        res.body.data.should.have.property('message').eql('Incorrect hash params');
+                        res.body.error.should.have.property('message').eql('Wrong confirm token');
                         res.body.data.content.user.should.have.property('status').eql('inactive');
                         done();
             });
@@ -197,7 +165,7 @@ class AuthorizationTestMethods {
 
     _authorizationWrongDataHandler(done) {
         const body = {
-            login: 'an@codemotion',
+            login: 'ancodemotin.eu',
             password: '123456'
         };
 
@@ -206,8 +174,7 @@ class AuthorizationTestMethods {
             .send(body)
             .end((err, res) => {
                 res.should.have.status(422);
-                res.body.data.content.user.should.be.a('object');
-                res.body.data.should.have.property('message').eql('Incorrect info for authenticate');
+                res.body.error.should.have.property('message').eql('Incorrect info for authenticate');
                 done();
         });
     };
@@ -215,7 +182,8 @@ class AuthorizationTestMethods {
     _authorizationUserHandler(done) {
         const body = {
             login: 'an@codemotion.eu',
-            password: '123456'
+            password: '123456',
+            device: 'mobile'
         };
 
         chai.request(server)
@@ -223,29 +191,12 @@ class AuthorizationTestMethods {
             .send(body)
             .end((err, res) => {
                 res.should.have.status(200);
-                rres.body.data.content.user.should.be.a('object');
+                res.body.data.content.user.should.be.a('object');
                 res.body.data.content.user.should.have.property('token');
                 res.body.data.content.user.should.have.property('status').eql('active');
                 done();
         });
     };
-
-    // _facebookAttachHandler(done) {
-    //     userModel.attachFacebookAccount(id, facebookData)
-    //         .then((user) => {
-
-    //             chai.request(server)
-    //                 .post(`${this.BASE_URL}/users/account-attach/${id}`)
-    //                 .send(id, facebookData)
-    //                 .set('x-access-token', this.userToken)
-    //                 .end((err, res) => {
-    //                     res.should.have.status(200);
-    //                     res.body.should.be.a('object');
-    //                     res.body.data.should.have.property('message').eql('Facebook account successfully attached.');
-    //                     done();
-    //             });
-    //     });
-    // };
 
     _logoutUserHandler(done) {
         chai.request(server)
@@ -259,21 +210,6 @@ class AuthorizationTestMethods {
         });
     };
 
-    // _facebookAuthorizationHandler(done) {
-    //     const facebookData = {
-
-    //     };
-    //     chai.request(server)
-    //         .post(`${this.BASE_URL}/users/facebook`)
-    //         .send(facebookData)
-    //         .end((err, res) => {
-    //             res.should.have.status(200);
-    //             res.body.should.be.a('object');
-    //             res.body.data.should.have.property('message').eql('Successfully authorized.');
-    //             done();
-    //     });
-    // };
-
     _changePasswordWrongEmailHandler(done) {
         const body = {
             email: 'ag@gmail'
@@ -283,30 +219,28 @@ class AuthorizationTestMethods {
                 .send(body)
                 .end((err, res) => {
                     res.should.have.status(422);
-                    res.body.data.content.user.should.be.a('object');
-                    res.body.data.should.have.property('message').eql('Bad data for restoring password');
+                    res.body.error.should.have.property('message').eql('Bad data for restoring password');
                     done();
             });
     };
 
     _changePasswordNonExistentEmailHandler(done) {
         const body = {
-            email: 'ag.yaremenko@gmail.com'
+            login: 'ag.yaremenko@gmail.com'
         };
             chai.request(server)
                 .post(`${this.BASE_URL}/users/restore`)
                 .send(body)
                 .end((err, res) => {
                     res.should.have.status(422);
-                    res.body.data.content.user.should.be.a('object');
-                    res.body.data.should.have.property('message').eql('User does not exist.');
+                    res.body.error.should.have.property('message').eql('User does not exist.');
                     done();
             });
     };
 
     _restoreAndChangePasswordHandler(done) {
         const body = {
-            email: 'an@codemotion.eu'
+            login: 'an@codemotion.eu'
         };
             chai.request(server)
                 .post(`${this.BASE_URL}/users/restore`)
@@ -315,7 +249,7 @@ class AuthorizationTestMethods {
                     res.should.have.status(200);
                     res.body.data.content.user.should.be.a('object');
                     res.body.data.should.have.property('message').eql('Email sent.');
-                    
+
                     const restore_hash = res.body.data.content.user.restore_hash;
                     const body = {
                         password: '654321',
@@ -336,7 +270,7 @@ class AuthorizationTestMethods {
 
     _changePasswordWrongLengthHandler(done) {
         const body = {
-            email: 'an@codemotion.eu'
+            login: 'an@codemotion.eu'
         };
             chai.request(server)
                 .post(`${this.BASE_URL}/users/restore`)
@@ -357,8 +291,7 @@ class AuthorizationTestMethods {
                         .send(body)
                         .end((err, res) => {
                             res.should.have.status(422);
-                            res.body.data.content.user.should.be.a('object');
-                            res.body.data.should.have.property('message').eql('Bad data for restoring password');
+                            res.body.error.should.have.property('message').eql('Bad data for restoring password');
                             done();
                     });
             });
@@ -366,7 +299,7 @@ class AuthorizationTestMethods {
 
     _changePasswordWrongConfirmingPassHandler(done) {
         const body = {
-            email: 'an@codemotion.eu'
+            login: 'an@codemotion.eu'
         };
             chai.request(server)
                 .post(`${this.BASE_URL}/users/restore`)
@@ -387,8 +320,7 @@ class AuthorizationTestMethods {
                         .send(body)
                         .end((err, res) => {
                             res.should.have.status(422);
-                            res.body.data.content.user.should.be.a('object');
-                            res.body.data.should.have.property('message').eql('Bad data for restoring password');
+                            res.body.error.should.have.property('message').eql('Bad data for restoring password');
                             done();
                     });
             });
@@ -397,7 +329,8 @@ class AuthorizationTestMethods {
     _authorizationChangedPasswordHandler(done) {
         const body = {
             login: 'an@codemotion.eu',
-            password: '654321'
+            password: '654321',
+            device: 'mobile'
         };
 
         chai.request(server)
@@ -423,7 +356,6 @@ class AuthorizationTestMethods {
             .send(body)
             .end((err, res) => {
                 res.should.have.status(422);
-                res.body.data.content.user.should.be.a('object');
                 done();
         });
     };

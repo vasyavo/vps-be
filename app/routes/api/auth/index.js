@@ -31,6 +31,7 @@ class AuthRoutes {
         let device = req.body.device || null;
         let tokenDevice = req.body.token || null;
 
+
         if (login.length < 3 || password.length < 5 || !this.emailPattern.test(login)) {
             helperFunctions.generateResponse(422, 'Incorrect info for authenticate', null, null, res);
             return;
@@ -135,7 +136,7 @@ class AuthRoutes {
         let password = req.body.password || null;
         let confirmPassowrd = req.body.confirmPassowrd || null;
 
-        if (!hash || !password || password !== confirmPassowrd) {
+        if (!hash || !password || password !== confirmPassowrd || password.length < 5) {
             helperFunctions.generateResponse(422, 'Bad data for restoring password', null, null, res);
             return;
         }
