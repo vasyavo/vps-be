@@ -50,7 +50,7 @@ class QuestionsRoutes {
      */
 
     getQuestionsHandler(req, res, next) {
-        let itemId = req.params.itemId || null;
+        let itemId = req.params.id || null;
         let findOptions = {};
 
         if (itemId) findOptions['_id'] = itemId;
@@ -60,7 +60,7 @@ class QuestionsRoutes {
                 helperFunctions.generateResponse(200, null, {question: question}, '', res);
             })
             .catch((err) => {
-                console.log(err);
+                console.error(err);
                 helperFunctions.generateResponse(422, err, null, null, res);
             });
     }

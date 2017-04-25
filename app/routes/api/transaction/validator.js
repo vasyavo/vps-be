@@ -41,6 +41,7 @@ class ValidatorManager {
      */
 
     validateCreditCardNumber(ccNumber) {
+        console.log(ccNumber)
         return Object.keys(this.cardNumberPatterns).find((key) => {
                 let pattern = new RegExp(this.cardNumberPatterns[key]);
                 return pattern.test(ccNumber);
@@ -55,7 +56,7 @@ class ValidatorManager {
      */
 
     validateCVV(CVV) {
-        return new RegExp(this.CVVPattern).test(+CVV);
+        return new RegExp(this.CVVPattern).test(CVV);
     };
 
 
@@ -66,21 +67,19 @@ class ValidatorManager {
      */
 
     validateDateExpire(dateExpire) {
-        if (!dateExpire.includes('/')) {
+      if (!dateExpire.includes('/')) {
             return false;
         }
-        let nowYear = new Date().getFullYear();
+      let nowYear = new Date().getFullYear();
         let nowMonth = new Date().getMonth() + 1;
 
         let expireDateParts = dateExpire.split('/');
         let cardMonth = +expireDateParts[0];
         let cardYear = +expireDateParts[1] + this.nowYearPlus;
-
         if (cardMonth > 12 || cardMonth < 0) {
-            return false;
+          return false;
         } else if ((cardMonth <= nowMonth) && (cardYear <= nowYear)) {
-            console.log('here');
-            return false;
+          return false;
         }
         return true;
     };

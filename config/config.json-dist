@@ -4,10 +4,10 @@
         "uri": "mongodb://localhost/vps"
     },
     "mailgun": {
-        "api": "key-00ff1bad35d36a6bf1ac37e95eac1b08",
-        "domain": "fromtheraw.codemotion.ninja",
+        "api": "key-7745caeaaa41020c054e6a1f7bb764b3",
+        "domain": "sandbox1a945ced09164c6abea5da5445a32d28.mailgun.org",
         "fromName": "support@ftr.com",
-        "emailTo": "v@codemotion.eu"
+        "emailTo": "b@codemotion.eu"
     },
     "serverUrl": "http://localhost:9000/",
     "jwt": {

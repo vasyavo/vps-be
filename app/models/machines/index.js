@@ -23,7 +23,8 @@ class MachinesManager {
      */
 
     getMachinesList(options) {
-        return new Promise((resolve, reject) => {
+
+      return new Promise((resolve, reject) => {
             this.api.machines.list(options.params, options.data, options.headers)
                 .then((res) => {
                     let result = (res.GetMachinesResult.machines && res.GetMachinesResult.machines.length)
@@ -77,11 +78,11 @@ class MachinesManager {
         return new Promise((resolve, reject) => {
             let machineStock = this.api.machines.get(options.params, options.data, options.headers);
             let machineCatalog = this.api.machines.getCatalog(options.params, options.data, options.headers);
-
             Promise.all([machineStock, machineCatalog])
                 .then((result) => {
                     let stockResult = result[0].GetStockMachineResult;
                     let catalogResult = result[1].GetCatalogResult;
+                    console.log(result[1].GetCatalogResult)
 
                     const CATALOG_FIELDS = ['articlesTariffs_VO', 'articles_VO'];
 
@@ -91,7 +92,7 @@ class MachinesManager {
                     let items = {};
 
                     for (let i = 0, l = stockResult.stock.length; i < l; ++i) {
-                        items[stockResult.stock[i].productId] = stockResult.stock[i];
+                        items[stockResult.stock[i].productId] = stockResult.stock[i].productReference;
                     }
 
                     for (let i = 0; i < CATALOG_FIELDS.length; ++i) {
@@ -101,9 +102,9 @@ class MachinesManager {
                         }
                         for (let j = 0, l = catalogResult[currentFields].length; j < l; ++j) {
                             let currentProductField = catalogResult[currentFields][j];
-
                             if (items[currentProductField.reference]) {
-                                items[currentProductField.reference][currentFields] = currentProductField;
+                              console.log(currentProductField.reference, currentFields)
+                              items[currentProductField.reference][currentFields] = currentProductField;
                             }
                             if (items[currentProductField.id]) {
                                 items[currentProductField.id][currentFields] = currentProductField;
