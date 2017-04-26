@@ -137,6 +137,8 @@ class TransactionsRoutes {
       cvv: ''
     };
 
+
+
     usaEpayModel.processUsaEpayRequest(usaEpayData)
       .then((usaEpayResponse) => {
         console.log(usaEpayResponse);

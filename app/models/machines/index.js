@@ -82,7 +82,6 @@ class MachinesManager {
                 .then((result) => {
                     let stockResult = result[0].GetStockMachineResult;
                     let catalogResult = result[1].GetCatalogResult;
-                    console.log(result[1].GetCatalogResult)
 
                     const CATALOG_FIELDS = ['articlesTariffs_VO', 'articles_VO'];
 
@@ -92,7 +91,7 @@ class MachinesManager {
                     let items = {};
 
                     for (let i = 0, l = stockResult.stock.length; i < l; ++i) {
-                        items[stockResult.stock[i].productId] = stockResult.stock[i].productReference;
+                        items[stockResult.stock[i].productReference] = stockResult.stock[i];
                     }
 
                     for (let i = 0; i < CATALOG_FIELDS.length; ++i) {
@@ -103,7 +102,6 @@ class MachinesManager {
                         for (let j = 0, l = catalogResult[currentFields].length; j < l; ++j) {
                             let currentProductField = catalogResult[currentFields][j];
                             if (items[currentProductField.reference]) {
-                              console.log(currentProductField.reference, currentFields)
                               items[currentProductField.reference][currentFields] = currentProductField;
                             }
                             if (items[currentProductField.id]) {
