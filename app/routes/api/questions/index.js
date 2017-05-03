@@ -116,6 +116,27 @@ class QuestionsRoutes {
             });
     }
 
+  getQuestionsDatateble(req, res, next) {
+    let options = helperFunctions.prepareDtRequest(req);
+    options.search = req.query.keyword
+      ? {
+        value: req.query.keyword,
+        fields: ['question']
+      }
+      : {};
+
+    options.sort['time_created'] = -1;
+
+    questionsModels.listDatatable(options)
+      .then((r) => {
+        helperFunctions.generateResponse(200, null, {questions: r}, '', res);
+      })
+      .catch((err) => {
+        console.log(err)
+        helperFunctions.generateResponse(422, err, null, null, res);
+      });
+  }
+
 
 }
 

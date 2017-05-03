@@ -12,6 +12,7 @@ const admin = require('./api/admin')
   , graphics = require('./api/graphics')
   , spentFree = require('./api/spentFree')
   , questions = require('./api/questions')
+  , discount = require('./api/discount')
   , api = require('../models/api')
   , jobs = require('./api/jobs')
   , multer = require('multer')
@@ -163,6 +164,8 @@ module.exports = (app) => {
 
   app.get('/api/v1/questions/:id?', questions.getQuestionsHandler.bind(questions));
 
+  app.get('/api/v1/questions-datatable/datatable', questions.getQuestionsDatateble.bind(questions));
+
   app.post('/api/v1/questions', admin.checkAdminRights, questions.createQuestionHandler.bind(questions));
 
   app.delete('/api/v1/questions/:id', admin.checkAdminRights, questions.deleteQuestionHandler.bind(questions));
@@ -199,6 +202,8 @@ module.exports = (app) => {
   //Transaction routes
 
   app.get('/api/v1/transactions-datatable', admin.checkAdminRights, transactions.datatableTransactionsHandler);
+
+  app.get('/api/v1/transaction/:id', user.checkUserRights, transactions.getTransaction);
 
   app.post('/api/v1/add-credit-card', user.checkUserRights, transactions.addCreditCardHandler);
 
@@ -237,6 +242,11 @@ module.exports = (app) => {
 
   app.get('/api/v1/getSpentFree', spentFree.getItems.bind(spentFree));
 
+  // discounts
+
+  app.post('/api/v1/discount/:id', admin.checkAdminRights, discount.create.bind(discount));
+
+  app.get('/api/v1/discount/:id', admin.checkAdminRights, discount.getDiscount.bind(discount));
 
   //Mongo express
 

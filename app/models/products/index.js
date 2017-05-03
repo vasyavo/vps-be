@@ -22,20 +22,21 @@ class ProductManager {
      */
 
     getProduct(options) {
-        let productId = options.params.productId;
-        delete options.params.productId;
+        let productReference = options.params.productReference;
+        delete options.params.productReference;
 
         return new Promise((resolve, reject) => {
             machinesModel.getMachine(options)
                 .then((result) => {
-                    resolve(result.items[productId] || {});
+                    resolve(result.items[productReference] || {});
                 })
                 .catch(reject);
         });
     };
 
 
-    /**
+
+      /**
      * Get Products list
      * @param {object} options - object with options for find product
      * @returns {Promise} - promise with result of getting product

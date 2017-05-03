@@ -45,7 +45,6 @@ class ApiManager {
         if (Object.keys(data).length) {
             options.body = data;
         }
-
         return rp(options);
     };
 

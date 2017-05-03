@@ -50,7 +50,7 @@ class ProductsRoutes {
     getProductHandler(req, res, next) {
         let basicOptions = this._getDefaultOptions();
         basicOptions.params.machineId = req.params.machineId;
-        basicOptions.params.productId = req.params.productId;
+        basicOptions.params.productReference = req.params.productId;
 
         productsModel.getProduct(basicOptions)
             .then((currentProduct) => {

@@ -121,15 +121,14 @@ class MachinesManager {
                                     itemsWithoutImage[prop] = items[prop];
                                 }
                             }
-                            responseObject.items = items;
-                            return this._parseImages(itemsWithoutImage, options)
+                             return this._parseImages(itemsWithoutImage, options)
                         })
                         .then((result) => {
                             for (let prop in result) {
                                 if (!responseObject.items[prop]) {
                                     continue;
                                 }
-                                let base64Image = helper.fromByteToBase64(result[prop].DownloadImageResult.fileImage);
+                                 let base64Image = helper.fromByteToBase64(result[prop].DownloadImageResult.fileImage);
 
                                 imagesModel.create({
                                     item_id: prop,
@@ -140,7 +139,7 @@ class MachinesManager {
                                     .then()
                                     .catch();
 
-                                responseObject.items[prop].articles_VO.image = base64Image;
+                                 responseObject.items[prop].articles_VO.image = base64Image;
 
                             }
                             resolve(responseObject);
@@ -166,9 +165,9 @@ class MachinesManager {
     _parseImages(items, options) {
         return new Promise((resolve, reject) => {
             let promisesObject = {};
-
             for (let prop in items) {
                 let currentItem = items[prop];
+
 
                 if (!currentItem.articles_VO || !currentItem.articles_VO.image) {
                     continue;

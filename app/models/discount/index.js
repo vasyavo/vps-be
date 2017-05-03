@@ -3,15 +3,12 @@ const mongo = require('../mongo')
   , Schema = mongo.Schema
   , CrudManager = require('../crud-manager');
 
-const Questions = new Schema({
-  question: {
+const Discount = new Schema({
+  product_id: {
     type: String,
   },
-  answer: {
+  discount: {
     type: String
-  },
-  status: {
-    type: Boolean
   },
   time_created: {
     type: String
@@ -38,12 +35,12 @@ const preMethods = [
  * @constructor
  */
 
-class QuestionsManager extends CrudManager {
+class DiscountManager extends CrudManager {
   constructor() {
-    super('Questions', Questions, preMethods);
+    super('Discount', Discount, preMethods);
   };
 
 }
 
-const questionsManager = new QuestionsManager();
-module.exports = questionsManager;
+const discountManager = new DiscountManager();
+module.exports = discountManager;

@@ -3,6 +3,7 @@ const fs = require('fs')
   , moment = require('moment')
   , CCValidator = require('./validator')
   , transactionsModel = require(__dirname + '/../../../models/transactions')
+  , ordersModel = require(__dirname + '/../../../models/orders')
   , usaEpayModel = require(__dirname + '/../../../models/usaepay')
   , userModel = require(__dirname + '/../../../models/user')
   , helperFunctions = require(__dirname + '/../../../models/helpers');
@@ -128,23 +129,15 @@ class TransactionsRoutes {
   makePaymentHandler(req, res, next) {
     let currentUser = req.user;
     let selectedCardIdx = req.body.cardIndex || 0;
-
-    let usaEpayData = {
-      command: 'saleCommand',
-      amount: '5.35',
-      ccNumber: currentUser.credit_cards[selectedCardIdx].token,
-      expire: '0000',
-      cvv: ''
-    };
-
-
-
-    usaEpayModel.processUsaEpayRequest(usaEpayData)
-      .then((usaEpayResponse) => {
-        console.log(usaEpayResponse);
-        //TODO create new transaction and make order
+    let machineId = req.body.machineId;
+    let products = req.body.order;
+    ordersModel.processNewOrder(products, machineId, 'esaePay', currentUser, selectedCardIdx)
+      .then((r) => {
+        helperFunctions.generateResponse(200, null, {res : r}, 'Done', res)
+      })
+      .catch((e) => {
+        return helperFunctions.generateResponse(422, e.toString(), null, null, res);
       });
-
   }
 
 
@@ -165,8 +158,18 @@ class TransactionsRoutes {
         helperFunctions.generateResponse(200, null, {user: u}, 'Card successfully deleted', res);
       })
       .catch((err) => {
-        helperFunctions.generateResponse(422, err, null, null, res);
+        return helperFunctions.generateResponse(422, err.toString(), null, null, res);
       });
+  }
+
+  getTransaction(req, res, next) {
+    ordersModel.list({_id : req.params.id})
+      .then((tr) => {
+        helperFunctions.generateResponse(200, null, {order: tr[0]}, null, res);
+      })
+      .catch((err) => {
+        helperFunctions.generateResponse(422, err, null, null, res);
+      })
   }
 
 }
