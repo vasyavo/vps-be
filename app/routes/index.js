@@ -9,6 +9,7 @@ const admin = require('./api/admin')
   , transactions = require('./api/transaction')
   , promoPacks = require('./api/promo-packs')
   , coinRules = require('./api/coins')
+  , settings = require('./api/settings')
   , graphics = require('./api/graphics')
   , spentFree = require('./api/spentFree')
   , questions = require('./api/questions')
@@ -247,6 +248,13 @@ module.exports = (app) => {
   app.post('/api/v1/discount/:id', admin.checkAdminRights, discount.create.bind(discount));
 
   app.get('/api/v1/discount/:id', admin.checkAdminRights, discount.getDiscount.bind(discount));
+
+  // settings
+
+  app.put('/api/v1/updateSettings', admin.checkAdminRights, settings.updateSettings.bind(settings));
+
+  app.get('/api/v1/settings', admin.checkAdminRights, settings.getSettings.bind(settings));
+
 
   //Mongo express
 
