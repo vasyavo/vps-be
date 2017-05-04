@@ -327,12 +327,6 @@ class UsersManager {
 
               this.addMobileToken(user, options.mobileToken)
                 .then((user) => {
-                  if (user.status === this.ACTIVE_STATTUS) {
-                    coinsModel.addBonusCoins(user, 'firstRegister')
-                      .then(resolve)
-                      .catch(reject);
-                    return;
-                  }
                   resolve(user);
                 })
                 .catch(reject);
@@ -478,18 +472,25 @@ class UsersManager {
           user.status = this.ACTIVE_STATTUS;
           user.confirm_hash = '';
           user.roles.push('user');
+          user.freeProducts = ['salad'];
 
           user.token.push(this._generateJWTToken(user));
 
           let methodName = user.referral_link ? 'referralRegister' : 'firstRegister';
-
-          coinsModel.addBonusCoins(user, methodName)
-            .then((user) => {
-              resolve(user);
-            })
-            .catch(reject);
-
-        });
+          if(methodName == 'referralRegister') {
+            UsersObject.findOne({referral_code: user.referral_link})
+              .then((refUser) => {
+                if(refUser) {
+                  refUser.freeProducts.push('juice');
+                  return UsersObject.update({_id : refUser._id}, {freeProducts : refUser.freeProducts})
+                }
+              })
+              .catch(reject)
+          }
+          UsersObject.update({_id : user._id}, user)
+            .then((user) =>  resolve(user))
+        })
+        .catch(reject);
     });
 
     return promise;

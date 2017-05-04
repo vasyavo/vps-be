@@ -88,7 +88,6 @@ class AuthRoutes {
             helperFunctions.generateResponse(422, 'Incorrect hash params', null, null, res);
             return;
         }
-
         userModel.confirmUserRegistration(token)
             .then((user) => {
                 helperFunctions.generateResponse(200, null, {user: user}, 'Successfully activated.', res);
