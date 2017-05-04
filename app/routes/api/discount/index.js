@@ -64,6 +64,14 @@ class DiscountApi {
       })
   }
 
+  getDiscountList(req, res, next) {
+    discountModel.list({})
+      .then((discount) => {
+        if(discount.length) return helperFunctions.generateResponse(200, null, {discounts: discount}, null, res);
+        helperFunctions.generateResponse(200, null, {discount: null}, null, res);
+      })
+  }
+
 }
 
 const discountApi = new DiscountApi();

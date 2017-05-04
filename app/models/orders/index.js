@@ -45,6 +45,10 @@ const Order = new Schema({
   picked_up_time: {
     type: String
   },
+  reward : {
+    type : Boolean,
+    default : false
+  },
   notificationStatus: {
     type: String
   },
