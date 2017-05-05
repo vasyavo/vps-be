@@ -86,6 +86,10 @@ let Users = new Schema({
   },
   b_day: {
     type:Number
+  },
+  spent_money : {
+    type : Number,
+    default : 0
   }
 });
 

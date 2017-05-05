@@ -45,9 +45,9 @@ const Order = new Schema({
   picked_up_time: {
     type: String
   },
-  reward : {
-    type : Boolean,
-    default : false
+  reward: {
+    type: Boolean,
+    default: false
   },
   notificationStatus: {
     type: String
@@ -93,6 +93,7 @@ class OrderManager extends CrudManager {
     this.APPROVED_STATUS = 'approved';
 
     this.refundPercent = 0.3; //refund percent
+    this.refundAmount = 2; //refund percent
 
     // userModel.getUser({login: 'v@codemotion.eu'})
     //     .then((user) => {
@@ -304,8 +305,8 @@ class OrderManager extends CrudManager {
               this.update({_id: currentOrder._id}, {status: 'canceled'})
             ];
 
-           Promise.all(promises)
-             .catch(reject)
+            Promise.all(promises)
+              .catch(reject)
           }
           console.log(err);
           reject(err)
@@ -338,7 +339,7 @@ class OrderManager extends CrudManager {
     let creditCardIdx = null;
 
     return new Promise((resolve, reject) => {
-      this.find({_id: orderId})
+      this.list({_id: orderId})
         .then((order) => {
 
           order = order[0] || null;
@@ -380,7 +381,7 @@ class OrderManager extends CrudManager {
             event: this.transactionTypes.cancel,
             details: '',
             card_num: user.credit_cards[0].maskedNum,
-            amount: parseFloat(currentOrder.price) - parseFloat(currentOrder.price * this.refundPercent).toFixed(2),
+            amount: currentOrder.price > this.refundAmount ? parseFloat(currentOrder.price) - this.refundAmount : currentOrder.price,
             status: 'approved'
           };
 
@@ -440,9 +441,12 @@ class OrderManager extends CrudManager {
    * @returns {Promise} promise - promise with a result of executing order
    */
 
-  cancelOrder(options) {
+  cancelOrder(options, user) {
     return new Promise((resolve, reject) => {
-      productsModel.cancelOrder(options)
+      this.processCancelOrder(options.params.orderId, user)
+        .then((res) => {
+          return productsModel.cancelOrder(options)
+        })
         .then((result) => {
           return result;
         })
