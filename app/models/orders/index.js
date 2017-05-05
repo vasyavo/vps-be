@@ -199,32 +199,35 @@ class OrderManager extends CrudManager {
     return new Promise((resolve, reject) => {
       this._getOrderProducts(Object.assign({}, options), productsArray)
         .then((items) => {
-          let orderSum = this._calculateSum(productsArray, items)
+          return this._calculateSum(productsArray, items, user)
+            .then((response) => {
+              items = items.map((e, k) => {
+                return {
+                  productId: e.productReference,
+                  productPriceUnit: e.articlesTariffs_VO ? e.articlesTariffs_VO.price : 0,
+                  productReference: e.productReference,
+                  productQuantity: productsArray[k].count + productsArray[k].freeCount,
+                  productEanCode: 'yyy',
+                  productName: e.productName
+                };
+              });
 
-          items = items.map((e, k) => {
-            return {
-              productId: e.productReference,
-              productPriceUnit: e.articlesTariffs_VO ? e.articlesTariffs_VO.price : 0,
-              productReference: e.productReference,
-              productQuantity: productsArray[k].count,
-              productEanCode: 'yyy',
-              productName: e.productName
-            };
-          });
+              let orderEntityOptions = {
+                user_id: user._id,
+                reward : response.rewardStatus,
+                machine_id: machineId,
+                status: 'new',
+                expire: null,
+                notificationStatus: 'new',
+                products: items,
+                credit_card_num: user.credit_cards[selectedCardIdx].maskedNum,
+                price: response.sum,
+                payment_type: this.transactionTypes[paymentType]
+              };
+              console.log('step1');
 
-          let orderEntityOptions = {
-            user_id: user._id,
-            machine_id: machineId,
-            status: 'new',
-            expire: null,
-            notificationStatus: 'new',
-            products: items,
-            credit_card_num: user.credit_cards[selectedCardIdx].maskedNum,
-            price: orderSum,
-            payment_type: this.transactionTypes[paymentType]
-          };
-          console.log('step1');
-          return this.create(orderEntityOptions);
+              return this.create(orderEntityOptions);
+            })
         })
         .then((order) => {
           currentOrder = order;
@@ -266,6 +269,7 @@ class OrderManager extends CrudManager {
             cvv: ''
           };
           console.log('step4');
+          if(order.price == 0) return {UMstatus : 'Approved'};
           return usaEpayModel.processUsaEpayRequest(usaEpayData);
         })
         .then((response) => {
@@ -523,12 +527,42 @@ class OrderManager extends CrudManager {
       .catch(err => console.log(err));
   };
 
-  _calculateSum(productsArray, items) {
-    let sum = 0;
-    items.forEach((e, k) => {
-      sum = sum + (e.articlesTariffs_VO ? e.articlesTariffs_VO.price : 0) * productsArray[k].count;
+  _calculateSum(productsArray, items, user) {
+    return new Promise((resolve, reject) => {
+      let sum = 0;
+      let rewardStatus = false;
+
+      productsArray.forEach((item) => {
+        // if(item.payStatus == 'free') rewardStatus = true;
+        const category = item.articles_VO.category;
+        const count = item.count;
+        const freeCount = item.freeCount;
+        if (freeCount > 0) {
+          for(let i = 0; i < freeCount; i++) {
+            if(user.freeProducts.includes(category)) {
+              user.freeProducts.splice(user.freeProducts.indexOf(category), 1);
+            }else {
+              items.forEach((e, k) => {
+                sum = sum + ((e.productReference == item.productReference) ? e.articlesTariffs_VO.price : 0);
+              });
+            }
+          }
+        }
+          items.forEach((e, k) => {
+            sum = sum + ((e.productReference == item.productReference) ? e.articlesTariffs_VO.price : 0)*count;
+          });
+      });
+
+
+      userModel.updateUser({_id : user._id}, {freeProducts : user.freeProducts})
+        .then(() => {
+          resolve({
+            rewardStatus,
+            sum
+          })
+        })
+        .catch(reject)
     });
-    return sum.toFixed(2);
   }
 
 }

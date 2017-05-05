@@ -476,7 +476,7 @@ class UsersManager {
           user.status = this.ACTIVE_STATTUS;
           user.confirm_hash = '';
           user.roles.push('user');
-          user.freeProducts = ['salad'];
+          user.freeProducts = ["1"];
 
           user.token.push(this._generateJWTToken(user));
 
@@ -485,7 +485,7 @@ class UsersManager {
             UsersObject.findOne({referral_code: user.referral_link})
               .then((refUser) => {
                 if(refUser) {
-                  refUser.freeProducts.push('juice');
+                  refUser.freeProducts.push("2");
                   return UsersObject.update({_id : refUser._id}, {freeProducts : refUser.freeProducts})
                 }
               })

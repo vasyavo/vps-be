@@ -278,21 +278,21 @@ class ProductsRoutes {
     orderModel.list({_id: orderId})
       .then((orders) => {
       let order = orders[0];
-        userModel.list({_id: order.user_id})
+        userModel.getUser({_id: order.user_id})
           .then((users) => {
             let user = users[0];
             spentFreeModel.list({})
               .then((spent) => {
                 const price = spent[0].price;
                 if(price == 0) return Promise.resolve('OK');
-                let newPrice = +user.spent_money.toFixed(2) + order.price.toFixed(2);
+                let newPrice = +user.spent_money.toFixed(2) + order.price;
                 if (newPrice >= price) {
                   user.spent_money = (newPrice - price).toFixed(2);
-                  user.freeProducts.push('juice');
+                  user.freeProducts.push("2");
                 } else {
                   user.spent_money = newPrice;
                 }
-                return userModel.update({_id : user._id}, user)
+                return userModel.updateUser({_id : user._id}, {spent_money:user.spent_money, freeProducts :user.freeProducts})
               })
               .then(() => {
                 orderModel.update({_id: orderId}, bodyParams)
