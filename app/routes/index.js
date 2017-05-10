@@ -249,7 +249,7 @@ module.exports = (app) => {
 
   app.get('/api/v1/discount/:id', admin.checkAdminRights, discount.getDiscount.bind(discount));
 
-  app.get('/api/v1/discount-list', admin.checkAdminRights, discount.getDiscountList.bind(discount));
+  app.get('/api/v1/discount-list', user.checkUserRights, discount.getDiscountList.bind(discount));
 
   // settings
 

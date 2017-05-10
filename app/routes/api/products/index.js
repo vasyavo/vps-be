@@ -287,8 +287,11 @@ class ProductsRoutes {
                 if(price == 0) return Promise.resolve('OK');
                 let newPrice = +user.spent_money.toFixed(2) + order.price;
                 if (newPrice >= price) {
-                  user.spent_money = (newPrice - price).toFixed(2);
-                  user.freeProducts.push("2");
+                  const freeProductCount = Math.floor(newPrice/price);
+                  for (let i = 0; i < freeProductCount; i++) {
+                    user.freeProducts.push("2");
+                  }
+                  user.spent_money = (newPrice - price * freeProductCount).toFixed(2);
                 } else {
                   user.spent_money = newPrice;
                 }

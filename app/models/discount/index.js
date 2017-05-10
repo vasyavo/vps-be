@@ -10,6 +10,9 @@ const Discount = new Schema({
   discount: {
     type: String
   },
+  category : {
+    type : String
+  },
   time_created: {
     type: String
   }

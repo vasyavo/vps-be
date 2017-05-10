@@ -367,9 +367,10 @@ class OrderManager extends CrudManager {
 
         })
         .then((r) => {
+        if(currentOrder.price == 0) return Promise.resolve('OK');
           let usaEpayData = {
             command: 'refundCommand',
-            amount: parseFloat(currentOrder.price) - parseFloat(currentOrder.price * this.refundPercent).toFixed(2),
+            amount: currentOrder.price > this.refundAmount ? parseFloat(currentOrder.price) - this.refundAmount : currentOrder.price,
             ccNumber: user.credit_cards[0].token,
             expire: '0000',
             cvv: ''

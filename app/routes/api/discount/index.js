@@ -31,6 +31,7 @@ class DiscountApi {
   create(req, res, next) {
     const id = req.params.id;
     const discount = req.body.discount;
+    const category = req.body.category;
     const machineId = req.body.machineId;
     let basicOptions = this._getDefaultOptions();
     basicOptions.params.machineId = machineId;
@@ -44,7 +45,8 @@ class DiscountApi {
       .then((product) => {
         const saveData = {
           product_id: id,
-          discount: discount
+          discount: discount,
+          category : category
         };
         if (!product.length) return discountModel.create(saveData);
         return discountModel.update({_id: product[0]._id}, saveData)
