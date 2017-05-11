@@ -4,6 +4,7 @@ const mongo = require('../mongo')
   , crypto = require('crypto')
   , transactionModel = require('../transactions')
   , userModel = require('../user')
+  , discountModel = require('../discount')
   , QRGenerator = require('../qr-generator')
   , productsModel = require('../products')
   , helper = require('../helpers')
@@ -206,15 +207,14 @@ class OrderManager extends CrudManager {
                   productId: e.productReference,
                   productPriceUnit: e.articlesTariffs_VO ? e.articlesTariffs_VO.price : 0,
                   productReference: e.productReference,
-                  productQuantity: productsArray[k].count + productsArray[k].freeCount,
+                  productQuantity: response.count[e.productReference],
                   productEanCode: 'yyy',
                   productName: e.productName
                 };
               });
-
               let orderEntityOptions = {
                 user_id: user._id,
-                reward : response.rewardStatus,
+                reward: response.rewardStatus,
                 machine_id: machineId,
                 status: 'new',
                 expire: null,
@@ -269,7 +269,7 @@ class OrderManager extends CrudManager {
             cvv: ''
           };
           console.log('step4');
-          if(order.price == 0) return {UMstatus : 'Approved'};
+          if (order.price == 0) return {UMstatus: 'Approved'};
           return usaEpayModel.processUsaEpayRequest(usaEpayData);
         })
         .then((response) => {
@@ -367,7 +367,7 @@ class OrderManager extends CrudManager {
 
         })
         .then((r) => {
-        if(currentOrder.price == 0) return Promise.resolve('OK');
+          if (currentOrder.price == 0) return Promise.resolve('OK');
           let usaEpayData = {
             command: 'refundCommand',
             amount: currentOrder.price > this.refundAmount ? parseFloat(currentOrder.price) - this.refundAmount : currentOrder.price,
@@ -406,8 +406,8 @@ class OrderManager extends CrudManager {
    */
 
   _getOrderProducts(options, product) {
-    let promises = product.map((e) => {
-      options.params.productReference = e.productReference;
+    let promises = Object.keys(product).map((e) => {
+      options.params.productReference = e;
       return productsModel.getProduct(options);
     });
     return new Promise((resolve, reject) => {
@@ -529,40 +529,62 @@ class OrderManager extends CrudManager {
   };
 
   _calculateSum(productsArray, items, user) {
+    let sum = 0;
+    let count = {
+    };
+    let rewardStatus = false;
     return new Promise((resolve, reject) => {
-      let sum = 0;
-      let rewardStatus = false;
+      discountModel.list({})
+        .then((discounts) => {
+          discounts = discounts || [];
 
-      productsArray.forEach((item) => {
-        // if(item.payStatus == 'free') rewardStatus = true;
-        const category = item.articles_VO.category;
-        const count = item.count;
-        const freeCount = item.freeCount;
-        if (freeCount > 0) {
-          for(let i = 0; i < freeCount; i++) {
-            if(user.freeProducts.includes(category)) {
-              user.freeProducts.splice(user.freeProducts.indexOf(category), 1);
-            }else {
-              items.forEach((e, k) => {
-                sum = sum + ((e.productReference == item.productReference) ? e.articlesTariffs_VO.price : 0);
-              });
+          let preparedDiscount = {};
+          let preparedItems = {};
+          discounts.forEach((d) => {
+            preparedDiscount[d.product_id] = d;
+          });
+          items.forEach((d) => {
+            preparedItems[d.productReference] = d;
+          });
+
+          for (let key in productsArray) {
+            if (productsArray.hasOwnProperty(key)) {
+              count[key] = 0;
+              if (productsArray[key].regularQuantity && productsArray[key].regularQuantity > 0) {
+                sum = (+sum + (preparedItems[key].articlesTariffs_VO.price * productsArray[key].regularQuantity)).toFixed(2)
+                count[key] = +count[key] + productsArray[key].regularQuantity;
+              }
+              if (productsArray[key].discountQuantity && productsArray[key].discountQuantity > 0) {
+                let pairs = productsArray[key].discountPair || [];
+                pairs.forEach((pair) => {
+                  if (productsArray[pair].regularPair.includes(productsArray[key].productReference)) {
+                    count[key] = count[key] + 1;
+                    sum = +sum + (+preparedDiscount[productsArray[key].productReference].discount);
+                    productsArray[pair].regularPair.splice(productsArray[pair].regularPair.indexOf(productsArray[key].productReference), 1);
+                  }
+                })
+              }
+              if (productsArray[key].freeQuantity && productsArray[key].freeQuantity > 0) {
+                for (let i = 0, len = productsArray[key].freeQuantity; i < len; i++) {
+                  if (user.freeProducts.includes(productsArray[key].articles_VO.category)) {
+                    rewardStatus = true;
+                    count[key] = count[key] + 1;
+                    user.freeProducts.splice(user.freeProducts.indexOf(productsArray[key].articles_VO.category), 1);
+                  }
+                }
+              }
+              userModel.updateUser({_id: user._id}, {freeProducts: user.freeProducts})
+                .then((user) => {
+                  resolve({
+                    rewardStatus,
+                    count,
+                    sum
+                  })
+                })
+                .catch(reject)
             }
           }
-        }
-          items.forEach((e, k) => {
-            sum = sum + ((e.productReference == item.productReference) ? e.articlesTariffs_VO.price : 0)*count;
-          });
-      });
-
-
-      userModel.updateUser({_id : user._id}, {freeProducts : user.freeProducts})
-        .then(() => {
-          resolve({
-            rewardStatus,
-            sum
-          })
-        })
-        .catch(reject)
+        });
     });
   }
 
