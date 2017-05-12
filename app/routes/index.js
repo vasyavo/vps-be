@@ -255,7 +255,7 @@ module.exports = (app) => {
 
   app.put('/api/v1/updateSettings', admin.checkAdminRights, settings.updateSettings.bind(settings));
 
-  app.get('/api/v1/settings', admin.checkAdminRights, settings.getSettings.bind(settings));
+  app.get('/api/v1/settings', settings.getSettings.bind(settings));
 
 
   //Mongo express
