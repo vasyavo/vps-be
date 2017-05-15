@@ -221,7 +221,7 @@ class OrderManager extends CrudManager {
                 notificationStatus: 'new',
                 products: items,
                 credit_card_num: user.credit_cards[selectedCardIdx].maskedNum,
-                price: +response.sum.toFixed(2),
+                price: response.sum,
                 payment_type: this.transactionTypes[paymentType]
               };
               console.log('step1');
@@ -559,7 +559,7 @@ class OrderManager extends CrudManager {
                 pairs.forEach((pair) => {
                   if (productsArray[pair].regularPair.includes(productsArray[key].productReference)) {
                     count[key] = count[key] + 1;
-                    sum = +sum + (+preparedDiscount[productsArray[key].productReference].discount);
+                    sum = +sum + (+preparedDiscount[productsArray[key].productReference].discount).toFixed(2);
                     productsArray[pair].regularPair.splice(productsArray[pair].regularPair.indexOf(productsArray[key].productReference), 1);
                   }
                 })
