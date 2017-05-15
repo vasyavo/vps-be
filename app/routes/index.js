@@ -241,7 +241,7 @@ module.exports = (app) => {
 
   app.put('/api/v1/updateSpentFree', admin.checkAdminRights, spentFree.update.bind(spentFree));
 
-  app.get('/api/v1/getSpentFree', user.checkUserRights, spentFree.getItems.bind(spentFree));
+  app.get('/api/v1/getSpentFree', spentFree.getItems.bind(spentFree));
 
   // discounts
 
