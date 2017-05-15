@@ -221,7 +221,7 @@ class OrderManager extends CrudManager {
                 notificationStatus: 'new',
                 products: items,
                 credit_card_num: user.credit_cards[selectedCardIdx].maskedNum,
-                price: response.sum.toFixed(2),
+                price: +response.sum.toFixed(2),
                 payment_type: this.transactionTypes[paymentType]
               };
               console.log('step1');
