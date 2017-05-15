@@ -17,7 +17,7 @@ class SpentFree {
     const id = req.body.id;
     spentFreeModel.list({})
         .then((prices => {
-          if (!prices) return spentFreeModel.create({price})
+          if (!prices.length) return spentFreeModel.create({price})
       return spentFreeModel.update(id, {price})
             }))
       .then((r) => {
