@@ -15,7 +15,11 @@ class SpentFree {
   update(req, res, next) {
     const price = req.body.price;
     const id = req.body.id;
-    spentFreeModel.update(id, {price})
+    spentFreeModel.list({_id : id})
+        .then((prices => {
+          if (!prices && !prices.length) return spentFreeModel.create({price})
+      return spentFreeModel.update(id, {price})
+            }))
       .then((r) => {
         helperFunctions.generateResponse(200, null, {data: r}, 'Price successfully updated', res);
       })
