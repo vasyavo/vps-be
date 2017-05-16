@@ -5,8 +5,11 @@ const mongo = require('../mongo')
 
 
 const ProductCategories = new Schema({
+    category_id : {
+        type : String
+    },
     category_name: {
-        type: String,
+        type: String
     },
     photo: {
         type: String

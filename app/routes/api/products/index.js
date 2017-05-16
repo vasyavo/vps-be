@@ -151,7 +151,11 @@ class ProductsRoutes {
     }
     filePath = filePath.replace('public/', config.get('serverUrl'));
 
-    productCategoriesModel.update({_id: categoryId}, {photo: filePath})
+      productCategoriesModel.list({category_id : categoryId})
+          .then((category) => {
+            if(!category.length) return productCategoriesModel.create({category_id : categoryId, photo : filePath})
+            return productCategoriesModel.update({category_id: categoryId}, {photo: filePath});
+      })
       .then((category) => {
         helperFunctions.generateResponse(200, null, {category: category}, '', res);
       })
@@ -285,7 +289,8 @@ class ProductsRoutes {
               .then((spent) => {
                 const price = spent[0].price;
                 if(price == 0) return Promise.resolve('OK');
-                let newPrice = +user.spent_money.toFixed(2) + order.price;
+                let newPrice = +user.spent_money.toFixed(2) + (+order.price);
+                console.log(newPrice)
                 if (newPrice >= price) {
                   const freeProductCount = Math.floor(newPrice/price);
                   for (let i = 0; i < freeProductCount; i++) {

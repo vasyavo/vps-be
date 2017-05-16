@@ -37,6 +37,9 @@ const Order = new Schema({
   status: {
     type: String
   },
+  freeProducts: {
+    type : Array
+  },
   reservation_expired: {
     type: String
   },
@@ -217,6 +220,7 @@ class OrderManager extends CrudManager {
                 reward: response.rewardStatus,
                 machine_id: machineId,
                 status: 'new',
+                freeProducts : response.freeProducts,
                 expire: null,
                 notificationStatus: 'new',
                 products: items,
@@ -530,6 +534,7 @@ class OrderManager extends CrudManager {
 
   _calculateSum(productsArray, items, user) {
     let sum = 0;
+    let freeProducts = [];
     let count = {
     };
     let rewardStatus = false;
@@ -569,21 +574,23 @@ class OrderManager extends CrudManager {
                   if (user.freeProducts.includes(productsArray[key].articles_VO.category)) {
                     rewardStatus = true;
                     count[key] = count[key] + 1;
+                    freeProducts.push(productsArray[key].articles_VO.category);
                     user.freeProducts.splice(user.freeProducts.indexOf(productsArray[key].articles_VO.category), 1);
                   }
                 }
               }
-              userModel.updateUser({_id: user._id}, {freeProducts: user.freeProducts})
-                .then((user) => {
-                  resolve({
-                    rewardStatus,
-                    count,
-                    sum
-                  })
-                })
-                .catch(reject)
             }
           }
+      userModel.updateUser({_id: user._id}, {freeProducts: user.freeProducts})
+          .then((user) => {
+          resolve({
+                      rewardStatus,
+                      count,
+                      sum,
+                      freeProducts
+                  })
+      })
+  .catch(reject)
         });
     });
   }

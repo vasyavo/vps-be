@@ -219,7 +219,7 @@ module.exports = (app) => {
 
   //Products Categories
 
-  app.get('/api/v1/product-categories-list', admin.checkAdminRights, products.productCategoriesListHandler);
+  app.get('/api/v1/product-categories-list', products.productCategoriesListHandler);
 
   app.post('/api/v1/product-categories/:id', admin.checkAdminRights, upload.single('img'), products.updateCategoryPictureHandler);
 
