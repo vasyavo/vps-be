@@ -366,6 +366,8 @@ class OrderManager extends CrudManager {
             id: -1
           };
           options.params.machineId = order.machine_id;
+          if(order.reward) userModel.updateUser({_id : order.user_id}, {$pushAll: {freeProducts:order.freeProducts}},{upsert:true})
+              .catch(e => console.log(e))
 
           return this.cancelOrderReservation(Object.assign({}, options), cancelOrderOptions);
 
