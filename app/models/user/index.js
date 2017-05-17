@@ -472,12 +472,13 @@ class UsersManager {
           if (!user) {
             return reject('Wrong confirm token');
           }
+          user.token.push(this._generateJWTToken(user))
           let updated = {
               status : this.ACTIVE_STATTUS,
               confirm_hash : '',
               roles : ['user'],
               freeProducts : ["1"],
-              token : user.token.push(this._generateJWTToken(user))
+              token : user.token
           }
 
           // user.status = this.ACTIVE_STATTUS;
