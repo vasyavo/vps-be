@@ -472,13 +472,20 @@ class UsersManager {
           if (!user) {
             return reject('Wrong confirm token');
           }
+          let updated = {
+              status : this.ACTIVE_STATTUS,
+              confirm_hash : '',
+              roles : ['user'],
+              freeProducts : ["1"],
+              token : user.token.push(this._generateJWTToken(user))
+          }
 
-          user.status = this.ACTIVE_STATTUS;
-          user.confirm_hash = '';
-          user.roles.push('user');
-          user.freeProducts = ["1"];
+          // user.status = this.ACTIVE_STATTUS;
+          // user.confirm_hash = '';
+          // user.roles.push('user');
+          // user.freeProducts = ["1"];
 
-          user.token.push(this._generateJWTToken(user));
+          // user.token.push(this._generateJWTToken(user));
 
           let methodName = user.referral_link ? 'referralRegister' : 'firstRegister';
           if(methodName == 'referralRegister') {
@@ -491,7 +498,7 @@ class UsersManager {
               })
               .catch(reject)
           }
-          UsersObject.update({_id : user._id}, user)
+          UsersObject.update({_id : user._id}, updated)
             .then((user) =>  resolve(user))
         })
         .catch(reject);
