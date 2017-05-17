@@ -66,7 +66,7 @@ class AuthRoutes {
 
         userModel.registerUser(userInfo)
             .then((user) => {
-                helperFunctions.generateResponse(200, null, {user: user}, 'Account successfully created.', res);
+                helperFunctions.generateResponse(200, null, {user: user}, 'Account is successfully created', res);
             })
             .catch((err) => {
                 helperFunctions.generateResponse(422, err, null, null, res);

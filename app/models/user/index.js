@@ -287,7 +287,7 @@ class UsersManager {
         user = (user && user.length) ? user[0] : null;
 
         if (user && !options.facebook_data.facebook_id) {
-          return reject('Already exist');
+          return reject('Account already exists');
         } else if (user && options.facebook_data.facebook_id) {
 
           let newToken = this._generateJWTToken(user);
