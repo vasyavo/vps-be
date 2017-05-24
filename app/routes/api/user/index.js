@@ -1,5 +1,6 @@
 const userModel = require(__dirname + '/../../../models/user')
   , mailerModel = require(__dirname + '/../../../models/mailer')
+  , settingsModel = require(__dirname + '/../../../models/settings')
   , helperFunctions = require(__dirname + '/../../../models/helpers');
 
 
@@ -138,16 +139,20 @@ class UserRoutes {
     if (!report) {
       return helperFunctions.generateResponse(422, 'Wrong inputed data.', null, null, res);
     }
-    mailerModel.sendEmail({
-      eventType: 'report',
-      data: {
-        emailSubject,
-        emailText : report
-      },
-      emailTo: 'mm@codemotion.eu',
-      subject: emailSubject
-    });
-    helperFunctions.generateResponse(200, null, {},null, res);
+      settingsModel.list({})
+          .then((model)=> {
+      console.log(model)
+          mailerModel.sendEmail({
+          eventType: 'report',
+          data: {
+              emailSubject,
+              emailText : report
+          },
+          emailTo: model[0].mail || 'b@codemotion.eu',
+          subject: emailSubject
+      });
+      helperFunctions.generateResponse(200, null, {},null, res);
+    })
   }
 
 }
