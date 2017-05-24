@@ -297,10 +297,11 @@ class UsersManager {
             .catch(reject);
           return;
         } else {
-          let userEntity = new UsersObject(options);
-          userEntity.banned = false;
+            let userEntity = new UsersObject(options);
+            userEntity.banned = false;
+            userEntity.freeProducts = ["1"];
 
-          if (userEntity.facebook_data.facebook_id) {
+            if (userEntity.facebook_data.facebook_id) {
             userEntity.first_name = userEntity.facebook_data.first_name;
             userEntity.last_name = userEntity.facebook_data.last_name;
             userEntity.status = this.ACTIVE_STATTUS;
@@ -477,7 +478,6 @@ class UsersManager {
               status : this.ACTIVE_STATTUS,
               confirm_hash : '',
               roles : ['user'],
-              freeProducts : ["1"],
               token : user.token
           }
 
