@@ -152,7 +152,7 @@ class TransactionsRoutes {
     let cardIndex = req.params.cardIdx || null;
     let user = req.user;
 
-    user.credit_cards[cardIndex].active = false;
+    delete user.credit_cards.splice(cardIndex, 1);
     userModel.updateUser({_id : user._id}, {credit_cards : user.credit_cards})
       .then((u) => {
         helperFunctions.generateResponse(200, null, {user: u}, 'Card successfully deleted', res);
