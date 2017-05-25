@@ -99,7 +99,6 @@ class SchedulerMethods {
                 orders.forEach((order) => {
                     let now = moment().unix();
                     if (now > order.expire) {
-                        console.log(order)
 
                         userModel.getUser({_id: order.user_id})
                             .then((user) => {
@@ -108,7 +107,7 @@ class SchedulerMethods {
                         }
                         console.log(user[0]);
                         let deviceTokens = user[0].device_tokens;
-                        if (deviceTokens) notificationSender.sendPushNotification(deviceTokens, 'Your order has expired :(');
+                        if (deviceTokens.length) notificationSender.sendPushNotification(deviceTokens, 'Your order has expired :(');
 
                         ordersModel.processCancelOrder(order._id, user[0])
                             .then((res) => {
