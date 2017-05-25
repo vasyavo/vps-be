@@ -106,6 +106,7 @@ class SchedulerMethods {
                             if(!user || !user[0]) {
                             return;
                         }
+                        console.log(user[0]);
                         deviceTokens = user[0].device_tokens;
                         if (deviceTokens) notificationSender.sendPushNotification(deviceTokens, 'Your order has expired :(');
 
