@@ -2,6 +2,7 @@ const mongo = require('../mongo')
     , moment = require('moment')
     , Schema = mongo.Schema
     , userModel = require('../user')
+    , productsModel = require('../products')
     , ordersModel = require('../orders')
     , notificationSender = require('../notifications-sender');
 
@@ -52,6 +53,7 @@ class SchedulerMethods {
      */
 
     checkUserGiftsExpires() {
+        console.log('checkUserGiftsExpires')
         let findOptionsUsers = {
             gift_packs: {
                 $exists: true,
@@ -87,6 +89,7 @@ class SchedulerMethods {
      */
 
     checkOrdersExpired() {
+        console.log('checkOrdersExpired')
         let findOptionsOrders = {
             status: 'done'
         };
@@ -96,22 +99,38 @@ class SchedulerMethods {
                 orders.forEach((order) => {
                     let now = moment().unix();
                     if (now > order.expire) {
-                        order.status = 'expired';
-                        order.save()
-                            .then()
-                            .catch();
-
-                        //TODO make a refund with fee
+                        console.log(order)
 
                         userModel.getUser({_id: order.user_id})
                             .then((user) => {
-                                if(!user || !user[0]) {
-                                    return;
+                            if(!user || !user[0]) {
+                            return;
+                        }
+                        deviceTokens = user[0].device_tokens;
+                        if (deviceTokens) notificationSender.sendPushNotification(deviceTokens, 'Your order has expired :(');
+
+                        ordersModel.processCancelOrder(order._id, user[0])
+                            .then((res) => {
+                                let options = {
+                                    params: {
+                                        appId: 1,
+                                        companyId: 49
+                                    },
+                                    data: {},
+                                    headers: {}
                                 }
-                                deviceTokens = user[0].device_tokens;
-                                notificationSender.sendPushNotification(deviceTokens, 'Your order has expired :(');
-                            })
-                            .catch();
+                            return productsModel.cancelOrder(options)
+                        })
+                    .then((result) => {
+                            return result;
+                    })
+                    .then((status) => {
+                            return ordersModel.update({_id:order._id}, {status: 'expired'})
+                        })
+                            .catch((e)=> console.log(e));
+                    })
+                    .catch((e)=> console.log(e));
+
                     }
                 });
 

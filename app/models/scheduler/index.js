@@ -79,8 +79,9 @@ class Scheduler extends CrudManager {
 
         this.jobsInProgress = {};
         this.jobsMethods = schedulerMethods;
+        this.scheduler.scheduleJob('* * * * *', () => this.jobsMethods.checkOrdersExpired())
 
-        // this.initJobs();
+        this.initJobs();
     };
 
 
@@ -121,7 +122,7 @@ class Scheduler extends CrudManager {
 
             this.list(query)
                 .then((jobs) => {
-                    jobs.forEach((job) => {
+                    jobs.forEach((jobs) => {
                         this._addNewJob(job)
                             .then(resolve)
                             .catch(reject);
@@ -143,7 +144,7 @@ class Scheduler extends CrudManager {
     _addNewJob(job) {
         return new Promise((resolve, reject) => {
             console.log(job.date);
-            this.jobsInProgress[job._id] = this.scheduler.scheduleJob(job.date, () => {
+            this.jobsInProgress[job._id] = this.scheduler.IN_PROGRESS(job.date, () => {
                 this.jobsMethods[job.job_metod].call(schedulerMethods, job.job_options || null)
                     .then((result) => {
                         if (job.job_type === this.TYPES.custom) {
