@@ -107,7 +107,7 @@ class SchedulerMethods {
                             return;
                         }
                         console.log(user[0]);
-                        deviceTokens = user[0].device_tokens;
+                        let deviceTokens = user[0].device_tokens;
                         if (deviceTokens) notificationSender.sendPushNotification(deviceTokens, 'Your order has expired :(');
 
                         ordersModel.processCancelOrder(order._id, user[0])
