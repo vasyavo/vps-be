@@ -285,19 +285,17 @@ class UsersManager {
     let promise = new Promise((resolve, reject) => {
       this.getUser(query).then((user) => {
         user = (user && user.length) ? user[0] : null;
-        let newToken = this._generateJWTToken(user);
 
-
-      if (user && !options.facebook_data.facebook_id) {
+        if (user && !options.facebook_data.facebook_id) {
           return reject('Account already exists');
         } else if (user && options.facebook_data.facebook_id) {
 
+          let newToken = this._generateJWTToken(user);
           user.token.push(newToken);
           user.save()
             .then(resolve)
             .catch(reject);
           return;
-
         } else {
             let userEntity = new UsersObject(options);
             userEntity.banned = false;
@@ -310,9 +308,9 @@ class UsersManager {
             userEntity.roles = [];
             userEntity.roles.push('user');
             userEntity.token = [];
-            userEntity.token.push(newToken);
+            userEntity.token.push(this._generateJWTToken(userEntity));
             userEntity.unratedProducts = [];
-            userEntity.freeProducts = ["1"];
+            userEntity.freeProducts = [];
 
           } else {
             userEntity.status = this.INACTIVE_STATTUS;
