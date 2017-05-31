@@ -136,6 +136,7 @@ Users.pre('save', function (next) {
 
     if (!self.isModified('confirm_hash')) {
       self.confirm_hash = result.confirmToken;
+      self.markModified('confirmToken');
     }
 
     if (!self.isModified('time_register')) {
@@ -310,7 +311,7 @@ class UsersManager {
             userEntity.token = [];
             userEntity.token.push(this._generateJWTToken(userEntity));
             userEntity.unratedProducts = [];
-            userEntity.freeProducts = [];
+            userEntity.freeProducts = ["1"];
 
           } else {
             userEntity.status = this.INACTIVE_STATTUS;
