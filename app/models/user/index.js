@@ -136,7 +136,6 @@ Users.pre('save', function (next) {
 
     if (!self.isModified('confirm_hash')) {
       self.confirm_hash = result.confirmToken;
-      self.markModified('confirm_hash');
     }
 
     if (!self.isModified('time_register')) {
@@ -320,19 +319,19 @@ class UsersManager {
 
           userEntity.save()
             .then((user) => {
-              if (!Object.keys(user.facebook_data).length) {
-                mailerModel.sendEmail({
-                  eventType: 'confirm_registration',
-                  data: {
-                    userName: user.first_name || user.login,
-                    url: config.get('appDomain') + '/success?confirmHash=' + user.confirm_hash
-                  },
-                  emailTo: user.login
-                });
-              }
-
               this.addMobileToken(user, options.mobileToken)
                 .then((user) => {
+
+              if (!Object.keys(user.facebook_data).length) {
+                mailerModel.sendEmail({
+                    eventType: 'confirm_registration',
+                    data: {
+                        userName: user.first_name || user.login,
+                        url: config.get('appDomain') + '/success?confirmHash=' + user.confirm_hash
+                    },
+                    emailTo: user.login
+                });
+            }
                   resolve(user);
                 })
                 .catch(reject);
