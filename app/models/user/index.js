@@ -135,6 +135,7 @@ Users.pre('save', function (next) {
     }
 
     if (!self.isModified('confirm_hash')) {
+      console.log(result.confirmToken)
       self.confirm_hash = result.confirmToken;
     }
 
@@ -285,17 +286,19 @@ class UsersManager {
     let promise = new Promise((resolve, reject) => {
       this.getUser(query).then((user) => {
         user = (user && user.length) ? user[0] : null;
+        let newToken = this._generateJWTToken(user);
 
-        if (user && !options.facebook_data.facebook_id) {
+
+      if (user && !options.facebook_data.facebook_id) {
           return reject('Account already exists');
         } else if (user && options.facebook_data.facebook_id) {
 
-          let newToken = this._generateJWTToken(user);
           user.token.push(newToken);
           user.save()
             .then(resolve)
             .catch(reject);
           return;
+
         } else {
             let userEntity = new UsersObject(options);
             userEntity.banned = false;
@@ -308,9 +311,9 @@ class UsersManager {
             userEntity.roles = [];
             userEntity.roles.push('user');
             userEntity.token = [];
-            userEntity.token.push(this._generateJWTToken(userEntity));
+            userEntity.token.push(newToken);
             userEntity.unratedProducts = [];
-            userEntity.freeProducts = [];
+            userEntity.freeProducts = ["1"];
 
           } else {
             userEntity.status = this.INACTIVE_STATTUS;
@@ -320,6 +323,7 @@ class UsersManager {
           userEntity.save()
             .then((user) => {
               if (!Object.keys(user.facebook_data).length) {
+                console.log(user.confirm_hash)
                 mailerModel.sendEmail({
                   eventType: 'confirm_registration',
                   data: {
