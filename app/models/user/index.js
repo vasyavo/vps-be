@@ -135,7 +135,6 @@ Users.pre('save', function (next) {
     }
 
     if (!self.isModified('confirm_hash')) {
-      console.log(result.confirmToken)
       self.confirm_hash = result.confirmToken;
     }
 
@@ -323,7 +322,6 @@ class UsersManager {
           userEntity.save()
             .then((user) => {
               if (!Object.keys(user.facebook_data).length) {
-                console.log(user.confirm_hash)
                 mailerModel.sendEmail({
                   eventType: 'confirm_registration',
                   data: {
