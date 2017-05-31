@@ -136,7 +136,7 @@ Users.pre('save', function (next) {
 
     if (!self.isModified('confirm_hash')) {
       self.confirm_hash = result.confirmToken;
-      self.markModified('confirmToken');
+      self.markModified('confirm_hash');
     }
 
     if (!self.isModified('time_register')) {
