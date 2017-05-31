@@ -79,7 +79,7 @@ class Scheduler extends CrudManager {
 
         this.jobsInProgress = {};
         this.jobsMethods = schedulerMethods;
-        this.scheduler.scheduleJob('* * * * *', () => this.jobsMethods.checkOrdersExpired())
+        this.scheduler.scheduleJob('0 0 * * *', () => this.jobsMethods.checkOrdersExpired())
 
         // this.initJobs();
     };
