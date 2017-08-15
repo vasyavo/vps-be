@@ -1,4 +1,5 @@
 const config = global.config;
+const cors = require('cors');
 
 module.exports = (app, express) => {
 
@@ -8,6 +9,7 @@ module.exports = (app, express) => {
         , cookieParser = require('cookie-parser');
 
     app
+        .use(cors())
         .use(express.static('./public'))
         .use(cookieParser())
         .use(bodyParser.json({limit: '50mb'}))
