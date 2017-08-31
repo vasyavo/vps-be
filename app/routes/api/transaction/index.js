@@ -133,7 +133,7 @@ class TransactionsRoutes {
     let products = req.body.order;
     ordersModel.processNewOrder(products, machineId, 'esaePay', currentUser, selectedCardIdx)
       .then((r) => {
-        helperFunctions.generateResponse(200, null, {res : r}, 'Done', res)
+        helperFunctions.generateResponse(200, null, {res : r}, null, res)
       })
       .catch((e) => {
         return helperFunctions.generateResponse(422, e.toString(), null, null, res);
