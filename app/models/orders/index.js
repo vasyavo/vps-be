@@ -242,13 +242,14 @@ class OrderManager extends CrudManager {
             codeQr: order.codeQr,
             codeManual: order.codeManual,
             products: order.products,
-            id: -1
+            id: order.id
           };
           console.log('step2');
 
           return this.createOrderReservation(Object.assign({}, options), reservationOptions);
         })
         .then((r) => {
+            reservationOptions.reservationId = r.reservationId;
           if (r.result.code != '0') {
             throw r.result.message;
           }
@@ -295,7 +296,7 @@ class OrderManager extends CrudManager {
             reject('Transaction not approved')
           }
           console.log('step6');
-          return this.confirmOrderReservation(Object.assign({}, options), -1, reservationOptions);
+          return this.confirmOrderReservation(Object.assign({}, options), reservationOptions.reservationId, reservationOptions);
         })
         .then((r) => {
           console.log('final7');
@@ -309,7 +310,7 @@ class OrderManager extends CrudManager {
           // console.log('err');
           if (currentOrder) {
             let promises = [
-              this.cancelOrderReservation(Object.assign({}, options), -1, reservationOptions),
+              this.cancelOrderReservation(Object.assign({}, options), reservationOptions.reservationId, reservationOptions),
               this.update({_id: currentOrder._id}, {status: 'canceled'})
             ];
 
