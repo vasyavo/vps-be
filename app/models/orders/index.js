@@ -299,6 +299,7 @@ class OrderManager extends CrudManager {
           return this.confirmOrderReservation(Object.assign({}, options), reservationOptions.reservationId, reservationOptions);
         })
         .then((r) => {
+          console.log(r)
           console.log('final7');
           this.update({_id: currentOrder._id}, {
             status: 'done',
