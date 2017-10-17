@@ -239,7 +239,7 @@ class OrderManager extends CrudManager {
 
           reservationOptions = {
             machineId: order.machine_id,
-            codeQr: order.codeQr,
+            codeQr: order.codeManual,
             codeManual: order.codeManual,
             products: order.products,
             id: order.id
@@ -450,7 +450,7 @@ class OrderManager extends CrudManager {
 
   saveOrderQRCode(order) {
     let fileName = 'qr' + order._id;
-    let cryptedStr = crypto.createHash("sha256").update(order._id.toString()).digest("base64").slice(0, 8);
+    let cryptedStr = helper.guid().slice(0,8).toUpperCase();
 
     order.codeQr = fileName;
     order.codeManual = cryptedStr;
