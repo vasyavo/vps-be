@@ -31,7 +31,7 @@ class MachinesRoutes {
      */
 
     getMachinesHandler(req, res, next) {
-        let machinesOptions = JSON.parse(JSON.stringify(this.basicOptions));
+      let machinesOptions = JSON.parse(JSON.stringify(this.basicOptions));
         machinesModel.getMachinesList(machinesOptions)
             .then((machines) => {
                 helperFunctions.generateResponse(200, null, {machines: machines}, '', res);

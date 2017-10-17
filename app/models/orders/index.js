@@ -245,11 +245,18 @@ class OrderManager extends CrudManager {
             id: order.id
           };
           console.log('step2');
+          console.log('option ----------');
+          console.log(options);
+          console.log('reservation option -----');
+          console.log(reservationOptions);
 
           return this.createOrderReservation(Object.assign({}, options), reservationOptions);
         })
         .then((r) => {
-            reservationOptions.reservationId = r.reservationId;
+          console.log('reserved status ------');
+          console.log(r);
+
+          reservationOptions.reservationId = r.reservationId;
           if (r.result.code != '0') {
             throw r.result.message;
           }
@@ -278,6 +285,8 @@ class OrderManager extends CrudManager {
           return usaEpayModel.processUsaEpayRequest(usaEpayData);
         })
         .then((response) => {
+          console.log('transaction response ------');
+          console.log(response);
           let transactionEntity = {
             user_id: user._id,
             user_login: user.login,
@@ -293,14 +302,21 @@ class OrderManager extends CrudManager {
         })
         .then((transaction) => {
           if (transaction.status.toLowerCase() !== this.APPROVED_STATUS) {
-            reject('Transaction not approved')
+            return reject('Transaction not approved')
           }
           console.log('step6');
+          console.log('option');
+          console.log(options);
+          console.log('reservation option -----');
+          console.log(reservationOptions);
+
           return this.confirmOrderReservation(Object.assign({}, options), reservationOptions.reservationId, reservationOptions);
         })
         .then((r) => {
-          console.log(r)
           console.log('final7');
+          console.log('reservation update');
+          console.log(r);
+
           this.update({_id: currentOrder._id}, {
             status: 'done',
             expire: moment().unix() + this.defaultExpireTime
