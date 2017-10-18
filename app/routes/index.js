@@ -60,6 +60,8 @@ module.exports = (app) => {
 
   app.post('/api/v1/users/register', auth.registerUserHandler);
 
+  app.get('/api/v1/users/get-user/:id', admin.checkAdminRights, user.getUser);
+
   app.get('/api/v1/users/confirm/:hash', auth.confirmRegisterUserHandler);
 
   app.post('/api/v1/users/restore', auth.forgotPasswordHandler.bind(auth));

@@ -132,6 +132,18 @@ class UserRoutes {
 
   }
 
+
+  getUser(req, res, next) {
+    const id = req.params.id;
+    userModel.getUser({'_id': id})
+      .then(user => {
+        helperFunctions.generateResponse(200, null, {user: user[0]}, null, res);
+      })
+      .catch(e => {
+        return helperFunctions.generateResponse(422, 'Wrong inputed data.', null, null, res);
+      })
+  }
+
   sendReport(req, res, next) {
     var user = req.user;
     const report = req.body.report;
