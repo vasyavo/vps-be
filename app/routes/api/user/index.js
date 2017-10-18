@@ -61,7 +61,7 @@ class UserRoutes {
     options.search = req.query.keyword
       ? {
         value: req.query.keyword,
-        fields: ['title']
+        fields: ['login', 'last_name', 'first_name']
       }
       : {};
 

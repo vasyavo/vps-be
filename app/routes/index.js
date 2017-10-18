@@ -203,6 +203,8 @@ module.exports = (app) => {
 
   app.get('/api/v1/transactions-datatable', admin.checkAdminRights, transactions.datatableTransactionsHandler);
 
+  app.get('/api/v1/orders-datatable', admin.checkAdminRights, transactions.orderDatatableTransactionsHandler);
+
   app.get('/api/v1/transaction/:id', user.checkUserRights, transactions.getTransaction);
 
   app.post('/api/v1/add-credit-card', user.checkUserRights, transactions.addCreditCardHandler);

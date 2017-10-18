@@ -85,10 +85,9 @@ class Helpers {
             let sortOrder = 1;
 
             if (req.query.sort_field[0] === '-') {
-                let sortOrder = -1;
+                sortOrder = -1;
                 req.query.sort_field = req.query.sort_field.substr(1);
             }
-
             sort[req.query.sort_field] = sortOrder;
 
         } else {

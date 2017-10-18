@@ -16,6 +16,9 @@ const Order = new Schema({
   user_id: {
     type: String
   },
+  user_login: {
+    type: String
+  },
   machine_id: {
     type: String
   },
@@ -217,6 +220,7 @@ class OrderManager extends CrudManager {
               });
               let orderEntityOptions = {
                 user_id: user._id,
+                user_login: user.login,
                 reward: response.rewardStatus,
                 machine_id: machineId,
                 status: 'new',
