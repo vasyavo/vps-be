@@ -64,12 +64,13 @@ class CrudManager {
      * @returns {Promise} - promise with result of getting entity
      */
 
-    list(options) {
+    list(options, sort) {
+      sort = sort || {};
         let promise = new Promise((resolve, reject) => {
             if(options._id && !mongoose.Types.ObjectId.isValid(options._id)) {
-                return reject('Wrong comment id');
+              reject('wrong query')
             }
-            this.schemaObject.find(options)
+          this.schemaObject.find(options).sort(sort)
                 .then(resolve)
                 .catch(reject);
         });

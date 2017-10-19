@@ -1,6 +1,8 @@
 const config = global.config
     , moment = require('moment')
-    , coinsTransactions = require('../coins/coinsTransactions');
+    , coinsTransactions = require('../coins/coinsTransactions')
+    , ordersModel = require('../../models/orders')
+    , transactionsModel = require('../../models/transactions');
 
 /**
  * Graphics data builder class
@@ -207,105 +209,34 @@ class GraphicsBuilderManager {
      */
 
     getTopBuyresData() {
-        let dummyTransactions = [
-            {
-                time_created: 1476626375,
-                user_id: '350',
-                user_login: 'v@codemotion.eu',
-                amount: 100,
-                status: 'approved'
-            },
-            {
-                time_created: 1479600000,
-                user_id: '350',
-                user_login: 'v@codemotion.eu',
-                amount: 10,
-                status: 'approved'
-            },
-            {
-                time_created: 1479859200,
-                user_id: '350',
-                user_login: 'v@codemotion.eu',
-                amount: 50,
-                status: 'approved'
-            },
-            {
-                time_created: 1475280775,
-                machine_id: '330',
-                user_login: 'm@codemotion.eu',
-                amount: 50,
-                status: 'approved'
-            },
-            {
-                time_created: 1475367175,
-                user_id: '330',
-                user_login: 'm@codemotion.eu',
-                amount: 140,
-                status: 'approved'
-            },
-            {
-                time_created: 1479340800,
-                user_id: '330',
-                user_login: 'm@codemotion.eu',
-                amount: 140,
-                status: 'approved'
-            },
-            {
-                time_created: 1474280775,
-                user_id: '230',
-                user_login: 'y@codemotion.eu',
-                amount: 20,
-                status: 'approved'
-            },
-            {
-                time_created: 1479340800,
-                user_id: '230',
-                user_login: 'y@codemotion.eu',
-                amount: 100,
-                status: 'approved'
-            },
-            {
-                time_created: 1479427200,
-                user_id: '230',
-                user_login: 'y@codemotion.eu',
-                amount: 30,
-                status: 'approved'
-            },
-            {
-                time_created: 1480982400,
-                user_id: '230',
-                user_login: 'y@codemotion.eu',
-                amount: 50,
-                status: 'approved'
-            }
-        ];
-
-        let customers = {
+     return ordersModel.list({}, {price: 1})
+        .then(dummyTransactions => {
+          let customers = {
             'A': [],
             'M': [],
             'W': []
-        };
+          };
 
-        for (let i = 0, l = dummyTransactions.length; i < l; ++i) {
+          for (let i = 0, l = dummyTransactions.length; i < l; ++i) {
             let currentTransaction = dummyTransactions[i];
             for (let key in this.ranges) {
 
-                let currentRange = this.ranges[key];
-                let rangeTime = +moment().unix() - +currentRange;
+              let currentRange = this.ranges[key];
+              let rangeTime = +moment().unix() - +currentRange;
 
-                if (currentTransaction.time_created > rangeTime) {
-                    customers[key].push({
-                        name: currentTransaction.user_login,
-                        location: 'Kyiv, Ukraine',
-                        cash: currentTransaction.amount
-                    })
-                }
+              if (currentTransaction.time_created > rangeTime) {
+                customers[key].push({
+                  name: currentTransaction.user_login,
+                  cash: currentTransaction.price
+                })
+              }
             }
-        }
+          }
 
 
-        return new Promise((resolve, reject) => {
+          return new Promise((resolve, reject) => {
             resolve(customers);
+          });
         });
 
 

@@ -48,6 +48,9 @@ class TransactionsRoutes {
 
   orderDatatableTransactionsHandler(req, res, next) {
     let options = helperFunctions.prepareDtRequest(req);
+    if(req.query.id) {
+      options.find = {'user_id': req.query.id}
+    }
     options.search = req.query.keyword
       ? {
         value: req.query.keyword,
