@@ -1,29 +1,32 @@
 const mongo = require('../mongo')
-    , moment = require('moment')
-    , Schema = mongo.Schema
-    , CrudManager = require('../crud-manager');
+  , moment = require('moment')
+  , Schema = mongo.Schema
+  , CrudManager = require('../crud-manager');
 
 const MobileTokens = new Schema({
-    token: {
-        type: String,
-        required: true,
-        unique: true
-    }
+  token: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  platform: {
+    type: String
+  }
 });
 
 const preMethods = [
-    {
-        name: 'save',
-        callback: function (next) {
-            let self = this;
-            if (!self.isModified('time_created')) {
-                let now = moment().unix();
-                self.time_created = now;
-            }
+  {
+    name: 'save',
+    callback: function (next) {
+      let self = this;
+      if (!self.isModified('time_created')) {
+        let now = moment().unix();
+        self.time_created = now;
+      }
 
-            next();
-        }
+      next();
     }
+  }
 ];
 
 /**
@@ -31,10 +34,10 @@ const preMethods = [
  * @constructor
  */
 
-class MobileTokensManager extends CrudManager{
-    constructor() {
-        super('MobileTokens', MobileTokens, preMethods);
-    };
+class MobileTokensManager extends CrudManager {
+  constructor() {
+    super('MobileTokens', MobileTokens, preMethods);
+  };
 
 }
 

@@ -238,7 +238,7 @@ module.exports = (app) => {
 
   //Mobile device tokens
 
-  app.put('/api/v1/mobile-token', auth.saveTokenHandler);
+  app.put('/api/v1/mobile-token', user.checkUserRights, auth.saveTokenHandler);
 
   // free spent
 

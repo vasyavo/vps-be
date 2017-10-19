@@ -31,8 +31,9 @@ class MachinesManager {
                         ? res.GetMachinesResult.machines
                         : [];
 
-                    let machines = result.filter(m => !!m.active);
-                    let machinesIds = machines.map(m => m.machineId);
+                    // let machines = result.filter(m => !!m.active);
+                    let machines = result;
+                  let machinesIds = machines.map(m => m.machineId);
 
                     this.loadMachineImages(machinesIds)
                         .then((images) => {

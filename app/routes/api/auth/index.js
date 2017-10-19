@@ -265,13 +265,14 @@ class AuthRoutes {
 
     saveTokenHandler(req, res, next) {
         let token = req.body.deviceToken || null;
+        let platform = req.body.platform || null;
 
         if(!token) {
             helperFunctions.generateResponse(422, 'Wrong device token', null, null, res);
             return;
         }
 
-        mobileDevicesModel.create({token: token})
+        mobileDevicesModel.create({token: token, platform: platform})
             .then((token) => {
                 helperFunctions.generateResponse(200, null, {token: token}, '', res);
             })
