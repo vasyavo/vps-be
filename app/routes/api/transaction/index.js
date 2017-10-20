@@ -48,6 +48,9 @@ class TransactionsRoutes {
 
   orderDatatableTransactionsHandler(req, res, next) {
     let options = helperFunctions.prepareDtRequest(req);
+    if(req.query.orderId) {
+      options.find = {'_id': req.query.orderId}
+    }
     if(req.query.id) {
       options.find = {'user_id': req.query.id}
     }
